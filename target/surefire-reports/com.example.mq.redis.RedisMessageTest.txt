@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: com.example.mq.redis.RedisMessageTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 16.235 s <<< FAILURE! - in com.example.mq.redis.RedisMessageTest
+testMessageOrder  Time elapsed: 5.018 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: 消息接收超时 ==> expected: <true> but was: <false>
+	at com.example.mq.redis.RedisMessageTest.testMessageOrder(RedisMessageTest.java:129)
+

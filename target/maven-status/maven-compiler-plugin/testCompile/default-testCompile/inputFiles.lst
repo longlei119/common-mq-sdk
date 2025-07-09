@@ -1,0 +1,9 @@
+G:\spring-ai-all\common-mq-sdk\src\test\java\com\example\mq\redis\BaseRedisTest.java
+G:\spring-ai-all\common-mq-sdk\src\test\java\com\example\mq\activemq\ActiveMQMessageTest.java
+G:\spring-ai-all\common-mq-sdk\src\test\java\com\example\mq\emqx\BaseEMQXTest.java
+G:\spring-ai-all\common-mq-sdk\src\test\java\com\example\mq\redis\RedisMessageTest.java
+G:\spring-ai-all\common-mq-sdk\src\test\java\com\example\mq\rabbitmq\RabbitMQMessageTest.java
+G:\spring-ai-all\common-mq-sdk\src\test\java\com\example\mq\activemq\BaseActiveMQTest.java
+G:\spring-ai-all\common-mq-sdk\src\test\java\com\example\mq\rabbitmq\BaseRabbitMQTest.java
+G:\spring-ai-all\common-mq-sdk\src\test\java\com\example\mq\rocketmq\RocketMQMessageTest.java
+G:\spring-ai-all\common-mq-sdk\src\test\java\com\example\mq\emqx\EMQXMessageTest.java

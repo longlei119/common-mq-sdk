@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000"/>
+    </marker>
+  </defs>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">统一消息中间件SDK架构图</text>
+  
+  <!-- 应用层 -->
+  <rect x="50" y="80" width="700" height="80" fill="#E1F5FE" stroke="#01579B" stroke-width="2"/>
+  <text x="400" y="120" text-anchor="middle" font-size="16" font-weight="bold">应用层</text>
+  <text x="400" y="140" text-anchor="middle" font-size="14">业务应用 | 消息发布 | 消息订阅 | 消息处理</text>
+  
+  <!-- SDK核心层 -->
+  <rect x="50" y="200" width="700" height="120" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+  <text x="400" y="230" text-anchor="middle" font-size="16" font-weight="bold">SDK核心层</text>
+  <rect x="100" y="250" width="180" height="40" fill="#C8E6C9" stroke="#2E7D32"/>
+  <text x="190" y="275" text-anchor="middle">消息转换器</text>
+  <rect x="310" y="250" width="180" height="40" fill="#C8E6C9" stroke="#2E7D32"/>
+  <text x="400" y="275" text-anchor="middle">重试模板</text>
+  <rect x="520" y="250" width="180" height="40" fill="#C8E6C9" stroke="#2E7D32"/>
+  <text x="610" y="275" text-anchor="middle">熔断器</text>
+  
+  <!-- 适配器层 -->
+  <rect x="50" y="360" width="700" height="100" fill="#FFF3E0" stroke="#E65100" stroke-width="2"/>
+  <text x="400" y="390" text-anchor="middle" font-size="16" font-weight="bold">适配器层</text>
+  <g transform="translate(80,410)">
+    <rect width="100" height="30" fill="#FFE0B2" stroke="#E65100"/>
+    <text x="50" y="20" text-anchor="middle">Redis</text>
+  </g>
+  <g transform="translate(200,410)">
+    <rect width="100" height="30" fill="#FFE0B2" stroke="#E65100"/>
+    <text x="50" y="20" text-anchor="middle">RocketMQ</text>
+  </g>
+  <g transform="translate(320,410)">
+    <rect width="100" height="30" fill="#FFE0B2" stroke="#E65100"/>
+    <text x="50" y="20" text-anchor="middle">ActiveMQ</text>
+  </g>
+  <g transform="translate(440,410)">
+    <rect width="100" height="30" fill="#FFE0B2" stroke="#E65100"/>
+    <text x="50" y="20" text-anchor="middle">RabbitMQ</text>
+  </g>
+  <g transform="translate(560,410)">
+    <rect width="100" height="30" fill="#FFE0B2" stroke="#E65100"/>
+    <text x="50" y="20" text-anchor="middle">EMQX</text>
+  </g>
+  
+  <!-- 消息中间件层 -->
+  <rect x="50" y="500" width="700" height="60" fill="#F3E5F5" stroke="#4A148C" stroke-width="2"/>
+  <text x="400" y="535" text-anchor="middle" font-size="16" font-weight="bold">消息中间件层</text>
+  
+  <!-- 连接线 -->
+  <line x1="400" y1="160" x2="400" y2="200" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="320" x2="400" y2="360" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="460" x2="400" y2="500" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+</svg>

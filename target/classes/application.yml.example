@@ -1,0 +1,38 @@
+# 消息队列配置示例
+mq:
+  # Redis配置
+  redis:
+    host: localhost
+    port: 6379
+    password: # 如果有密码，请在此配置
+    database: 0
+    timeout: 2000
+    pool:
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
+      max-wait: -1
+
+  # RocketMQ配置
+  rocketmq:
+    name-server: localhost:9876
+    producer-group: producer-group
+    consumer-group: consumer-group
+    send-msg-timeout: 3000
+    retry-times-when-send-failed: 2
+
+  # Kafka配置
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer-group: producer-group
+    consumer-group: consumer-group
+    auto-offset-reset: latest
+    retries: 3
+
+  # RabbitMQ配置
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /

@@ -1,0 +1,240 @@
+{
+  "groups": [
+    {
+      "name": "mq",
+      "type": "com.example.mq.config.MQConfig",
+      "sourceType": "com.example.mq.config.MQConfig"
+    },
+    {
+      "name": "mq.emqx",
+      "type": "com.example.mq.config.MQConfig$EMQXProperties",
+      "sourceType": "com.example.mq.config.MQConfig"
+    },
+    {
+      "name": "mq.kafka",
+      "type": "com.example.mq.config.MQConfig$KafkaProperties",
+      "sourceType": "com.example.mq.config.MQConfig"
+    },
+    {
+      "name": "mq.rabbitmq",
+      "type": "com.example.mq.config.MQConfig$RabbitMQProperties",
+      "sourceType": "com.example.mq.config.MQConfig"
+    },
+    {
+      "name": "mq.redis",
+      "type": "com.example.mq.config.MQConfig$RedisProperties",
+      "sourceType": "com.example.mq.config.MQConfig"
+    },
+    {
+      "name": "mq.redis.pool",
+      "type": "com.example.mq.config.MQConfig$RedisProperties$Pool",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties"
+    },
+    {
+      "name": "mq.rocketmq",
+      "type": "com.example.mq.config.MQConfig$RocketMQProperties",
+      "sourceType": "com.example.mq.config.MQConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "mq.emqx.clean-session",
+      "type": "java.lang.Boolean",
+      "description": "清除会话",
+      "sourceType": "com.example.mq.config.MQConfig$EMQXProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "mq.emqx.client-id",
+      "type": "java.lang.String",
+      "description": "客户端ID",
+      "sourceType": "com.example.mq.config.MQConfig$EMQXProperties",
+      "defaultValue": "testClient"
+    },
+    {
+      "name": "mq.emqx.enabled",
+      "type": "java.lang.Boolean",
+      "description": "是否启用EMQX",
+      "sourceType": "com.example.mq.config.MQConfig$EMQXProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "mq.emqx.keep-alive-interval",
+      "type": "java.lang.Integer",
+      "description": "心跳间隔（秒）",
+      "sourceType": "com.example.mq.config.MQConfig$EMQXProperties",
+      "defaultValue": 60
+    },
+    {
+      "name": "mq.emqx.password",
+      "type": "java.lang.String",
+      "description": "密码",
+      "sourceType": "com.example.mq.config.MQConfig$EMQXProperties",
+      "defaultValue": "public"
+    },
+    {
+      "name": "mq.emqx.server-uri",
+      "type": "java.lang.String",
+      "description": "服务器地址",
+      "sourceType": "com.example.mq.config.MQConfig$EMQXProperties",
+      "defaultValue": "tcp:\/\/localhost:1883"
+    },
+    {
+      "name": "mq.emqx.username",
+      "type": "java.lang.String",
+      "description": "用户名",
+      "sourceType": "com.example.mq.config.MQConfig$EMQXProperties",
+      "defaultValue": "admin"
+    },
+    {
+      "name": "mq.kafka.auto-commit-interval",
+      "type": "java.lang.Integer",
+      "description": "自动提交间隔（毫秒）",
+      "sourceType": "com.example.mq.config.MQConfig$KafkaProperties",
+      "defaultValue": 1000
+    },
+    {
+      "name": "mq.kafka.bootstrap-servers",
+      "type": "java.lang.String",
+      "description": "服务器地址",
+      "sourceType": "com.example.mq.config.MQConfig$KafkaProperties"
+    },
+    {
+      "name": "mq.kafka.consumer-group-id",
+      "type": "java.lang.String",
+      "description": "消费者组ID",
+      "sourceType": "com.example.mq.config.MQConfig$KafkaProperties"
+    },
+    {
+      "name": "mq.kafka.producer-client-id",
+      "type": "java.lang.String",
+      "description": "生产者客户端ID",
+      "sourceType": "com.example.mq.config.MQConfig$KafkaProperties"
+    },
+    {
+      "name": "mq.rabbitmq.host",
+      "type": "java.lang.String",
+      "description": "服务器地址",
+      "sourceType": "com.example.mq.config.MQConfig$RabbitMQProperties"
+    },
+    {
+      "name": "mq.rabbitmq.password",
+      "type": "java.lang.String",
+      "description": "密码",
+      "sourceType": "com.example.mq.config.MQConfig$RabbitMQProperties"
+    },
+    {
+      "name": "mq.rabbitmq.port",
+      "type": "java.lang.Integer",
+      "description": "端口",
+      "sourceType": "com.example.mq.config.MQConfig$RabbitMQProperties",
+      "defaultValue": 5672
+    },
+    {
+      "name": "mq.rabbitmq.username",
+      "type": "java.lang.String",
+      "description": "用户名",
+      "sourceType": "com.example.mq.config.MQConfig$RabbitMQProperties"
+    },
+    {
+      "name": "mq.rabbitmq.virtual-host",
+      "type": "java.lang.String",
+      "description": "虚拟主机",
+      "sourceType": "com.example.mq.config.MQConfig$RabbitMQProperties",
+      "defaultValue": "\/"
+    },
+    {
+      "name": "mq.redis.database",
+      "type": "java.lang.Integer",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties",
+      "defaultValue": 0
+    },
+    {
+      "name": "mq.redis.host",
+      "type": "java.lang.String",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties",
+      "defaultValue": "localhost"
+    },
+    {
+      "name": "mq.redis.password",
+      "type": "java.lang.String",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties"
+    },
+    {
+      "name": "mq.redis.pool.max-active",
+      "type": "java.lang.Integer",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties$Pool",
+      "defaultValue": 8
+    },
+    {
+      "name": "mq.redis.pool.max-idle",
+      "type": "java.lang.Integer",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties$Pool",
+      "defaultValue": 8
+    },
+    {
+      "name": "mq.redis.pool.max-wait",
+      "type": "java.lang.Integer",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties$Pool",
+      "defaultValue": -1
+    },
+    {
+      "name": "mq.redis.pool.min-idle",
+      "type": "java.lang.Integer",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties$Pool",
+      "defaultValue": 0
+    },
+    {
+      "name": "mq.redis.port",
+      "type": "java.lang.Integer",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties",
+      "defaultValue": 6379
+    },
+    {
+      "name": "mq.redis.timeout",
+      "type": "java.lang.Integer",
+      "sourceType": "com.example.mq.config.MQConfig$RedisProperties",
+      "defaultValue": 2000
+    },
+    {
+      "name": "mq.rocketmq.consume-thread-max",
+      "type": "java.lang.Integer",
+      "description": "消费者最大线程数",
+      "sourceType": "com.example.mq.config.MQConfig$RocketMQProperties",
+      "defaultValue": 64
+    },
+    {
+      "name": "mq.rocketmq.consume-thread-min",
+      "type": "java.lang.Integer",
+      "description": "消费者最小线程数",
+      "sourceType": "com.example.mq.config.MQConfig$RocketMQProperties",
+      "defaultValue": 20
+    },
+    {
+      "name": "mq.rocketmq.consumer-group",
+      "type": "java.lang.String",
+      "description": "消费者组",
+      "sourceType": "com.example.mq.config.MQConfig$RocketMQProperties"
+    },
+    {
+      "name": "mq.rocketmq.name-server-addr",
+      "type": "java.lang.String",
+      "description": "NameServer地址",
+      "sourceType": "com.example.mq.config.MQConfig$RocketMQProperties"
+    },
+    {
+      "name": "mq.rocketmq.producer-group",
+      "type": "java.lang.String",
+      "description": "生产者组",
+      "sourceType": "com.example.mq.config.MQConfig$RocketMQProperties"
+    },
+    {
+      "name": "mq.rocketmq.send-msg-timeout",
+      "type": "java.lang.Integer",
+      "description": "发送消息超时时间（毫秒）",
+      "sourceType": "com.example.mq.config.MQConfig$RocketMQProperties",
+      "defaultValue": 3000
+    }
+  ],
+  "hints": []
+}

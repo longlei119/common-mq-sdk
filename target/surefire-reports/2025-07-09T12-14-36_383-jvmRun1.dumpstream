@@ -1,0 +1,158 @@
+# Created at 2025-07-09T12:14:46.448
+TestSet has not finished before stream error has appeared >> initializing exit by non-null configuration: null
+java.io.EOFException
+	at java.base/java.io.DataInputStream.readFully(DataInputStream.java:210)
+	at java.base/java.io.DataInputStream.readInt(DataInputStream.java:385)
+	at org.apache.maven.surefire.booter.MasterProcessCommand.decode(MasterProcessCommand.java:115)
+	at org.apache.maven.surefire.booter.CommandReader$CommandRunnable.run(CommandReader.java:391)
+	at java.base/java.lang.Thread.run(Thread.java:1570)
+
+
+# Created at 2025-07-09T12:14:46.953
+Unexpected IOException with stream: 2025-07-09 12:14:46.951  INFO 30080 --- [           main] c.e.mq.producer.impl.RedisProducer       : Redis消息发送成功 - channel: test_topic:test_tag, messageId: a892f140-222f-44fe-89f6-83f57abf30ba, message: {"message":"同步消息测试","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:46.995
+Unexpected IOException: 6,1,com.example.mq.redis.RedisMessageTest,testSyncSend,null,null,null
+
+
+# Created at 2025-07-09T12:14:47.000
+Unexpected IOException: 5,1,com.example.mq.redis.RedisMessageTest,testAsyncSend,null,null,null
+
+
+# Created at 2025-07-09T12:14:47.010
+Unexpected IOException with stream: 2025-07-09 12:14:47.009  INFO 30080 --- [           main] c.e.mq.consumer.impl.RedisConsumer       : Redis消费者订阅成功 - channel: test_topic:test_tag
+
+
+# Created at 2025-07-09T12:14:49.014
+Unexpected IOException with stream: 2025-07-09 12:14:49.014  INFO 30080 --- [onPool-worker-1] c.e.mq.producer.impl.RedisProducer       : Redis消息发送成功 - channel: test_topic:test_tag, message: {"message":"异步消息测试","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:49.015
+Unexpected IOException with stream: 2025-07-09 12:14:49.015 DEBUG 30080 --- [enerContainer-2] c.e.mq.consumer.impl.RedisConsumer       : Redis收到原始消息 - channel: test_topic:test_tag, message: {"message":"异步消息测试","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:49.016
+Unexpected IOException with stream: 2025-07-09 12:14:49.015  INFO 30080 --- [enerContainer-2] com.example.mq.redis.RedisMessageTest    : 收到异步消息: {"message":"异步消息测试","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:49.017
+Unexpected IOException with stream: 2025-07-09 12:14:49.016  INFO 30080 --- [enerContainer-2] c.e.mq.consumer.impl.RedisConsumer       : Redis消息处理成功 - channel: test_topic:test_tag, message: {"message":"异步消息测试","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:49.021
+Unexpected IOException: 6,1,com.example.mq.redis.RedisMessageTest,testAsyncSend,null,null,null
+
+
+# Created at 2025-07-09T12:14:49.023
+Unexpected IOException: 5,1,com.example.mq.redis.RedisMessageTest,testDelayMessage,null,null,null
+
+
+# Created at 2025-07-09T12:14:49.030
+Unexpected IOException with stream: 2025-07-09 12:14:49.029  INFO 30080 --- [           main] c.e.mq.consumer.impl.RedisConsumer       : Redis消费者取消订阅成功 - channel: test_topic:test_tag
+
+
+# Created at 2025-07-09T12:14:49.031
+Unexpected IOException with stream: 2025-07-09 12:14:49.030  INFO 30080 --- [           main] c.e.mq.consumer.impl.RedisConsumer       : Redis消费者订阅成功 - channel: test_topic:test_tag
+
+
+# Created at 2025-07-09T12:14:49.044
+Unexpected IOException with stream: 2025-07-09 12:14:49.043  INFO 30080 --- [onPool-worker-1] c.e.mq.producer.impl.RedisProducer       : Redis延迟消息设置成功 - channel: test_topic:test_tag, delayKey: test_topic:test_tag:delay:c3a518c6-da3f-48ee-937a-174f72751383, delaySeconds: 3, message: {"message":"延迟消息测试","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:52.047
+Unexpected IOException with stream: 2025-07-09 12:14:52.046  INFO 30080 --- [onPool-worker-1] c.e.mq.producer.impl.RedisProducer       : Redis延迟消息发送成功 - channel: test_topic:test_tag, delayKey: test_topic:test_tag:delay:c3a518c6-da3f-48ee-937a-174f72751383, message: {"message":"延迟消息测试","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:52.049
+Unexpected IOException with stream: 2025-07-09 12:14:52.047 DEBUG 30080 --- [enerContainer-4] c.e.mq.consumer.impl.RedisConsumer       : Redis收到原始消息 - channel: test_topic:test_tag, message: {"message":"延迟消息测试","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:52.050
+Unexpected IOException with stream: 2025-07-09 12:14:52.049  INFO 30080 --- [enerContainer-4] c.e.mq.consumer.impl.RedisConsumer       : Redis消息处理成功 - channel: test_topic:test_tag, message: {"message":"延迟消息测试","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:52.056
+Unexpected IOException: 6,1,com.example.mq.redis.RedisMessageTest,testDelayMessage,null,null,null
+
+
+# Created at 2025-07-09T12:14:52.059
+Unexpected IOException: 5,1,com.example.mq.redis.RedisMessageTest,testMessageOrder,null,null,null
+
+
+# Created at 2025-07-09T12:14:52.064
+Unexpected IOException with stream: 2025-07-09 12:14:52.063  INFO 30080 --- [           main] c.e.mq.consumer.impl.RedisConsumer       : Redis消费者取消订阅成功 - channel: test_topic:test_tag
+
+
+# Created at 2025-07-09T12:14:52.066
+Unexpected IOException with stream: 2025-07-09 12:14:52.065  INFO 30080 --- [           main] c.e.mq.consumer.impl.RedisConsumer       : Redis消费者订阅成功 - channel: test_topic:test_tag
+
+
+# Created at 2025-07-09T12:14:54.068
+Unexpected IOException with stream: 2025-07-09 12:14:54.067  INFO 30080 --- [           main] com.example.mq.redis.RedisMessageTest    : 发送顺序消息: 消息1
+
+
+# Created at 2025-07-09T12:14:54.071
+Unexpected IOException with stream: 2025-07-09 12:14:54.070  INFO 30080 --- [onPool-worker-1] c.e.mq.producer.impl.RedisProducer       : Redis消息发送成功 - channel: test_topic:test_tag, message: {"message":"消息1","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.072
+Unexpected IOException with stream: 2025-07-09 12:14:54.070 DEBUG 30080 --- [enerContainer-6] c.e.mq.consumer.impl.RedisConsumer       : Redis收到原始消息 - channel: test_topic:test_tag, message: {"message":"消息1","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.073
+Unexpected IOException with stream: 2025-07-09 12:14:54.072  INFO 30080 --- [enerContainer-6] com.example.mq.redis.RedisMessageTest    : 收到顺序消息: {"message":"消息1","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.075
+Unexpected IOException with stream: 2025-07-09 12:14:54.074  INFO 30080 --- [enerContainer-6] c.e.mq.consumer.impl.RedisConsumer       : Redis消息处理成功 - channel: test_topic:test_tag, message: {"message":"消息1","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.170
+Unexpected IOException with stream: 2025-07-09 12:14:54.170  INFO 30080 --- [           main] com.example.mq.redis.RedisMessageTest    : 发送顺序消息: 消息2
+
+
+# Created at 2025-07-09T12:14:54.172
+Unexpected IOException with stream: 2025-07-09 12:14:54.171  INFO 30080 --- [onPool-worker-1] c.e.mq.producer.impl.RedisProducer       : Redis消息发送成功 - channel: test_topic:test_tag, message: {"message":"消息2","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.173
+Unexpected IOException with stream: 2025-07-09 12:14:54.172 DEBUG 30080 --- [enerContainer-7] c.e.mq.consumer.impl.RedisConsumer       : Redis收到原始消息 - channel: test_topic:test_tag, message: {"message":"消息2","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.174
+Unexpected IOException with stream: 2025-07-09 12:14:54.173  INFO 30080 --- [enerContainer-7] com.example.mq.redis.RedisMessageTest    : 收到顺序消息: {"message":"消息2","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.174
+Unexpected IOException with stream: 2025-07-09 12:14:54.174  INFO 30080 --- [enerContainer-7] c.e.mq.consumer.impl.RedisConsumer       : Redis消息处理成功 - channel: test_topic:test_tag, message: {"message":"消息2","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.271
+Unexpected IOException with stream: 2025-07-09 12:14:54.271  INFO 30080 --- [           main] com.example.mq.redis.RedisMessageTest    : 发送顺序消息: 消息3
+
+
+# Created at 2025-07-09T12:14:54.273
+Unexpected IOException with stream: 2025-07-09 12:14:54.272  INFO 30080 --- [onPool-worker-1] c.e.mq.producer.impl.RedisProducer       : Redis消息发送成功 - channel: test_topic:test_tag, message: {"message":"消息3","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.274
+Unexpected IOException with stream: 2025-07-09 12:14:54.273 DEBUG 30080 --- [enerContainer-8] c.e.mq.consumer.impl.RedisConsumer       : Redis收到原始消息 - channel: test_topic:test_tag, message: {"message":"消息3","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.275
+Unexpected IOException with stream: 2025-07-09 12:14:54.275  INFO 30080 --- [enerContainer-8] com.example.mq.redis.RedisMessageTest    : 收到顺序消息: {"message":"消息3","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.277
+Unexpected IOException with stream: 2025-07-09 12:14:54.276  INFO 30080 --- [enerContainer-8] c.e.mq.consumer.impl.RedisConsumer       : Redis消息处理成功 - channel: test_topic:test_tag, message: {"message":"消息3","tag":"test_tag","topic":"test_topic"}
+
+
+# Created at 2025-07-09T12:14:54.381
+Unexpected IOException: 6,1,com.example.mq.redis.RedisMessageTest,testMessageOrder,null,null,null
+
+
+# Created at 2025-07-09T12:14:54.384
+Unexpected IOException: 2,1,org.apache.maven.surefire.junitplatform.JUnitPlatformProvider,com.example.mq.redis.RedisMessageTest,null,null,null
+
+
