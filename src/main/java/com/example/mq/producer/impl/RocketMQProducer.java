@@ -84,8 +84,9 @@ public class RocketMQProducer implements MQProducer {
             producer.send(msg, new SendCallback() {
                 @Override
                 public void onSuccess(SendResult sendResult) {
-                    log.info("RocketMQ异步发送延迟消息成功：topic={}, tag={}, msgId={}, delaySecond={}", 
-                            topic, tag, sendResult.getMsgId(), delaySecond);
+                    String sendSuccessTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new java.util.Date());
+                    log.info("RocketMQ异步发送延迟消息成功：topic={}, tag={}, msgId={}, delaySecond={}, sendSuccessTime={}", 
+                            topic, tag, sendResult.getMsgId(), delaySecond, sendSuccessTime);
                 }
 
                 @Override

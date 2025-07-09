@@ -12,7 +12,16 @@ mq:
     # 消费者组名
     consumer-group: test-consumer-group
     # 发送消息超时时间（毫秒）
-    send-msg-timeout: 3000
+    send-msg-timeout: 10000
+    # 消费者配置
+    consumer:
+      # 消费线程数
+      thread-min: 20
+      thread-max: 64
+      # 批量消费配置
+      batch-max-size: 1
+      # 消费超时时间（毫秒）
+      consume-timeout: 15000
 
   # Redis配置
   redis:

@@ -57,8 +57,15 @@ public class MQAutoConfiguration {
     @ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
     @ConditionalOnBean(DefaultMQPushConsumer.class)
     @ConditionalOnMissingBean
-    public RocketMQConsumer rocketMQConsumer(DefaultMQPushConsumer defaultMQPushConsumer) {
-        return new RocketMQConsumer(defaultMQPushConsumer);
+    public RocketMQConsumer rocketMQConsumer(DefaultMQPushConsumer defaultMQPushConsumer, MQConfig.RocketMQProperties rocketMQProperties) {
+        return new RocketMQConsumer(defaultMQPushConsumer, rocketMQProperties);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
+    @ConditionalOnMissingBean
+    public MQConfig.RocketMQProperties rocketMQProperties(MQConfig mqConfig) {
+        return mqConfig.getRocketmq();
     }
 
     @Bean

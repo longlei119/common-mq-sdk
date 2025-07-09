@@ -1,5 +1,6 @@
 package com.example.mq.consumer.impl;
 
+import com.example.mq.config.MQConfig;
 import com.example.mq.consumer.MQConsumer;
 import com.example.mq.enums.MQTypeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.remoting.exception.RemotingConnectException;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 /**
@@ -35,6 +36,7 @@ public class RocketMQConsumer implements MQConsumer {
     private volatile boolean started = false;
 
     private final DefaultMQPushConsumer consumer;
+    private final MQConfig.RocketMQProperties rocketMQProperties;
 
     /**
      * 最大重试次数
@@ -46,8 +48,63 @@ public class RocketMQConsumer implements MQConsumer {
      */
     private static final long RETRY_INTERVAL_MS = 1000;
 
-    public RocketMQConsumer(DefaultMQPushConsumer consumer) {
+    public RocketMQConsumer(DefaultMQPushConsumer consumer, MQConfig.RocketMQProperties rocketMQProperties) {
         this.consumer = consumer;
+        this.rocketMQProperties = rocketMQProperties;
+
+        // 配置消费者参数
+        consumer.setConsumeThreadMin(rocketMQProperties.getConsumer().getThreadMin());
+        consumer.setConsumeThreadMax(rocketMQProperties.getConsumer().getThreadMax());
+        consumer.setConsumeMessageBatchMaxSize(rocketMQProperties.getConsumer().getBatchMaxSize());
+
+        // 在构造函数中注册全局消息监听器
+        consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+            for (MessageExt msg : msgs) {
+                String messageKey = buildKey(msg.getTopic(), msg.getTags());
+                Consumer<String> messageHandler = handlerMap.get(messageKey);
+                if (messageHandler != null) {
+                    try {
+                        String messageBody = new String(msg.getBody());
+                        String receiveTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new java.util.Date());
+                        log.info("RocketMQ接收到消息：topic={}, tag={}, msgId={}, receiveTime={}", 
+                                msg.getTopic(), msg.getTags(), msg.getMsgId(), receiveTime);
+                        // 使用CompletableFuture实现超时控制
+                        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                            messageHandler.accept(messageBody);
+                        });
+                        
+                        try {
+                            future.get(rocketMQProperties.getConsumer().getConsumeTimeout(), TimeUnit.MILLISECONDS);
+                            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                        } catch (TimeoutException e) {
+                            log.error("消息处理超时：topic={}, tag={}, msgId={}, timeout={}", 
+                                msg.getTopic(), msg.getTags(), msg.getMsgId(), 
+                                rocketMQProperties.getConsumer().getConsumeTimeout());
+                            future.cancel(true); // 取消任务
+                            return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                        } catch (Exception e) {
+                            log.error("等待消息处理完成时发生错误：topic={}, tag={}, msgId={}", 
+                                msg.getTopic(), msg.getTags(), msg.getMsgId(), e);
+                            return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                        }
+                    } catch (Exception e) {
+                        // 检查重试次数
+                        if (msg.getReconsumeTimes() >= MAX_RETRY_TIMES) {
+                            log.error("消息处理失败且超过最大重试次数，将被跳过：topic={}, tag={}, msgId={}, retryTimes={}", 
+                                msg.getTopic(), msg.getTags(), msg.getMsgId(), msg.getReconsumeTimes(), e);
+                            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS; // 不再重试
+                        }
+                        
+                        log.warn("处理消息失败，将进行重试：topic={}, tag={}, msgId={}, retryTimes={}", 
+                            msg.getTopic(), msg.getTags(), msg.getMsgId(), msg.getReconsumeTimes(), e);
+                        // 只对当前失败的消息进行重试，而不是整个批次
+                        context.setDelayLevelWhenNextConsume(1); // 1秒后重试
+                        return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                    }
+                }
+            }
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        });
     }
 
     @Override
@@ -56,34 +113,30 @@ public class RocketMQConsumer implements MQConsumer {
             return;
         }
         String key = buildKey(topic, tag);
-        handlerMap.put(key, handler);
-        log.info("RocketMQ订阅消息：topic={}, tag={}", topic, tag);
+        
+        // 检查是否已经订阅
+        if (handlerMap.containsKey(key)) {
+            log.warn("重复订阅RocketMQ消息：topic={}, tag={}", topic, tag);
+            // 更新处理器
+            handlerMap.put(key, handler);
+            return;
+        }
         
         try {
-            consumer.subscribe(topic, tag);
-            consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
-                for (MessageExt msg : msgs) {
-                    String messageKey = buildKey(msg.getTopic(), msg.getTags());
-                    Consumer<String> messageHandler = handlerMap.get(messageKey);
-                    if (messageHandler != null) {
-                        try {
-                            String messageBody = new String(msg.getBody());
-                            messageHandler.accept(messageBody);
-                            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-                        } catch (Exception e) {
-                            log.error("处理消息失败：topic={}, tag={}, msgId={}", 
-                                msg.getTopic(), msg.getTags(), msg.getMsgId(), e);
-                            return ConsumeConcurrentlyStatus.RECONSUME_LATER;
-                        }
-                    }
-                }
-                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-            });
+            // 先注册处理器
+            handlerMap.put(key, handler);
+            log.info("RocketMQ订阅消息：topic={}, tag={}", topic, tag);
             
+            // 确保消费者已启动
             if (!started) {
                 start();
             }
+            
+            // 订阅主题
+            consumer.subscribe(topic, tag);
         } catch (Exception e) {
+            // 发生异常时，移除处理器
+            handlerMap.remove(key);
             log.error("订阅RocketMQ消息失败：topic={}, tag={}", topic, tag, e);
             throw new RuntimeException("订阅RocketMQ消息失败", e);
         }

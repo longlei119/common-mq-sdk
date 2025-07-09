@@ -3,16 +3,15 @@ server:
 
 mq:
   # RocketMQ配置
-  # 注意：如果不需要使用RocketMQ，请保持以下配置注释状态
-  # rocketmq:
-  #   # RocketMQ服务器地址，格式：host:port
-  #   name-server-addr: localhost:9876
-  #   # 生产者组名
-  #   producer-group: test-producer-group
-  #   # 消费者组名
-  #   consumer-group: test-consumer-group
-  #   # 发送消息超时时间（毫秒）
-  #   send-msg-timeout: 3000
+  rocketmq:
+    # RocketMQ服务器地址，格式：host:port
+    name-server-addr: localhost:9876
+    # 生产者组名
+    producer-group: test-producer-group
+    # 消费者组名
+    consumer-group: test-consumer-group
+    # 发送消息超时时间（毫秒）
+    send-msg-timeout: 3000
 
   # Redis测试配置
   redis:

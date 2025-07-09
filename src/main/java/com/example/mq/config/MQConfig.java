@@ -77,14 +77,32 @@ public class MQConfig {
         private int sendMsgTimeout = 3000;
 
         /**
-         * 消费者最小线程数
+         * 消费者配置
          */
-        private int consumeThreadMin = 20;
+        private ConsumerConfig consumer = new ConsumerConfig();
 
-        /**
-         * 消费者最大线程数
-         */
-        private int consumeThreadMax = 64;
+        @Data
+        public static class ConsumerConfig {
+            /**
+             * 消费者最小线程数
+             */
+            private int threadMin = 20;
+
+            /**
+             * 消费者最大线程数
+             */
+            private int threadMax = 64;
+
+            /**
+             * 批量消费最大消息数
+             */
+            private int batchMaxSize = 1;
+
+            /**
+             * 消费超时时间（毫秒）
+             */
+            private int consumeTimeout = 15000;
+        }
     }
 
     @Data
