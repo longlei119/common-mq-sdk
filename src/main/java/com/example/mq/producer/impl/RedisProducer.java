@@ -94,4 +94,9 @@ public class RedisProducer implements MQProducer {
             }
         });
     }
+
+    @Override
+    public MQTypeEnum getMQType() {
+        return MQTypeEnum.REDIS;
+    }
 }

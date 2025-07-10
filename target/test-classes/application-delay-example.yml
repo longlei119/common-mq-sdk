@@ -1,0 +1,112 @@
+# 延迟消息示例配置
+spring:
+  application:
+    name: delay-message-example
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 10000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+
+# 消息队列配置
+mq:
+  # Redis配置
+  redis:
+    enabled: true
+    host: ${spring.redis.host}
+    port: ${spring.redis.port}
+    database: ${spring.redis.database}
+    password: 
+    timeout: ${spring.redis.timeout}
+    pool:
+      max-active: ${spring.redis.lettuce.pool.max-active}
+      max-wait: ${spring.redis.lettuce.pool.max-wait}
+      max-idle: ${spring.redis.lettuce.pool.max-idle}
+      min-idle: ${spring.redis.lettuce.pool.min-idle}
+  
+  # RocketMQ配置
+  rocketmq:
+    enabled: true
+    name-server: localhost:9876
+    producer-group: delay-message-producer-group
+    consumer-group: delay-message-consumer-group
+    send-message-timeout: 3000
+    retry-times-when-send-failed: 2
+    retry-times-when-send-async-failed: 2
+    compress-message-body-threshold: 4096
+    max-message-size: 4194304
+  
+  # ActiveMQ配置
+  activemq:
+    enabled: false
+    broker-url: tcp://localhost:61616
+    username: admin
+    password: admin
+    pool:
+      enabled: true
+      max-connections: 10
+  
+  # RabbitMQ配置
+  rabbitmq:
+    enabled: false
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    publisher-confirms: true
+    publisher-returns: true
+    template:
+      mandatory: true
+  
+  # Kafka配置
+  kafka:
+    enabled: false
+    bootstrap-servers: localhost:9092
+    producer:
+      retries: 3
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: delay-message-consumer-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  
+  # 延迟消息配置
+  delay:
+    enabled: true
+    redis-key-prefix: "delay_message:"
+    scan-interval: 1000
+    batch-size: 100
+    message-expire-time: 604800000  # 7天，单位毫秒
+    default-mq-type: "ROCKET_MQ"
+    retry:
+      max-retries: 3
+      retry-interval: 5000
+      retry-multiplier: 2
+    delay-level:
+      "1": 1000       # 1秒
+      "2": 5000       # 5秒
+      "3": 10000      # 10秒
+      "4": 30000      # 30秒
+      "5": 60000      # 1分钟
+      "6": 300000     # 5分钟
+      "7": 600000     # 10分钟
+      "8": 1800000    # 30分钟
+      "9": 3600000    # 1小时
+      "10": 7200000   # 2小时
+      "11": 21600000  # 6小时
+      "12": 43200000  # 12小时
+      "13": 86400000  # 1天
+      "14": 172800000 # 2天
+      "15": 604800000 # 7天

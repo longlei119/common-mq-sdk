@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.example.mq.rocketmq.RocketMQMessageTest" time="110.256" tests="4" errors="0" skipped="0" failures="4">
+  <properties>
+    <property name="java.specification.version" value="22"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="GBK"/>
+    <property name="java.class.path" value="G:\spring-ai-all\common-mq-sdk\target\test-classes;G:\spring-ai-all\common-mq-sdk\target\classes;D:\software\maven\repos\org\springframework\boot\spring-boot-starter\2.3.12.RELEASE\spring-boot-starter-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot\2.3.12.RELEASE\spring-boot-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-context\5.2.15.RELEASE\spring-context-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-autoconfigure\2.3.12.RELEASE\spring-boot-autoconfigure-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-logging\2.3.12.RELEASE\spring-boot-starter-logging-2.3.12.RELEASE.jar;D:\software\maven\repos\ch\qos\logback\logback-classic\1.2.3\logback-classic-1.2.3.jar;D:\software\maven\repos\ch\qos\logback\logback-core\1.2.3\logback-core-1.2.3.jar;D:\software\maven\repos\org\apache\logging\log4j\log4j-to-slf4j\2.13.3\log4j-to-slf4j-2.13.3.jar;D:\software\maven\repos\org\apache\logging\log4j\log4j-api\2.13.3\log4j-api-2.13.3.jar;D:\software\maven\repos\org\slf4j\jul-to-slf4j\1.7.30\jul-to-slf4j-1.7.30.jar;D:\software\maven\repos\jakarta\annotation\jakarta.annotation-api\1.3.5\jakarta.annotation-api-1.3.5.jar;D:\software\maven\repos\org\springframework\spring-core\5.2.15.RELEASE\spring-core-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-jcl\5.2.15.RELEASE\spring-jcl-5.2.15.RELEASE.jar;D:\software\maven\repos\org\yaml\snakeyaml\1.26\snakeyaml-1.26.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-configuration-processor\2.3.12.RELEASE\spring-boot-configuration-processor-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-data-redis\2.3.12.RELEASE\spring-boot-starter-data-redis-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\data\spring-data-redis\2.3.9.RELEASE\spring-data-redis-2.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\data\spring-data-keyvalue\2.3.9.RELEASE\spring-data-keyvalue-2.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\data\spring-data-commons\2.3.9.RELEASE\spring-data-commons-2.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-tx\5.2.14.RELEASE\spring-tx-5.2.14.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-oxm\5.2.14.RELEASE\spring-oxm-5.2.14.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-aop\5.2.14.RELEASE\spring-aop-5.2.14.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-context-support\5.2.14.RELEASE\spring-context-support-5.2.14.RELEASE.jar;D:\software\maven\repos\io\lettuce\lettuce-core\5.3.7.RELEASE\lettuce-core-5.3.7.RELEASE.jar;D:\software\maven\repos\io\netty\netty-common\4.1.63.Final\netty-common-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-handler\4.1.63.Final\netty-handler-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-resolver\4.1.63.Final\netty-resolver-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-buffer\4.1.63.Final\netty-buffer-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-codec\4.1.63.Final\netty-codec-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-transport\4.1.63.Final\netty-transport-4.1.63.Final.jar;D:\software\maven\repos\io\projectreactor\reactor-core\3.3.16.RELEASE\reactor-core-3.3.16.RELEASE.jar;D:\software\maven\repos\org\reactivestreams\reactive-streams\1.0.3\reactive-streams-1.0.3.jar;D:\software\maven\repos\org\apache\commons\commons-pool2\2.9.0\commons-pool2-2.9.0.jar;D:\software\maven\repos\org\projectlombok\lombok\1.18.30\lombok-1.18.30.jar;D:\software\maven\repos\com\alibaba\fastjson\1.2.83\fastjson-1.2.83.jar;D:\software\maven\repos\org\apache\rocketmq\rocketmq-client\4.9.4\rocketmq-client-4.9.4.jar;D:\software\maven\repos\org\apache\rocketmq\rocketmq-common\4.9.4\rocketmq-common-4.9.4.jar;D:\software\maven\repos\org\apache\rocketmq\rocketmq-remoting\4.9.4\rocketmq-remoting-4.9.4.jar;D:\software\maven\repos\io\netty\netty-all\4.1.65.Final\netty-all-4.1.65.Final.jar;D:\software\maven\repos\org\apache\rocketmq\rocketmq-logging\4.9.4\rocketmq-logging-4.9.4.jar;D:\software\maven\repos\commons-validator\commons-validator\1.7\commons-validator-1.7.jar;D:\software\maven\repos\commons-beanutils\commons-beanutils\1.9.4\commons-beanutils-1.9.4.jar;D:\software\maven\repos\commons-digester\commons-digester\2.1\commons-digester-2.1.jar;D:\software\maven\repos\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;D:\software\maven\repos\commons-collections\commons-collections\3.2.2\commons-collections-3.2.2.jar;D:\software\maven\repos\org\apache\commons\commons-lang3\3.4\commons-lang3-3.4.jar;D:\software\maven\repos\org\apache\kafka\kafka-clients\2.8.1\kafka-clients-2.8.1.jar;D:\software\maven\repos\com\github\luben\zstd-jni\1.4.9-1\zstd-jni-1.4.9-1.jar;D:\software\maven\repos\org\lz4\lz4-java\1.7.1\lz4-java-1.7.1.jar;D:\software\maven\repos\org\xerial\snappy\snappy-java\1.1.8.1\snappy-java-1.1.8.1.jar;D:\software\maven\repos\org\slf4j\slf4j-api\1.7.30\slf4j-api-1.7.30.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-amqp\2.3.12.RELEASE\spring-boot-starter-amqp-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-messaging\5.2.15.RELEASE\spring-messaging-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-beans\5.2.15.RELEASE\spring-beans-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\amqp\spring-rabbit\2.2.18.RELEASE\spring-rabbit-2.2.18.RELEASE.jar;D:\software\maven\repos\com\rabbitmq\amqp-client\5.7.3\amqp-client-5.7.3.jar;D:\software\maven\repos\org\springframework\amqp\spring-amqp\2.2.18.RELEASE\spring-amqp-2.2.18.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-activemq\2.3.12.RELEASE\spring-boot-starter-activemq-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-jms\5.2.15.RELEASE\spring-jms-5.2.15.RELEASE.jar;D:\software\maven\repos\org\apache\activemq\activemq-broker\5.15.15\activemq-broker-5.15.15.jar;D:\software\maven\repos\org\apache\activemq\activemq-client\5.15.15\activemq-client-5.15.15.jar;D:\software\maven\repos\org\fusesource\hawtbuf\hawtbuf\1.11\hawtbuf-1.11.jar;D:\software\maven\repos\org\apache\geronimo\specs\geronimo-j2ee-management_1.1_spec\1.0.1\geronimo-j2ee-management_1.1_spec-1.0.1.jar;D:\software\maven\repos\org\apache\activemq\activemq-openwire-legacy\5.15.15\activemq-openwire-legacy-5.15.15.jar;D:\software\maven\repos\com\google\guava\guava\28.2-jre\guava-28.2-jre.jar;D:\software\maven\repos\com\google\guava\failureaccess\1.0.1\failureaccess-1.0.1.jar;D:\software\maven\repos\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;D:\software\maven\repos\com\google\code\findbugs\jsr305\3.0.2\jsr305-3.0.2.jar;D:\software\maven\repos\org\checkerframework\checker-qual\2.10.0\checker-qual-2.10.0.jar;D:\software\maven\repos\com\google\errorprone\error_prone_annotations\2.3.4\error_prone_annotations-2.3.4.jar;D:\software\maven\repos\com\google\j2objc\j2objc-annotations\1.3\j2objc-annotations-1.3.jar;D:\software\maven\repos\jakarta\jms\jakarta.jms-api\2.0.3\jakarta.jms-api-2.0.3.jar;D:\software\maven\repos\org\eclipse\paho\org.eclipse.paho.client.mqttv3\1.2.5\org.eclipse.paho.client.mqttv3-1.2.5.jar;D:\software\maven\repos\org\springframework\integration\spring-integration-mqtt\5.3.9.RELEASE\spring-integration-mqtt-5.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\integration\spring-integration-core\5.3.9.RELEASE\spring-integration-core-5.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\retry\spring-retry\1.2.5.RELEASE\spring-retry-1.2.5.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-web\2.3.12.RELEASE\spring-boot-starter-web-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-json\2.3.12.RELEASE\spring-boot-starter-json-2.3.12.RELEASE.jar;D:\software\maven\repos\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.11.4\jackson-datatype-jdk8-2.11.4.jar;D:\software\maven\repos\com\fasterxml\jackson\module\jackson-module-parameter-names\2.11.4\jackson-module-parameter-names-2.11.4.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-tomcat\2.3.12.RELEASE\spring-boot-starter-tomcat-2.3.12.RELEASE.jar;D:\software\maven\repos\org\apache\tomcat\embed\tomcat-embed-core\9.0.46\tomcat-embed-core-9.0.46.jar;D:\software\maven\repos\org\glassfish\jakarta.el\3.0.3\jakarta.el-3.0.3.jar;D:\software\maven\repos\org\apache\tomcat\embed\tomcat-embed-websocket\9.0.46\tomcat-embed-websocket-9.0.46.jar;D:\software\maven\repos\org\springframework\spring-web\5.2.15.RELEASE\spring-web-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-webmvc\5.2.15.RELEASE\spring-webmvc-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-expression\5.2.15.RELEASE\spring-expression-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-test\2.3.12.RELEASE\spring-boot-starter-test-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-test\2.3.12.RELEASE\spring-boot-test-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-test-autoconfigure\2.3.12.RELEASE\spring-boot-test-autoconfigure-2.3.12.RELEASE.jar;D:\software\maven\repos\com\jayway\jsonpath\json-path\2.4.0\json-path-2.4.0.jar;D:\software\maven\repos\net\minidev\json-smart\2.3\json-smart-2.3.jar;D:\software\maven\repos\net\minidev\accessors-smart\1.2\accessors-smart-1.2.jar;D:\software\maven\repos\org\ow2\asm\asm\5.0.4\asm-5.0.4.jar;D:\software\maven\repos\jakarta\xml\bind\jakarta.xml.bind-api\2.3.3\jakarta.xml.bind-api-2.3.3.jar;D:\software\maven\repos\jakarta\activation\jakarta.activation-api\1.2.2\jakarta.activation-api-1.2.2.jar;D:\software\maven\repos\org\assertj\assertj-core\3.16.1\assertj-core-3.16.1.jar;D:\software\maven\repos\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;D:\software\maven\repos\org\junit\jupiter\junit-jupiter\5.6.3\junit-jupiter-5.6.3.jar;D:\software\maven\repos\org\junit\jupiter\junit-jupiter-params\5.6.3\junit-jupiter-params-5.6.3.jar;D:\software\maven\repos\org\junit\vintage\junit-vintage-engine\5.6.3\junit-vintage-engine-5.6.3.jar;D:\software\maven\repos\org\mockito\mockito-core\3.3.3\mockito-core-3.3.3.jar;D:\software\maven\repos\net\bytebuddy\byte-buddy\1.10.5\byte-buddy-1.10.5.jar;D:\software\maven\repos\net\bytebuddy\byte-buddy-agent\1.10.5\byte-buddy-agent-1.10.5.jar;D:\software\maven\repos\org\objenesis\objenesis\2.6\objenesis-2.6.jar;D:\software\maven\repos\org\mockito\mockito-junit-jupiter\3.3.3\mockito-junit-jupiter-3.3.3.jar;D:\software\maven\repos\org\skyscreamer\jsonassert\1.5.0\jsonassert-1.5.0.jar;D:\software\maven\repos\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;D:\software\maven\repos\org\springframework\spring-test\5.2.15.RELEASE\spring-test-5.2.15.RELEASE.jar;D:\software\maven\repos\org\xmlunit\xmlunit-core\2.7.0\xmlunit-core-2.7.0.jar;D:\software\maven\repos\org\junit\jupiter\junit-jupiter-api\5.7.2\junit-jupiter-api-5.7.2.jar;D:\software\maven\repos\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;D:\software\maven\repos\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;D:\software\maven\repos\org\junit\platform\junit-platform-commons\1.7.2\junit-platform-commons-1.7.2.jar;D:\software\maven\repos\org\junit\jupiter\junit-jupiter-engine\5.7.2\junit-jupiter-engine-5.7.2.jar;D:\software\maven\repos\org\junit\platform\junit-platform-engine\1.7.2\junit-platform-engine-1.7.2.jar;D:\software\maven\repos\org\testcontainers\testcontainers\1.19.3\testcontainers-1.19.3.jar;D:\software\maven\repos\junit\junit\4.13.2\junit-4.13.2.jar;D:\software\maven\repos\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;D:\software\maven\repos\org\apache\commons\commons-compress\1.24.0\commons-compress-1.24.0.jar;D:\software\maven\repos\org\rnorth\duct-tape\duct-tape\1.0.8\duct-tape-1.0.8.jar;D:\software\maven\repos\org\jetbrains\annotations\17.0.0\annotations-17.0.0.jar;D:\software\maven\repos\com\github\docker-java\docker-java-api\3.3.4\docker-java-api-3.3.4.jar;D:\software\maven\repos\com\github\docker-java\docker-java-transport-zerodep\3.3.4\docker-java-transport-zerodep-3.3.4.jar;D:\software\maven\repos\com\github\docker-java\docker-java-transport\3.3.4\docker-java-transport-3.3.4.jar;D:\software\maven\repos\net\java\dev\jna\jna\5.13.0\jna-5.13.0.jar;D:\software\maven\repos\org\testcontainers\junit-jupiter\1.19.3\junit-jupiter-1.19.3.jar;D:\software\maven\repos\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.11.4\jackson-datatype-jsr310-2.11.4.jar;D:\software\maven\repos\com\fasterxml\jackson\core\jackson-annotations\2.11.4\jackson-annotations-2.11.4.jar;D:\software\maven\repos\com\fasterxml\jackson\core\jackson-core\2.11.4\jackson-core-2.11.4.jar;D:\software\maven\repos\com\fasterxml\jackson\core\jackson-databind\2.11.4\jackson-databind-2.11.4.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="Asia/Shanghai"/>
+    <property name="os.name" value="Windows 10"/>
+    <property name="java.vm.specification.version" value="22"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="CN"/>
+    <property name="sun.boot.library.path" value="D:\Program Files\Java\jdk-22\bin"/>
+    <property name="sun.java.command" value="C:\Users\LEI~1.LON\AppData\Local\Temp\surefire7784447906011032730\surefirebooter8312215310905871606.jar C:\Users\lei.long\AppData\Local\Temp\surefire7784447906011032730 2025-07-10T16-02-06_261-jvmRun1 surefire13679178599801074618tmp surefire_016611733472919970107tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="G:\spring-ai-all\common-mq-sdk\target\test-classes;G:\spring-ai-all\common-mq-sdk\target\classes;D:\software\maven\repos\org\springframework\boot\spring-boot-starter\2.3.12.RELEASE\spring-boot-starter-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot\2.3.12.RELEASE\spring-boot-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-context\5.2.15.RELEASE\spring-context-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-autoconfigure\2.3.12.RELEASE\spring-boot-autoconfigure-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-logging\2.3.12.RELEASE\spring-boot-starter-logging-2.3.12.RELEASE.jar;D:\software\maven\repos\ch\qos\logback\logback-classic\1.2.3\logback-classic-1.2.3.jar;D:\software\maven\repos\ch\qos\logback\logback-core\1.2.3\logback-core-1.2.3.jar;D:\software\maven\repos\org\apache\logging\log4j\log4j-to-slf4j\2.13.3\log4j-to-slf4j-2.13.3.jar;D:\software\maven\repos\org\apache\logging\log4j\log4j-api\2.13.3\log4j-api-2.13.3.jar;D:\software\maven\repos\org\slf4j\jul-to-slf4j\1.7.30\jul-to-slf4j-1.7.30.jar;D:\software\maven\repos\jakarta\annotation\jakarta.annotation-api\1.3.5\jakarta.annotation-api-1.3.5.jar;D:\software\maven\repos\org\springframework\spring-core\5.2.15.RELEASE\spring-core-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-jcl\5.2.15.RELEASE\spring-jcl-5.2.15.RELEASE.jar;D:\software\maven\repos\org\yaml\snakeyaml\1.26\snakeyaml-1.26.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-configuration-processor\2.3.12.RELEASE\spring-boot-configuration-processor-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-data-redis\2.3.12.RELEASE\spring-boot-starter-data-redis-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\data\spring-data-redis\2.3.9.RELEASE\spring-data-redis-2.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\data\spring-data-keyvalue\2.3.9.RELEASE\spring-data-keyvalue-2.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\data\spring-data-commons\2.3.9.RELEASE\spring-data-commons-2.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-tx\5.2.14.RELEASE\spring-tx-5.2.14.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-oxm\5.2.14.RELEASE\spring-oxm-5.2.14.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-aop\5.2.14.RELEASE\spring-aop-5.2.14.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-context-support\5.2.14.RELEASE\spring-context-support-5.2.14.RELEASE.jar;D:\software\maven\repos\io\lettuce\lettuce-core\5.3.7.RELEASE\lettuce-core-5.3.7.RELEASE.jar;D:\software\maven\repos\io\netty\netty-common\4.1.63.Final\netty-common-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-handler\4.1.63.Final\netty-handler-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-resolver\4.1.63.Final\netty-resolver-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-buffer\4.1.63.Final\netty-buffer-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-codec\4.1.63.Final\netty-codec-4.1.63.Final.jar;D:\software\maven\repos\io\netty\netty-transport\4.1.63.Final\netty-transport-4.1.63.Final.jar;D:\software\maven\repos\io\projectreactor\reactor-core\3.3.16.RELEASE\reactor-core-3.3.16.RELEASE.jar;D:\software\maven\repos\org\reactivestreams\reactive-streams\1.0.3\reactive-streams-1.0.3.jar;D:\software\maven\repos\org\apache\commons\commons-pool2\2.9.0\commons-pool2-2.9.0.jar;D:\software\maven\repos\org\projectlombok\lombok\1.18.30\lombok-1.18.30.jar;D:\software\maven\repos\com\alibaba\fastjson\1.2.83\fastjson-1.2.83.jar;D:\software\maven\repos\org\apache\rocketmq\rocketmq-client\4.9.4\rocketmq-client-4.9.4.jar;D:\software\maven\repos\org\apache\rocketmq\rocketmq-common\4.9.4\rocketmq-common-4.9.4.jar;D:\software\maven\repos\org\apache\rocketmq\rocketmq-remoting\4.9.4\rocketmq-remoting-4.9.4.jar;D:\software\maven\repos\io\netty\netty-all\4.1.65.Final\netty-all-4.1.65.Final.jar;D:\software\maven\repos\org\apache\rocketmq\rocketmq-logging\4.9.4\rocketmq-logging-4.9.4.jar;D:\software\maven\repos\commons-validator\commons-validator\1.7\commons-validator-1.7.jar;D:\software\maven\repos\commons-beanutils\commons-beanutils\1.9.4\commons-beanutils-1.9.4.jar;D:\software\maven\repos\commons-digester\commons-digester\2.1\commons-digester-2.1.jar;D:\software\maven\repos\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;D:\software\maven\repos\commons-collections\commons-collections\3.2.2\commons-collections-3.2.2.jar;D:\software\maven\repos\org\apache\commons\commons-lang3\3.4\commons-lang3-3.4.jar;D:\software\maven\repos\org\apache\kafka\kafka-clients\2.8.1\kafka-clients-2.8.1.jar;D:\software\maven\repos\com\github\luben\zstd-jni\1.4.9-1\zstd-jni-1.4.9-1.jar;D:\software\maven\repos\org\lz4\lz4-java\1.7.1\lz4-java-1.7.1.jar;D:\software\maven\repos\org\xerial\snappy\snappy-java\1.1.8.1\snappy-java-1.1.8.1.jar;D:\software\maven\repos\org\slf4j\slf4j-api\1.7.30\slf4j-api-1.7.30.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-amqp\2.3.12.RELEASE\spring-boot-starter-amqp-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-messaging\5.2.15.RELEASE\spring-messaging-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-beans\5.2.15.RELEASE\spring-beans-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\amqp\spring-rabbit\2.2.18.RELEASE\spring-rabbit-2.2.18.RELEASE.jar;D:\software\maven\repos\com\rabbitmq\amqp-client\5.7.3\amqp-client-5.7.3.jar;D:\software\maven\repos\org\springframework\amqp\spring-amqp\2.2.18.RELEASE\spring-amqp-2.2.18.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-activemq\2.3.12.RELEASE\spring-boot-starter-activemq-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-jms\5.2.15.RELEASE\spring-jms-5.2.15.RELEASE.jar;D:\software\maven\repos\org\apache\activemq\activemq-broker\5.15.15\activemq-broker-5.15.15.jar;D:\software\maven\repos\org\apache\activemq\activemq-client\5.15.15\activemq-client-5.15.15.jar;D:\software\maven\repos\org\fusesource\hawtbuf\hawtbuf\1.11\hawtbuf-1.11.jar;D:\software\maven\repos\org\apache\geronimo\specs\geronimo-j2ee-management_1.1_spec\1.0.1\geronimo-j2ee-management_1.1_spec-1.0.1.jar;D:\software\maven\repos\org\apache\activemq\activemq-openwire-legacy\5.15.15\activemq-openwire-legacy-5.15.15.jar;D:\software\maven\repos\com\google\guava\guava\28.2-jre\guava-28.2-jre.jar;D:\software\maven\repos\com\google\guava\failureaccess\1.0.1\failureaccess-1.0.1.jar;D:\software\maven\repos\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;D:\software\maven\repos\com\google\code\findbugs\jsr305\3.0.2\jsr305-3.0.2.jar;D:\software\maven\repos\org\checkerframework\checker-qual\2.10.0\checker-qual-2.10.0.jar;D:\software\maven\repos\com\google\errorprone\error_prone_annotations\2.3.4\error_prone_annotations-2.3.4.jar;D:\software\maven\repos\com\google\j2objc\j2objc-annotations\1.3\j2objc-annotations-1.3.jar;D:\software\maven\repos\jakarta\jms\jakarta.jms-api\2.0.3\jakarta.jms-api-2.0.3.jar;D:\software\maven\repos\org\eclipse\paho\org.eclipse.paho.client.mqttv3\1.2.5\org.eclipse.paho.client.mqttv3-1.2.5.jar;D:\software\maven\repos\org\springframework\integration\spring-integration-mqtt\5.3.9.RELEASE\spring-integration-mqtt-5.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\integration\spring-integration-core\5.3.9.RELEASE\spring-integration-core-5.3.9.RELEASE.jar;D:\software\maven\repos\org\springframework\retry\spring-retry\1.2.5.RELEASE\spring-retry-1.2.5.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-web\2.3.12.RELEASE\spring-boot-starter-web-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-json\2.3.12.RELEASE\spring-boot-starter-json-2.3.12.RELEASE.jar;D:\software\maven\repos\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.11.4\jackson-datatype-jdk8-2.11.4.jar;D:\software\maven\repos\com\fasterxml\jackson\module\jackson-module-parameter-names\2.11.4\jackson-module-parameter-names-2.11.4.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-tomcat\2.3.12.RELEASE\spring-boot-starter-tomcat-2.3.12.RELEASE.jar;D:\software\maven\repos\org\apache\tomcat\embed\tomcat-embed-core\9.0.46\tomcat-embed-core-9.0.46.jar;D:\software\maven\repos\org\glassfish\jakarta.el\3.0.3\jakarta.el-3.0.3.jar;D:\software\maven\repos\org\apache\tomcat\embed\tomcat-embed-websocket\9.0.46\tomcat-embed-websocket-9.0.46.jar;D:\software\maven\repos\org\springframework\spring-web\5.2.15.RELEASE\spring-web-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-webmvc\5.2.15.RELEASE\spring-webmvc-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\spring-expression\5.2.15.RELEASE\spring-expression-5.2.15.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-starter-test\2.3.12.RELEASE\spring-boot-starter-test-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-test\2.3.12.RELEASE\spring-boot-test-2.3.12.RELEASE.jar;D:\software\maven\repos\org\springframework\boot\spring-boot-test-autoconfigure\2.3.12.RELEASE\spring-boot-test-autoconfigure-2.3.12.RELEASE.jar;D:\software\maven\repos\com\jayway\jsonpath\json-path\2.4.0\json-path-2.4.0.jar;D:\software\maven\repos\net\minidev\json-smart\2.3\json-smart-2.3.jar;D:\software\maven\repos\net\minidev\accessors-smart\1.2\accessors-smart-1.2.jar;D:\software\maven\repos\org\ow2\asm\asm\5.0.4\asm-5.0.4.jar;D:\software\maven\repos\jakarta\xml\bind\jakarta.xml.bind-api\2.3.3\jakarta.xml.bind-api-2.3.3.jar;D:\software\maven\repos\jakarta\activation\jakarta.activation-api\1.2.2\jakarta.activation-api-1.2.2.jar;D:\software\maven\repos\org\assertj\assertj-core\3.16.1\assertj-core-3.16.1.jar;D:\software\maven\repos\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;D:\software\maven\repos\org\junit\jupiter\junit-jupiter\5.6.3\junit-jupiter-5.6.3.jar;D:\software\maven\repos\org\junit\jupiter\junit-jupiter-params\5.6.3\junit-jupiter-params-5.6.3.jar;D:\software\maven\repos\org\junit\vintage\junit-vintage-engine\5.6.3\junit-vintage-engine-5.6.3.jar;D:\software\maven\repos\org\mockito\mockito-core\3.3.3\mockito-core-3.3.3.jar;D:\software\maven\repos\net\bytebuddy\byte-buddy\1.10.5\byte-buddy-1.10.5.jar;D:\software\maven\repos\net\bytebuddy\byte-buddy-agent\1.10.5\byte-buddy-agent-1.10.5.jar;D:\software\maven\repos\org\objenesis\objenesis\2.6\objenesis-2.6.jar;D:\software\maven\repos\org\mockito\mockito-junit-jupiter\3.3.3\mockito-junit-jupiter-3.3.3.jar;D:\software\maven\repos\org\skyscreamer\jsonassert\1.5.0\jsonassert-1.5.0.jar;D:\software\maven\repos\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;D:\software\maven\repos\org\springframework\spring-test\5.2.15.RELEASE\spring-test-5.2.15.RELEASE.jar;D:\software\maven\repos\org\xmlunit\xmlunit-core\2.7.0\xmlunit-core-2.7.0.jar;D:\software\maven\repos\org\junit\jupiter\junit-jupiter-api\5.7.2\junit-jupiter-api-5.7.2.jar;D:\software\maven\repos\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;D:\software\maven\repos\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;D:\software\maven\repos\org\junit\platform\junit-platform-commons\1.7.2\junit-platform-commons-1.7.2.jar;D:\software\maven\repos\org\junit\jupiter\junit-jupiter-engine\5.7.2\junit-jupiter-engine-5.7.2.jar;D:\software\maven\repos\org\junit\platform\junit-platform-engine\1.7.2\junit-platform-engine-1.7.2.jar;D:\software\maven\repos\org\testcontainers\testcontainers\1.19.3\testcontainers-1.19.3.jar;D:\software\maven\repos\junit\junit\4.13.2\junit-4.13.2.jar;D:\software\maven\repos\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;D:\software\maven\repos\org\apache\commons\commons-compress\1.24.0\commons-compress-1.24.0.jar;D:\software\maven\repos\org\rnorth\duct-tape\duct-tape\1.0.8\duct-tape-1.0.8.jar;D:\software\maven\repos\org\jetbrains\annotations\17.0.0\annotations-17.0.0.jar;D:\software\maven\repos\com\github\docker-java\docker-java-api\3.3.4\docker-java-api-3.3.4.jar;D:\software\maven\repos\com\github\docker-java\docker-java-transport-zerodep\3.3.4\docker-java-transport-zerodep-3.3.4.jar;D:\software\maven\repos\com\github\docker-java\docker-java-transport\3.3.4\docker-java-transport-3.3.4.jar;D:\software\maven\repos\net\java\dev\jna\jna\5.13.0\jna-5.13.0.jar;D:\software\maven\repos\org\testcontainers\junit-jupiter\1.19.3\junit-jupiter-1.19.3.jar;D:\software\maven\repos\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.11.4\jackson-datatype-jsr310-2.11.4.jar;D:\software\maven\repos\com\fasterxml\jackson\core\jackson-annotations\2.11.4\jackson-annotations-2.11.4.jar;D:\software\maven\repos\com\fasterxml\jackson\core\jackson-core\2.11.4\jackson-core-2.11.4.jar;D:\software\maven\repos\com\fasterxml\jackson\core\jackson-databind\2.11.4\jackson-databind-2.11.4.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\lei.long"/>
+    <property name="user.language" value="zh"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-04-16"/>
+    <property name="java.home" value="D:\Program Files\Java\jdk-22"/>
+    <property name="spring.profiles.active" value="test"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="G:\spring-ai-all\common-mq-sdk"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\LEI~1.LON\AppData\Local\Temp\surefire7784447906011032730\surefirebooter8312215310905871606.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="22.0.1+8-16"/>
+    <property name="user.name" value="lei.long"/>
+    <property name="stdout.encoding" value="GBK"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="D:\software\maven\repos"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\LEI~1.LON\AppData\Local\Temp\"/>
+    <property name="java.version" value="22.0.1"/>
+    <property name="user.dir" value="G:\spring-ai-all\common-mq-sdk"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="GBK"/>
+    <property name="java.library.path" value="D:\Program Files\Java\jdk-22\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\\Program Files\\Java\\jdk-22\\bin;C:\\Users\\lei.long\\.trae\\tools\\maven\\latest\\bin;C:\\Users\\lei.long\\.trae\\tools\\gradle\\latest\\bin;D:\Program Files\Java\jdk-22\bin;C:\Users\lei.long\.trae\tools\maven\latest\bin;C:\Users\lei.long\.trae\tools\gradle\latest\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Windows\SysWOW64\5097;C:\Windows\SysWOW64\5097;C:\Windows\SysWOW64;D:\develep_soft\java\Java\jdk1.8.0_191\bin;D:\Program Files\Git\cmd;D:\develep_soft\apache-maven-3.8.4\bin;C:\Program Files (x86)\PuTTY\;F:\Program Files\nodejs\;D:\develep_soft\mysql-9.3.0-winx64\bin;D:\software\rocketmq-all-5.3.3-bin-release\bin;C:\Users\lei.long\AppData\Local\Microsoft\WindowsApps;C:\Users\lei.long\AppData\Local\JetBrains\Toolbox\scripts;;C:\Users\lei.long\AppData\Local\Programs\Ollama;D:\Program Files\JetBrains\PyCharm 2024.3.1.1\bin;;C:\Users\lei.long\AppData\Roaming\npm;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="GBK"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="22.0.1+8-16"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="66.0"/>
+  </properties>
+  <testcase name="testSyncSend" classname="com.example.mq.rocketmq.RocketMQMessageTest" time="22.068">
+    <failure message="消息接收超时 ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 消息接收超时 ==> expected: <true> but was: <false>
+	at com.example.mq.rocketmq.RocketMQMessageTest.testSyncSend(RocketMQMessageTest.java:75)
+]]></failure>
+    <system-out><![CDATA[2025-07-10 16:02:27.280  INFO 33000 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [com.example.mq.rocketmq.RocketMQMessageTest], using SpringBootContextLoader
+2025-07-10 16:02:27.282  INFO 33000 --- [           main] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [com.example.mq.rocketmq.RocketMQMessageTest]: no resource found for suffixes {-context.xml, Context.groovy}.
+2025-07-10 16:02:27.282  INFO 33000 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.example.mq.rocketmq.RocketMQMessageTest]: RocketMQMessageTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-07-10 16:02:27.295  INFO 33000 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.example.mq.MQApplication for test class com.example.mq.rocketmq.RocketMQMessageTest
+2025-07-10 16:02:27.297  INFO 33000 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener, org.springframework.test.context.event.EventPublishingTestExecutionListener]
+2025-07-10 16:02:27.298  INFO 33000 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@15ade272, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@225890bc, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@d426e01, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@44b5b54, org.springframework.test.context.support.DirtiesContextTestExecutionListener@7e8f97dd, org.springframework.test.context.transaction.TransactionalTestExecutionListener@183435c0, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@69862a1, org.springframework.test.context.event.EventPublishingTestExecutionListener@585718dd, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@5a644d75, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@6347f9cc, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@268f126f, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@467e7793, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@3e8995cc, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener@625c9248]
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::       (v2.3.12.RELEASE)
+
+2025-07-10 16:02:27.344  INFO 33000 --- [           main] c.e.mq.rocketmq.RocketMQMessageTest      : Starting RocketMQMessageTest on IT997 with PID 33000 (started by lei.long in G:\spring-ai-all\common-mq-sdk)
+2025-07-10 16:02:27.344 DEBUG 33000 --- [           main] c.e.mq.rocketmq.RocketMQMessageTest      : Running with Spring Boot v2.3.12.RELEASE, Spring v5.2.15.RELEASE
+2025-07-10 16:02:27.344  INFO 33000 --- [           main] c.e.mq.rocketmq.RocketMQMessageTest      : The following profiles are active: test
+2025-07-10 16:02:27.633  INFO 33000 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2025-07-10 16:02:27.633  INFO 33000 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-07-10 16:02:27.664  INFO 33000 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 30ms. Found 0 Redis repository interfaces.
+2025-07-10 16:02:27.718  INFO 33000 --- [           main] faultConfiguringBeanFactoryPostProcessor : No bean named 'errorChannel' has been explicitly defined. Therefore, a default PublishSubscribeChannel will be created.
+2025-07-10 16:02:27.720  INFO 33000 --- [           main] faultConfiguringBeanFactoryPostProcessor : No bean named 'integrationHeaderChannelRegistry' has been explicitly defined. Therefore, a default DefaultHeaderChannelRegistry will be created.
+2025-07-10 16:02:27.772  INFO 33000 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.integration.config.IntegrationManagementConfiguration' of type [org.springframework.integration.config.IntegrationManagementConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2025-07-10 16:02:27.786  INFO 33000 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'integrationChannelResolver' of type [org.springframework.integration.support.channel.BeanFactoryChannelResolver] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2025-07-10 16:02:27.789  INFO 33000 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'integrationDisposableAutoCreatedBeans' of type [org.springframework.integration.config.annotation.Disposables] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2025-07-10 16:02:27.836  INFO 33000 --- [           main] c.e.m.d.e.DelayMessageConsumerExample    : 延迟消息消费者已启动，消费者组: test-consumer-group, 名称服务器: localhost:9876
+2025-07-10 16:02:27.925  INFO 33000 --- [           main] c.e.mq.delay.adapter.RocketMQAdapter     : RocketMQ适配器初始化成功，producerGroup=test-producer-group, nameServerAddr=localhost:9876
+2025-07-10 16:02:27.946  INFO 33000 --- [           main] c.e.mq.delay.adapter.ActiveMQAdapter     : ActiveMQ适配器初始化成功
+2025-07-10 16:02:27.991  INFO 33000 --- [           main] c.e.mq.delay.adapter.RabbitMQAdapter     : RabbitMQ适配器初始化成功
+2025-07-10 16:02:27.995  INFO 33000 --- [           main] com.example.mq.delay.DelayMessageSender  : 延迟消息发送器初始化成功，已加载3个MQ适配器
+2025-07-10 16:02:28.091  INFO 33000 --- [           main] c.e.mq.consumer.impl.RocketMQConsumer    : RocketMQ订阅消息：topic=TestTopic, tag=TestTag
+2025-07-10 16:02:28.091  INFO 33000 --- [           main] c.e.mq.consumer.impl.RocketMQConsumer    : 正在启动RocketMQ消费者，第1次尝试
+2025-07-10 16:02:28.116  INFO 33000 --- [           main] c.e.mq.consumer.impl.RocketMQConsumer    : RocketMQ消费者启动成功
+2025-07-10 16:02:28.121  INFO 33000 --- [           main] com.example.mq.consumer.TestConsumer     : RocketMQ 消息订阅成功：TestTopic:TestTag
+2025-07-10 16:02:28.134  INFO 33000 --- [           main] c.e.mq.consumer.impl.RocketMQConsumer    : RocketMQ订阅消息：topic=mall, tag=order_sync
+2025-07-10 16:02:28.149  INFO 33000 --- [           main] c.e.mq.controller.OrderSyncConsumer      : Order sync consumer initialized successfully
+2025-07-10 16:02:28.562  INFO 33000 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2025-07-10 16:02:29.085  INFO 33000 --- [           main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2025-07-10 16:02:29.295  INFO 33000 --- [           main] o.s.i.endpoint.EventDrivenConsumer       : Adding {logging-channel-adapter:_org.springframework.integration.errorLogger} as a subscriber to the 'errorChannel' channel
+2025-07-10 16:02:29.296  INFO 33000 --- [           main] o.s.i.channel.PublishSubscribeChannel    : Channel 'application.errorChannel' has 1 subscriber(s).
+2025-07-10 16:02:29.296  INFO 33000 --- [           main] o.s.i.endpoint.EventDrivenConsumer       : started bean '_org.springframework.integration.errorLogger'
+2025-07-10 16:02:29.299  INFO 33000 --- [           main] c.e.mq.rocketmq.RocketMQMessageTest      : Started RocketMQMessageTest in 1.999 seconds (JVM running for 22.543)
+2025-07-10 16:02:29.308  INFO 33000 --- [           main] c.e.mq.consumer.impl.RocketMQConsumer    : RocketMQ订阅消息：topic=test_topic_sync, tag=test_tag_sync
+2025-07-10 16:02:31.315  INFO 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ同步发送消息：topic=test_topic_sync, tag=test_tag_sync, message={"message":"同步消息测试","sendSuccessTime":0,"tag":"test_tag_sync","topic":"test_topic_sync","userProperties":{}}
+2025-07-10 16:02:31.366 ERROR 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ同步发送消息失败：topic=test_topic_sync, tag=test_tag_sync, event=RocketMQMessageTest.TestEvent(message=同步消息测试, topic=test_topic_sync, tag=test_tag_sync)
+
+org.apache.rocketmq.client.exception.MQClientException: Send [3] times, still failed, cost [48]ms, Topic: test_topic_sync, BrokersSent: [IT997, IT997, IT997]
+See http://rocketmq.apache.org/docs/faq/ for further details.
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendDefaultImpl(DefaultMQProducerImpl.java:647) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.send(DefaultMQProducerImpl.java:1363) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.send(DefaultMQProducerImpl.java:1307) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.producer.DefaultMQProducer.send(DefaultMQProducer.java:333) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at com.example.mq.producer.impl.RocketMQProducer.syncSend(RocketMQProducer.java:44) ~[classes/:na]
+	at com.example.mq.rocketmq.RocketMQMessageTest.testSyncSend(RocketMQMessageTest.java:72) ~[test-classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:688) ~[junit-platform-commons-1.7.2.jar:1.7.2]
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:210) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:206) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:65) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150) ~[surefire-junit-platform-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124) ~[surefire-junit-platform-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418) ~[surefire-booter-2.22.2.jar:2.22.2]
+Caused by: org.apache.rocketmq.client.exception.MQBrokerException: CODE: 14  DESC: service not available now. It may be caused by one of the following reasons: the broker's disk is full [CL:  0.88 CQ:  0.88 INDEX:  0.88], messages are put to the slave, message store has been shut down, etc. BROKER: 10.2.15.54:10911
+For more information, please visit the url, http://rocketmq.apache.org/docs/faq/
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.processSendResponse(MQClientAPIImpl.java:675) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessageSync(MQClientAPIImpl.java:523) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessage(MQClientAPIImpl.java:505) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessage(MQClientAPIImpl.java:449) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendKernelImpl(DefaultMQProducerImpl.java:837) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendDefaultImpl(DefaultMQProducerImpl.java:575) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	... 68 common frames omitted
+
+]]></system-out>
+  </testcase>
+  <testcase name="testAsyncSend" classname="com.example.mq.rocketmq.RocketMQMessageTest" time="22.015">
+    <failure message="消息接收超时 ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 消息接收超时 ==> expected: <true> but was: <false>
+	at com.example.mq.rocketmq.RocketMQMessageTest.testAsyncSend(RocketMQMessageTest.java:117)
+]]></failure>
+    <system-out><![CDATA[2025-07-10 16:02:51.377  INFO 33000 --- [           main] c.e.mq.consumer.impl.RocketMQConsumer    : RocketMQ订阅消息：topic=test_topic_async, tag=test_tag_async
+2025-07-10 16:02:53.382  INFO 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ异步发送消息：topic=test_topic_async, tag=test_tag_async, message={"message":"异步消息测试","sendSuccessTime":0,"tag":"test_tag_async","topic":"test_topic_async","userProperties":{}}
+2025-07-10 16:02:53.399 ERROR 33000 --- [ublicExecutor_1] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ异步发送消息失败：topic=test_topic_async, tag=test_tag_async, event=RocketMQMessageTest.TestEvent(message=异步消息测试, topic=test_topic_async, tag=test_tag_async)
+
+org.apache.rocketmq.client.exception.MQBrokerException: CODE: 14  DESC: service not available now. It may be caused by one of the following reasons: the broker's disk is full [CL:  0.88 CQ:  0.88 INDEX:  0.88], messages are put to the slave, message store has been shut down, etc. BROKER: 10.2.15.54:10911
+For more information, please visit the url, http://rocketmq.apache.org/docs/faq/
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.processSendResponse(MQClientAPIImpl.java:675) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.access$000(MQClientAPIImpl.java:175) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl$1.operationComplete(MQClientAPIImpl.java:564) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.remoting.netty.ResponseFuture.executeInvokeCallback(ResponseFuture.java:54) ~[rocketmq-remoting-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.remoting.netty.NettyRemotingAbstract$2.run(NettyRemotingAbstract.java:321) ~[rocketmq-remoting-4.9.4.jar:4.9.4]
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572) ~[na:na]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:1570) ~[na:na]
+
+]]></system-out>
+  </testcase>
+  <testcase name="testDelayMessage" classname="com.example.mq.rocketmq.RocketMQMessageTest" time="32.013">
+    <failure message="消息接收超时 ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 消息接收超时 ==> expected: <true> but was: <false>
+	at com.example.mq.rocketmq.RocketMQMessageTest.testDelayMessage(RocketMQMessageTest.java:160)
+]]></failure>
+    <system-out><![CDATA[2025-07-10 16:03:13.391  INFO 33000 --- [           main] c.e.mq.consumer.impl.RocketMQConsumer    : RocketMQ订阅消息：topic=test_topic_delay, tag=test_tag_delay
+2025-07-10 16:03:15.395  INFO 33000 --- [           main] c.e.mq.rocketmq.RocketMQMessageTest      : 发送延迟消息时间：2025-07-10 16:03:15.395
+2025-07-10 16:03:15.395  INFO 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ异步发送延迟消息：topic=test_topic_delay, tag=test_tag_delay, message={"message":"延迟消息测试","sendSuccessTime":0,"tag":"test_tag_delay","topic":"test_topic_delay","userProperties":{}}, delaySecond=5
+2025-07-10 16:03:15.413 ERROR 33000 --- [ublicExecutor_2] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ异步发送延迟消息失败：topic=test_topic_delay, tag=test_tag_delay, event=RocketMQMessageTest.TestEvent(message=延迟消息测试, topic=test_topic_delay, tag=test_tag_delay)
+
+org.apache.rocketmq.client.exception.MQBrokerException: CODE: 14  DESC: service not available now. It may be caused by one of the following reasons: the broker's disk is full [CL:  0.88 CQ:  0.88 INDEX:  0.88], messages are put to the slave, message store has been shut down, etc. BROKER: 10.2.15.54:10911
+For more information, please visit the url, http://rocketmq.apache.org/docs/faq/
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.processSendResponse(MQClientAPIImpl.java:675) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.access$000(MQClientAPIImpl.java:175) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl$1.operationComplete(MQClientAPIImpl.java:564) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.remoting.netty.ResponseFuture.executeInvokeCallback(ResponseFuture.java:54) ~[rocketmq-remoting-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.remoting.netty.NettyRemotingAbstract$2.run(NettyRemotingAbstract.java:321) ~[rocketmq-remoting-4.9.4.jar:4.9.4]
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572) ~[na:na]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:1570) ~[na:na]
+
+]]></system-out>
+  </testcase>
+  <testcase name="testMessageOrder" classname="com.example.mq.rocketmq.RocketMQMessageTest" time="32.139">
+    <failure message="消息接收超时 ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 消息接收超时 ==> expected: <true> but was: <false>
+	at com.example.mq.rocketmq.RocketMQMessageTest.testMessageOrder(RocketMQMessageTest.java:209)
+]]></failure>
+    <system-out><![CDATA[2025-07-10 16:03:45.404  INFO 33000 --- [           main] c.e.mq.consumer.impl.RocketMQConsumer    : RocketMQ订阅消息：topic=test_topic_order, tag=test_tag_order
+2025-07-10 16:03:47.408  INFO 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ同步发送消息：topic=test_topic_order, tag=test_tag_order, message={"message":"顺序消息测试1","sendSuccessTime":0,"tag":"test_tag_order","topic":"test_topic_order","userProperties":{}}
+2025-07-10 16:03:47.449 ERROR 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ同步发送消息失败：topic=test_topic_order, tag=test_tag_order, event=RocketMQMessageTest.TestEvent(message=顺序消息测试1, topic=test_topic_order, tag=test_tag_order)
+
+org.apache.rocketmq.client.exception.MQClientException: Send [3] times, still failed, cost [40]ms, Topic: test_topic_order, BrokersSent: [IT997, IT997, IT997]
+See http://rocketmq.apache.org/docs/faq/ for further details.
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendDefaultImpl(DefaultMQProducerImpl.java:647) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.send(DefaultMQProducerImpl.java:1363) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.send(DefaultMQProducerImpl.java:1307) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.producer.DefaultMQProducer.send(DefaultMQProducer.java:333) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at com.example.mq.producer.impl.RocketMQProducer.syncSend(RocketMQProducer.java:44) ~[classes/:na]
+	at com.example.mq.rocketmq.RocketMQMessageTest.testMessageOrder(RocketMQMessageTest.java:205) ~[test-classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:688) ~[junit-platform-commons-1.7.2.jar:1.7.2]
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:210) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:206) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:65) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150) ~[surefire-junit-platform-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124) ~[surefire-junit-platform-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418) ~[surefire-booter-2.22.2.jar:2.22.2]
+Caused by: org.apache.rocketmq.client.exception.MQBrokerException: CODE: 14  DESC: service not available now. It may be caused by one of the following reasons: the broker's disk is full [CL:  0.88 CQ:  0.88 INDEX:  0.88], messages are put to the slave, message store has been shut down, etc. BROKER: 10.2.15.54:10911
+For more information, please visit the url, http://rocketmq.apache.org/docs/faq/
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.processSendResponse(MQClientAPIImpl.java:675) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessageSync(MQClientAPIImpl.java:523) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessage(MQClientAPIImpl.java:505) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessage(MQClientAPIImpl.java:449) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendKernelImpl(DefaultMQProducerImpl.java:837) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendDefaultImpl(DefaultMQProducerImpl.java:575) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	... 68 common frames omitted
+
+2025-07-10 16:03:47.450  INFO 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ同步发送消息：topic=test_topic_order, tag=test_tag_order, message={"message":"顺序消息测试2","sendSuccessTime":0,"tag":"test_tag_order","topic":"test_topic_order","userProperties":{}}
+2025-07-10 16:03:47.493 ERROR 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ同步发送消息失败：topic=test_topic_order, tag=test_tag_order, event=RocketMQMessageTest.TestEvent(message=顺序消息测试2, topic=test_topic_order, tag=test_tag_order)
+
+org.apache.rocketmq.client.exception.MQClientException: Send [3] times, still failed, cost [42]ms, Topic: test_topic_order, BrokersSent: [IT997, IT997, IT997]
+See http://rocketmq.apache.org/docs/faq/ for further details.
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendDefaultImpl(DefaultMQProducerImpl.java:647) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.send(DefaultMQProducerImpl.java:1363) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.send(DefaultMQProducerImpl.java:1307) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.producer.DefaultMQProducer.send(DefaultMQProducer.java:333) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at com.example.mq.producer.impl.RocketMQProducer.syncSend(RocketMQProducer.java:44) ~[classes/:na]
+	at com.example.mq.rocketmq.RocketMQMessageTest.testMessageOrder(RocketMQMessageTest.java:205) ~[test-classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:688) ~[junit-platform-commons-1.7.2.jar:1.7.2]
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:210) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:206) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:65) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150) ~[surefire-junit-platform-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124) ~[surefire-junit-platform-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418) ~[surefire-booter-2.22.2.jar:2.22.2]
+Caused by: org.apache.rocketmq.client.exception.MQBrokerException: CODE: 14  DESC: service not available now. It may be caused by one of the following reasons: the broker's disk is full [CL:  0.88 CQ:  0.88 INDEX:  0.88], messages are put to the slave, message store has been shut down, etc. BROKER: 10.2.15.54:10911
+For more information, please visit the url, http://rocketmq.apache.org/docs/faq/
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.processSendResponse(MQClientAPIImpl.java:675) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessageSync(MQClientAPIImpl.java:523) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessage(MQClientAPIImpl.java:505) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessage(MQClientAPIImpl.java:449) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendKernelImpl(DefaultMQProducerImpl.java:837) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendDefaultImpl(DefaultMQProducerImpl.java:575) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	... 68 common frames omitted
+
+2025-07-10 16:03:47.493  INFO 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ同步发送消息：topic=test_topic_order, tag=test_tag_order, message={"message":"顺序消息测试3","sendSuccessTime":0,"tag":"test_tag_order","topic":"test_topic_order","userProperties":{}}
+2025-07-10 16:03:47.537 ERROR 33000 --- [           main] c.e.mq.producer.impl.RocketMQProducer    : RocketMQ同步发送消息失败：topic=test_topic_order, tag=test_tag_order, event=RocketMQMessageTest.TestEvent(message=顺序消息测试3, topic=test_topic_order, tag=test_tag_order)
+
+org.apache.rocketmq.client.exception.MQClientException: Send [3] times, still failed, cost [44]ms, Topic: test_topic_order, BrokersSent: [IT997, IT997, IT997]
+See http://rocketmq.apache.org/docs/faq/ for further details.
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendDefaultImpl(DefaultMQProducerImpl.java:647) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.send(DefaultMQProducerImpl.java:1363) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.send(DefaultMQProducerImpl.java:1307) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.producer.DefaultMQProducer.send(DefaultMQProducer.java:333) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at com.example.mq.producer.impl.RocketMQProducer.syncSend(RocketMQProducer.java:44) ~[classes/:na]
+	at com.example.mq.rocketmq.RocketMQMessageTest.testMessageOrder(RocketMQMessageTest.java:205) ~[test-classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:688) ~[junit-platform-commons-1.7.2.jar:1.7.2]
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:210) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:206) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:65) ~[junit-jupiter-engine-5.7.2.jar:5.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597) ~[na:na]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51) ~[junit-platform-engine-1.7.2.jar:1.7.2]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128) ~[junit-platform-launcher-1.3.1.jar:1.3.1]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150) ~[surefire-junit-platform-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124) ~[surefire-junit-platform-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126) ~[surefire-booter-2.22.2.jar:2.22.2]
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418) ~[surefire-booter-2.22.2.jar:2.22.2]
+Caused by: org.apache.rocketmq.client.exception.MQBrokerException: CODE: 14  DESC: service not available now. It may be caused by one of the following reasons: the broker's disk is full [CL:  0.88 CQ:  0.88 INDEX:  0.88], messages are put to the slave, message store has been shut down, etc. BROKER: 10.2.15.54:10911
+For more information, please visit the url, http://rocketmq.apache.org/docs/faq/
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.processSendResponse(MQClientAPIImpl.java:675) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessageSync(MQClientAPIImpl.java:523) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessage(MQClientAPIImpl.java:505) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.MQClientAPIImpl.sendMessage(MQClientAPIImpl.java:449) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendKernelImpl(DefaultMQProducerImpl.java:837) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	at org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.sendDefaultImpl(DefaultMQProducerImpl.java:575) ~[rocketmq-client-4.9.4.jar:4.9.4]
+	... 68 common frames omitted
+
+]]></system-out>
+  </testcase>
+</testsuite>

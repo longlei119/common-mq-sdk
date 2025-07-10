@@ -3,6 +3,9 @@ package com.example.mq.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 消息队列配置类
  */
@@ -34,6 +37,16 @@ public class MQConfig {
      * EMQX配置
      */
     private EMQXProperties emqx = new EMQXProperties();
+    
+    /**
+     * ActiveMQ配置
+     */
+    private ActiveMQProperties activemq = new ActiveMQProperties();
+    
+    /**
+     * 延迟消息配置
+     */
+    private DelayMessageProperties delay = new DelayMessageProperties();
 
     @Data
     public static class RedisProperties {
@@ -192,5 +205,103 @@ public class MQConfig {
          * 心跳间隔（秒）
          */
         private int keepAliveInterval = 60;
+    }
+    
+    @Data
+    public static class ActiveMQProperties {
+        /**
+         * 服务器地址
+         */
+        private String brokerUrl = "tcp://localhost:61616";
+
+        /**
+         * 用户名
+         */
+        private String username = "admin";
+
+        /**
+         * 密码
+         */
+        private String password = "admin";
+
+        /**
+         * 连接池配置
+         */
+        private Pool pool = new Pool();
+
+        @Data
+        public static class Pool {
+            /**
+             * 最大连接数
+             */
+            private int maxConnections = 10;
+
+            /**
+             * 空闲连接超时时间（毫秒）
+             */
+            private int idleTimeout = 30000;
+        }
+    }
+    
+    @Data
+    public static class DelayMessageProperties {
+        /**
+         * 是否启用延迟消息功能
+         */
+        private boolean enabled = true;
+        
+        /**
+         * 延迟消息存储的Redis键前缀
+         */
+        private String redisKeyPrefix = "delay_message:";
+        
+        /**
+         * 延迟消息扫描间隔（毫秒）
+         */
+        private int scanInterval = 1000;
+        
+        /**
+         * 每次扫描处理的最大消息数
+         */
+        private int batchSize = 100;
+        
+        /**
+         * 消息重试配置
+         */
+        private RetryConfig retry = new RetryConfig();
+        
+        /**
+         * 消息过期时间（毫秒），默认7天
+         */
+        private long messageExpireTime = 7 * 24 * 60 * 60 * 1000L;
+        
+        /**
+         * 默认的消息队列类型，当未指定时使用
+         */
+        private String defaultMQType = "ROCKET_MQ";
+        
+        /**
+         * 消息队列类型与延迟级别的映射
+         * 例如：RocketMQ的延迟级别为1s/5s/10s/30s/1m/2m/3m/4m/5m/6m/7m/8m/9m/10m/20m/30m/1h/2h
+         */
+        private Map<String, Integer> delayLevelMapping = new HashMap<>();
+        
+        @Data
+        public static class RetryConfig {
+            /**
+             * 最大重试次数
+             */
+            private int maxRetries = 3;
+            
+            /**
+             * 重试间隔（毫秒）
+             */
+            private int retryInterval = 5000;
+            
+            /**
+             * 重试间隔倍数（指数退避策略）
+             */
+            private int retryMultiplier = 2;
+        }
     }
 }

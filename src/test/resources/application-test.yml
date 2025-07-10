@@ -20,6 +20,24 @@ mq:
     database: 0
     timeout: 3000
 
+  # ActiveMQ配置
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+    pool:
+      enabled: true
+      max-connections: 10
+
+  # RabbitMQ配置
+  rabbitmq:
+    enabled: true
+    host: 10.2.6.180
+    port: 5672
+    username: root
+    password: root
+    virtual-host: /
+
   # EMQX配置
   # 注意：默认禁用EMQX，只在需要时启用
   emqx:

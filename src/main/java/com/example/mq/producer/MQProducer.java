@@ -39,4 +39,11 @@ public interface MQProducer {
      * @param delaySecond 延迟时间（秒）
      */
     void asyncSendDelay(MQTypeEnum mqType, String topic, String tag, MQEvent event, int delaySecond);
+
+    /**
+     * 获取MQ类型
+     *
+     * @return MQ类型
+     */
+    MQTypeEnum getMQType();
 }

@@ -163,4 +163,9 @@ public class RocketMQProducer implements MQProducer {
             return 18;
         }
     }
+
+    @Override
+    public MQTypeEnum getMQType() {
+        return MQTypeEnum.ROCKET_MQ;
+    }
 }

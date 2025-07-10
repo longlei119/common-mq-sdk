@@ -1,10 +1,14 @@
 package com.example.mq.factory;
 
 import com.example.mq.consumer.MQConsumer;
+import com.example.mq.consumer.impl.ActiveMQConsumer;
+import com.example.mq.consumer.impl.RabbitMQConsumer;
 import com.example.mq.consumer.impl.RedisConsumer;
 import com.example.mq.consumer.impl.RocketMQConsumer;
 import com.example.mq.enums.MQTypeEnum;
 import com.example.mq.producer.MQProducer;
+import com.example.mq.producer.impl.ActiveMQProducer;
+import com.example.mq.producer.impl.RabbitMQProducer;
 import com.example.mq.producer.impl.RedisProducer;
 import com.example.mq.producer.impl.RocketMQProducer;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -22,21 +26,43 @@ public class MQFactory {
     private final Map<MQTypeEnum, MQProducer> producerMap = new EnumMap<>(MQTypeEnum.class);
     private final Map<MQTypeEnum, MQConsumer> consumerMap = new EnumMap<>(MQTypeEnum.class);
 
-    public MQFactory(@Nullable RocketMQProducer rocketMQProducer, @Nullable RocketMQConsumer rocketMQConsumer,
-                     StringRedisTemplate redisTemplate, RedisMessageListenerContainer redisListenerContainer) {
-        // 注册RocketMQ的实现（如果可用）
+    public MQFactory(@Nullable RocketMQProducer rocketMQProducer,
+                     @Nullable RocketMQConsumer rocketMQConsumer,
+                     StringRedisTemplate redisTemplate,
+                     RedisMessageListenerContainer redisListenerContainer,
+                     @Nullable ActiveMQProducer activeMQProducer,
+                     @Nullable ActiveMQConsumer activeMQConsumer,
+                     @Nullable RabbitMQProducer rabbitMQProducer,
+                     @Nullable RabbitMQConsumer rabbitMQConsumer) {
+        // 注册RocketMQ生产者和消费者
         if (rocketMQProducer != null) {
             producerMap.put(MQTypeEnum.ROCKET_MQ, rocketMQProducer);
         }
         if (rocketMQConsumer != null) {
             consumerMap.put(MQTypeEnum.ROCKET_MQ, rocketMQConsumer);
         }
-
-        // 注册Redis的实现
+        
+        // 注册Redis生产者和消费者
         RedisProducer redisProducer = new RedisProducer(redisTemplate);
         RedisConsumer redisConsumer = new RedisConsumer(redisListenerContainer);
         producerMap.put(MQTypeEnum.REDIS, redisProducer);
         consumerMap.put(MQTypeEnum.REDIS, redisConsumer);
+        
+        // 注册ActiveMQ生产者和消费者
+        if (activeMQProducer != null) {
+            producerMap.put(MQTypeEnum.ACTIVE_MQ, activeMQProducer);
+        }
+        if (activeMQConsumer != null) {
+            consumerMap.put(MQTypeEnum.ACTIVE_MQ, activeMQConsumer);
+        }
+        
+        // 注册RabbitMQ生产者和消费者
+        if (rabbitMQProducer != null) {
+            producerMap.put(MQTypeEnum.RABBIT_MQ, rabbitMQProducer);
+        }
+        if (rabbitMQConsumer != null) {
+            consumerMap.put(MQTypeEnum.RABBIT_MQ, rabbitMQConsumer);
+        }
     }
 
     /**

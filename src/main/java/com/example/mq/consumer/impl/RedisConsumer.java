@@ -91,4 +91,9 @@ public class RedisConsumer implements MQConsumer {
             log.info("Redis消费者停止成功");
         }
     }
+
+    @Override
+    public MQTypeEnum getMQType() {
+        return MQTypeEnum.REDIS;
+    }
 }

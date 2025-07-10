@@ -36,4 +36,11 @@ public interface MQConsumer {
      * 停止消费者
      */
     void stop();
+
+    /**
+     * 获取MQ类型
+     *
+     * @return MQ类型
+     */
+    MQTypeEnum getMQType();
 }

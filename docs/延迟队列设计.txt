@@ -1,0 +1,151 @@
+📚 统一延迟消息系统设计方案（AI 可读 & 可执行文档）
+本方案旨在为所有主流消息队列（RocketMQ、RabbitMQ、Kafka、ActiveMQ 等）提供一个统一的延迟消息处理机制，支持任意时间延迟、高可用、可扩展，并适用于 AI 自动化理解与部分代码生成。
+
+✅ 设计目标
+目标	描述
+✅ 支持任意延迟时间	不依赖 MQ 原生 level 延迟机制，支持毫秒级精度
+✅ 兼容多种 MQ	RocketMQ / RabbitMQ / Kafka / ActiveMQ 等
+✅ 高可用	即使服务重启也不丢失延迟消息
+✅ 分布式部署	支持集群部署，避免单点故障
+✅ 性能优化	减少资源浪费，支持动态扫描频率调整
+✅ 易于集成	提供统一接口，方便接入业务系统
+🧱 核心组件架构图
+深色版本
+生产者
+   ↓
+通用延迟消息接口 DelayMessageSender
+   ↓
+Redis Sorted Set + MySQL（双写）
+   ↓
+定时任务（Quartz / ScheduledExecutorService）
+   ↓
+MQ 消息投递器（适配不同 MQ）
+   ↓
+消费者
+🔑 关键技术选型
+组件	技术选型	说明
+消息存储	Redis ZSet + MySQL	Redis 用于高效查询到期消息，MySQL 用于持久化
+定时任务	Quartz 或 ScheduledExecutorService	控制定时扫描逻辑
+MQ 适配	接口抽象 + 多实现	为每种 MQ 实现独立发送逻辑
+消息结构	JSON + 字节流	保证兼容性与灵活性
+📦 数据模型设计
+DelayMessage 实体类（Java 示例）
+java
+深色版本
+public class DelayMessage {
+    private String messageId;       // 唯一 ID
+    private String topic;           // 主题
+    private String tag;             // 标签（可选）
+    private byte[] body;            // 消息体
+    private Map<String, String> properties; // 属性
+    private long deliverTimeMs;     // 投递时间戳（毫秒）
+    private String mqType;          // 消息队列类型（rocketmq/rabbitmq/kafka 等）
+}
+Redis 存储结构（Sorted Set）
+bash
+深色版本
+ZADD delay_queue <deliverTimeMs> <messageId>
+key: delay_queue
+value: messageId
+score: deliverTimeMs（期望投递时间戳）
+MySQL 表结构示例
+sql
+深色版本
+CREATE TABLE delay_message (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    message_id VARCHAR(64) NOT NULL,
+    topic VARCHAR(255),
+    tag VARCHAR(255),
+    body BLOB,
+    properties TEXT,
+    deliver_time_ms BIGINT,
+    status ENUM('PENDING', 'DELIVERED', 'FAILED') DEFAULT 'PENDING',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME ON UPDATE CURRENT_TIMESTAMP
+);
+⏰ 定时任务逻辑（核心流程）
+功能描述：
+定期从 Redis 中获取所有已到期的消息（score <= 当前时间）
+通过 MQ 适配器将消息发送到对应 Broker
+更新数据库状态为“已投递”
+从 Redis 中删除该消息
+Java 示例代码（伪代码）
+java
+深色版本
+public void scanAndDeliver() {
+    long now = System.currentTimeMillis();
+    Set<String> expiredMessageIds = redis.zrangebyscore("delay_queue", 0, now);
+
+    for (String msgId : expiredMessageIds) {
+        DelayMessage message = loadFromDB(msgId);
+        if (message == null) continue;
+
+        try {
+            MQAdapter adapter = getMQAdapter(message.getMqType());
+            adapter.send(message); // 发送到对应的 MQ
+            markAsDelivered(msgId); // 标记为已投递
+            redis.zrem("delay_queue", msgId); // 删除 Redis 缓存
+        } catch (Exception e) {
+            log.error("消息投递失败: " + msgId, e);
+            markAsFailed(msgId);
+        }
+    }
+}
+🔄 定时任务配置建议
+配置项	建议值	说明
+初始扫描间隔	100ms	平衡性能与延迟精度
+最小间隔	20ms	适用于高精度场景
+最大间隔	500ms	适用于低负载环境
+动态调节	✅ 开启	根据消息数量自动调整扫描频率
+示例：Java ScheduledExecutorService 配置
+java
+深色版本
+ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+scheduler.scheduleAtFixedRate(this::scanAndDeliver, 0, 100, TimeUnit.MILLISECONDS);
+📈 性能优化策略
+优化项	描述
+✅ 分片	将 delay_queue 拆分为多个 key（如 delay_queue_0 ~ delay_queue_15），并行处理
+✅ 异步处理	使用线程池异步投递消息，防止阻塞定时任务
+✅ 批量处理	每次扫描取出一批消息处理，减少 Redis 调用次数
+✅ 动态频率	根据负载自动调整扫描频率
+✅ 消息去重	利用 messageId 避免重复投递
+✅ 故障恢复	定期检查未投递消息，重新加入队列
+✅ 监控报警	对长时间未投递的消息进行预警
+🔄 MQ 适配层设计
+接口定义（Java）
+java
+深色版本
+public interface MQAdapter {
+    void send(DelayMessage message);
+}
+示例实现：RocketMQ
+java
+深色版本
+public class RocketMQAdapter implements MQAdapter {
+    private Producer producer;
+
+    public RocketMQAdapter(String topic) {
+        this.producer = new DefaultMQProducer("delay_producer_group");
+        producer.setNamesrvAddr("localhost:9876");
+        producer.start();
+    }
+
+    @Override
+    public void send(DelayMessage message) {
+        Message msg = new Message(message.getTopic(), message.getBody());
+        msg.putUserProperty("TIMER_DELIVER_MS", String.valueOf(message.getDeliverTimeMs()));
+        producer.send(msg);
+    }
+}
+其他 MQ 实现类似，只需重写 send() 方法即可。
+📦 生产者 API（统一入口）
+java
+深色版本
+public class DelayMessageSender {
+
+    public static void sendDelayedMessage(DelayMessage message) {
+        saveToRedis(message);
+        saveToDB(message);
+        log.info("延迟消息已注册，ID={}", message.getMessageId());
+    }
+}
