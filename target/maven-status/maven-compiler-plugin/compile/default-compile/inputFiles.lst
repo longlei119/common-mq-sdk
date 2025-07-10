@@ -9,6 +9,7 @@ G:\spring-ai-all\common-mq-sdk\src\main\java\com\example\mq\model\OrderSyncEvent
 G:\spring-ai-all\common-mq-sdk\src\main\java\com\example\mq\producer\impl\RocketMQProducer.java
 G:\spring-ai-all\common-mq-sdk\src\main\java\com\example\mq\producer\MQProducer.java
 G:\spring-ai-all\common-mq-sdk\src\main\java\com\example\mq\consumer\impl\RocketMQConsumer.java
+G:\spring-ai-all\common-mq-sdk\src\main\java\com\example\mq\delay\adapter\RedisAdapter.java
 G:\spring-ai-all\common-mq-sdk\src\main\java\com\example\mq\producer\impl\RedisProducer.java
 G:\spring-ai-all\common-mq-sdk\src\main\java\com\example\mq\model\TestEvent.java
 G:\spring-ai-all\common-mq-sdk\src\main\java\com\example\mq\delay\model\MessageStatusEnum.java

@@ -5,6 +5,12 @@ import com.example.mq.delay.adapter.RabbitMQAdapter;
 import com.example.mq.delay.model.DelayMessage;
 import com.example.mq.delay.model.MessageStatusEnum;
 import com.example.mq.enums.MQTypeEnum;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,11 +21,18 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations;
 
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * RabbitMQ延迟消息测试
@@ -53,14 +66,14 @@ public class RabbitMQDelayMessageTest {
         delayProps.setScanInterval(100);
         delayProps.setBatchSize(10);
         delayProps.setMessageExpireTime(7 * 24 * 60 * 60 * 1000L); // 7天
-        
+
         // 重试配置
         MQConfig.DelayMessageProperties.RetryConfig retryConfig = new MQConfig.DelayMessageProperties.RetryConfig();
         retryConfig.setMaxRetries(3);
         retryConfig.setRetryInterval(1000);
         retryConfig.setRetryMultiplier(2);
         delayProps.setRetry(retryConfig);
-        
+
         mqConfig.setDelay(delayProps);
 
         // 初始化RabbitMQ适配器
@@ -83,16 +96,16 @@ public class RabbitMQDelayMessageTest {
         // 测试RabbitMQ延迟消息发送
         String topic = "rabbitmq-delay-topic";
         String tag = "rabbitmq-delay-tag";
-        String body = "RabbitMQ delay message test";
+        String body = "RabbitMQ delay message test 2";
         String mqType = MQTypeEnum.RABBIT_MQ.getType();
-        long delayTime = 5000; // 5秒延迟
+        long delayTime = 10000; // 10秒延迟
 
         // 发送延迟消息
         String messageId = delayMessageSender.sendDelayMessage(topic, tag, body, mqType, delayTime);
 
         // 验证消息ID不为空
         assertNotNull(messageId);
-        
+
         // 验证Redis操作
         verify(valueOperations).set(anyString(), anyString());
         verify(zSetOperations).add(anyString(), eq(messageId), any(Double.class));
@@ -121,7 +134,7 @@ public class RabbitMQDelayMessageTest {
 
         // 验证消息ID
         assertEquals("rabbitmq-msg-001", messageId);
-        
+
         // 验证Redis操作
         verify(valueOperations).set(contains(messageId), anyString());
         verify(zSetOperations).add(anyString(), eq(messageId), any(Double.class));
@@ -139,30 +152,30 @@ public class RabbitMQDelayMessageTest {
         expiredMessage.setMqTypeEnum(MQTypeEnum.RABBIT_MQ);
         expiredMessage.setDeliverTimestamp(pastTime);
         expiredMessage.setStatusEnum(MessageStatusEnum.WAITING);
-        
+
         // 设置消息属性
         Map<String, String> properties = new HashMap<>();
         properties.put("custom-header", "test-value");
         expiredMessage.setProperties(properties);
-        
+
         String messageJson = com.alibaba.fastjson.JSON.toJSONString(expiredMessage);
-        
+
         // 模拟Redis返回过期消息
         Set<String> expiredMessageIds = new HashSet<>();
         expiredMessageIds.add("rabbitmq-expired-msg-001");
         when(zSetOperations.rangeByScore(anyString(), any(Double.class), any(Double.class)))
-                .thenReturn(expiredMessageIds);
+            .thenReturn(expiredMessageIds);
         when(valueOperations.get(contains("rabbitmq-expired-msg-001"))).thenReturn(messageJson);
-        
+
         // 执行扫描和投递
         delayMessageSender.scanAndDeliverMessages();
-        
+
         // 验证消息被发送到RabbitMQ（使用tag作为路由键）
         verify(rabbitTemplate).send(eq("rabbitmq-expired-topic"), eq("rabbitmq-expired-tag"), any());
-        
+
         // 验证消息状态被更新
         verify(valueOperations).set(contains("rabbitmq-expired-msg-001"), contains("DELIVERED"));
-        
+
         // 验证消息从队列中移除
         verify(zSetOperations).remove(anyString(), eq("rabbitmq-expired-msg-001"));
     }
@@ -179,25 +192,25 @@ public class RabbitMQDelayMessageTest {
         expiredMessage.setMqTypeEnum(MQTypeEnum.RABBIT_MQ);
         expiredMessage.setDeliverTimestamp(pastTime);
         expiredMessage.setStatusEnum(MessageStatusEnum.WAITING);
-        
+
         String messageJson = com.alibaba.fastjson.JSON.toJSONString(expiredMessage);
-        
+
         // 模拟Redis返回过期消息
         Set<String> expiredMessageIds = new HashSet<>();
         expiredMessageIds.add("rabbitmq-no-routing-msg-001");
         when(zSetOperations.rangeByScore(anyString(), any(Double.class), any(Double.class)))
-                .thenReturn(expiredMessageIds);
+            .thenReturn(expiredMessageIds);
         when(valueOperations.get(contains("rabbitmq-no-routing-msg-001"))).thenReturn(messageJson);
-        
+
         // 执行扫描和投递
         delayMessageSender.scanAndDeliverMessages();
-        
+
         // 验证消息被发送到RabbitMQ（使用tag作为路由键）
         verify(rabbitTemplate).send(eq("rabbitmq-no-routing-topic"), eq("rabbitmq-no-routing-tag"), any());
-        
+
         // 验证消息状态被更新
         verify(valueOperations).set(contains("rabbitmq-no-routing-msg-001"), contains("DELIVERED"));
-        
+
         // 验证消息从队列中移除
         verify(zSetOperations).remove(anyString(), eq("rabbitmq-no-routing-msg-001"));
     }
@@ -215,29 +228,29 @@ public class RabbitMQDelayMessageTest {
         failedMessage.setDeliverTimestamp(pastTime);
         failedMessage.setStatusEnum(MessageStatusEnum.WAITING);
         failedMessage.setRetryCount(0);
-        
+
         String messageJson = com.alibaba.fastjson.JSON.toJSONString(failedMessage);
-        
+
         // 模拟Redis返回失败消息
         Set<String> expiredMessageIds = new HashSet<>();
         expiredMessageIds.add("rabbitmq-failed-msg-001");
         when(zSetOperations.rangeByScore(anyString(), any(Double.class), any(Double.class)))
-                .thenReturn(expiredMessageIds);
+            .thenReturn(expiredMessageIds);
         when(valueOperations.get(contains("rabbitmq-failed-msg-001"))).thenReturn(messageJson);
-        
+
         // 模拟RabbitMQ发送失败
         doThrow(new RuntimeException("RabbitMQ send failed"))
-                .when(rabbitTemplate).send(anyString(), anyString(), any());
-        
+            .when(rabbitTemplate).send(anyString(), anyString(), any());
+
         // 执行扫描和投递
         delayMessageSender.scanAndDeliverMessages();
-        
+
         // 验证消息被尝试发送
         verify(rabbitTemplate).send(anyString(), anyString(), any());
-        
+
         // 验证消息状态被更新（重试计数增加）
         verify(valueOperations, atLeastOnce()).set(contains("rabbitmq-failed-msg-001"), anyString());
-        
+
         // 验证消息重新加入队列（用于重试）
         verify(zSetOperations).add(anyString(), eq("rabbitmq-failed-msg-001"), any(Double.class));
     }
@@ -255,29 +268,29 @@ public class RabbitMQDelayMessageTest {
         maxRetriedMessage.setDeliverTimestamp(pastTime);
         maxRetriedMessage.setStatusEnum(MessageStatusEnum.WAITING);
         maxRetriedMessage.setRetryCount(3); // 已达到最大重试次数
-        
+
         String messageJson = com.alibaba.fastjson.JSON.toJSONString(maxRetriedMessage);
-        
+
         // 模拟Redis返回超过重试次数的消息
         Set<String> expiredMessageIds = new HashSet<>();
         expiredMessageIds.add("rabbitmq-max-retry-msg-001");
         when(zSetOperations.rangeByScore(anyString(), any(Double.class), any(Double.class)))
-                .thenReturn(expiredMessageIds);
+            .thenReturn(expiredMessageIds);
         when(valueOperations.get(contains("rabbitmq-max-retry-msg-001"))).thenReturn(messageJson);
-        
+
         // 模拟RabbitMQ发送失败
         doThrow(new RuntimeException("RabbitMQ send failed"))
-                .when(rabbitTemplate).send(anyString(), anyString(), any());
-        
+            .when(rabbitTemplate).send(anyString(), anyString(), any());
+
         // 执行扫描和投递
         delayMessageSender.scanAndDeliverMessages();
-        
+
         // 验证消息被尝试发送
         verify(rabbitTemplate).send(anyString(), anyString(), any());
-        
+
         // 验证消息状态被标记为失败
         verify(valueOperations).set(contains("rabbitmq-max-retry-msg-001"), contains("FAILED"));
-        
+
         // 验证消息从队列中移除
         verify(zSetOperations).remove(anyString(), eq("rabbitmq-max-retry-msg-001"));
     }
@@ -291,19 +304,19 @@ public class RabbitMQDelayMessageTest {
         message.setTag("rabbitmq-direct-tag");
         message.setBody("RabbitMQ direct send message");
         message.setMqTypeEnum(MQTypeEnum.RABBIT_MQ);
-        
+
         // 设置消息属性
         Map<String, String> properties = new HashMap<>();
         properties.put("routing-key", "direct.routing.key");
         properties.put("priority", "1");
         message.setProperties(properties);
-        
+
         // 直接调用适配器发送消息
         boolean result = rabbitMQAdapter.send(message);
-        
+
         // 验证发送成功
         assertTrue(result);
-        
+
         // 验证RabbitTemplate被调用（使用tag作为路由键）
         verify(rabbitTemplate).send(eq("rabbitmq-direct-topic"), eq("rabbitmq-direct-tag"), any());
     }

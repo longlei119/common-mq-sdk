@@ -1,0 +1,174 @@
+2025-07-10 18:26:47.298 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息发送器初始化成功，已加载1个MQ适配器
+2025-07-10 18:26:47.303 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 测试环境初始化完成
+2025-07-10 18:26:47.306 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - === 开始Redis延迟消息简单测试 ===
+2025-07-10 18:26:47.315 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 发送时间: 2025-07-10 18:26:47.315
+2025-07-10 18:26:47.315 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 发送消息: 测试延迟消息-1752143207307, 延迟: 5秒
+2025-07-10 18:26:47.316 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - === 开始发送延迟消息 ===
+2025-07-10 18:26:47.316 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 消息内容: 测试延迟消息-1752143207307
+2025-07-10 18:26:47.317 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 延迟消息发送时间: 2025-07-10 18:26:47.315
+2025-07-10 18:26:47.317 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 预期执行时间: 2025-07-10 18:26:52.315
+2025-07-10 18:26:48.148 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息已保存: messageId=fbbce6fb-af7f-49f8-bd40-2169fe25d4d2, topic=test-delay-topic, tag=test-tag, mqType=REDIS, deliverTime=2025-07-10T10:26:52.394Z
+2025-07-10 18:26:48.149 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 延迟消息已发送到Redis
+2025-07-10 18:26:48.150 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 检查Redis中的消息存储:
+2025-07-10 18:26:48.157 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 消息Key: delay_message:test-delay-topic, 存在: false
+2025-07-10 18:26:48.159 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 队列Key: delay_queue:test-delay-topic, 存在: false
+2025-07-10 18:26:48.164 [Thread-0] INFO  c.e.mq.delay.RedisDelaySimpleTest - 第1次扫描延迟消息...
+2025-07-10 18:26:48.165 [Thread-0] INFO  c.e.mq.delay.RedisDelaySimpleTest - 当前时间戳: 1752143208165
+2025-07-10 18:26:48.183 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 扫描到1条到期的延迟消息
+2025-07-10 18:26:48.232 [Thread-0] INFO  c.e.mq.delay.RedisDelaySimpleTest - ✅ 模拟发送延迟消息: topic=test-delay-topic, tag=test-tag, body=测试延迟消息-1752143121094, mqType=REDIS
+2025-07-10 18:26:48.238 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息投递成功: messageId=ff511a6c-9188-4e67-a063-e5110483587e, topic=test-delay-topic, tag=test-tag, mqType=REDIS
+2025-07-10 18:26:48.239 [Thread-0] INFO  c.e.mq.delay.RedisDelaySimpleTest - 延迟队列已不存在，消息可能已被处理
+2025-07-10 18:26:48.240 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - ✅ 测试完成
+2025-07-10 18:26:48.241 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - 测试数据清理完成
+2025-07-10 18:26:48.242 [main] INFO  c.e.mq.delay.RedisDelaySimpleTest - === Redis延迟消息简单测试结束 ===
+2025-07-10 18:30:42.736 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis连接测试成功: ok
+2025-07-10 18:30:42.754 [main] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis适配器初始化成功
+2025-07-10 18:30:42.755 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息发送器初始化成功，已加载1个MQ适配器
+2025-07-10 18:30:42.756 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis延迟消息测试环境初始化完成
+2025-07-10 18:30:42.758 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - === 开始多条延迟消息测试 ===
+2025-07-10 18:30:42.766 [main] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消费者订阅成功 - channel: multi-delay-topic:multi-delay-tag
+2025-07-10 18:30:42.933 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息已保存: messageId=c876b4cc-3ad6-4fde-a1c5-2ff62da93eb6, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS, deliverTime=2025-07-10T10:30:45.769Z
+2025-07-10 18:30:42.940 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息已保存: messageId=8b664e8a-32b9-4918-8d28-d1a158cbb737, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS, deliverTime=2025-07-10T10:30:48.938Z
+2025-07-10 18:30:42.942 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息已保存: messageId=4c0ec05f-1693-4192-97e2-93d67d6ab8d4, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS, deliverTime=2025-07-10T10:30:51.941Z
+2025-07-10 18:30:42.943 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 已发送3条延迟消息
+2025-07-10 18:30:45.995 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 扫描到1条到期的延迟消息
+2025-07-10 18:30:46.024 [Thread-0] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis消息发送成功，channel=multi-delay-topic, messageId=c876b4cc-3ad6-4fde-a1c5-2ff62da93eb6, body=消息1 - 延迟3秒
+2025-07-10 18:30:46.027 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息投递成功: messageId=c876b4cc-3ad6-4fde-a1c5-2ff62da93eb6, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS
+2025-07-10 18:30:49.057 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 扫描到1条到期的延迟消息
+2025-07-10 18:30:49.058 [Thread-0] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis消息发送成功，channel=multi-delay-topic, messageId=8b664e8a-32b9-4918-8d28-d1a158cbb737, body=消息2 - 延迟6秒
+2025-07-10 18:30:49.060 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息投递成功: messageId=8b664e8a-32b9-4918-8d28-d1a158cbb737, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS
+2025-07-10 18:30:52.078 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 扫描到1条到期的延迟消息
+2025-07-10 18:30:52.080 [Thread-0] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis消息发送成功，channel=multi-delay-topic, messageId=4c0ec05f-1693-4192-97e2-93d67d6ab8d4, body=消息3 - 延迟9秒
+2025-07-10 18:30:52.082 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息投递成功: messageId=4c0ec05f-1693-4192-97e2-93d67d6ab8d4, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS
+2025-07-10 18:30:58.024 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis连接测试成功: ok
+2025-07-10 18:30:58.024 [main] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis适配器初始化成功
+2025-07-10 18:30:58.024 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息发送器初始化成功，已加载1个MQ适配器
+2025-07-10 18:30:58.024 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis延迟消息测试环境初始化完成
+2025-07-10 18:30:58.025 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - === 开始Redis延迟消息真实测试 ===
+2025-07-10 18:30:58.031 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 发送时间: 2025-07-10 18:30:58.031
+2025-07-10 18:30:58.031 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 预期接收时间: 2025-07-10 18:31:08.031
+2025-07-10 18:30:58.032 [main] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消费者订阅成功 - channel: test-delay-topic:test-delay-tag
+2025-07-10 18:30:58.033 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 已订阅Redis通道: test-delay-topic:test-delay-tag
+2025-07-10 18:30:58.038 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息已保存: messageId=e309cdde-7f4a-4b51-8031-b911d6961907, topic=test-delay-topic, tag=test-delay-tag, mqType=REDIS, deliverTime=2025-07-10T10:31:08.033Z
+2025-07-10 18:30:58.038 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 延迟消息已发送，消息ID: e309cdde-7f4a-4b51-8031-b911d6961907
+2025-07-10 18:30:58.038 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 消息内容: 这是一条延迟10秒的测试消息 - 2025-07-10 18:30:58
+2025-07-10 18:30:58.039 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 延迟时间: 10秒
+2025-07-10 18:30:58.045 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis中保存的消息: {"body":"这是一条延迟10秒的测试消息 - 2025-07-10 18:30:58","createTimestamp":1752143458033,"deliverTimestamp":1752143468033,"id":"e309cdde-7f4a-4b51-8031-b911d6961907","mqType":"REDIS","mqTypeEnum":"REDIS","retryCount":0,"status":0,"statusEnum":"WAITING","tag":"test-delay-tag","topic":"test-delay-topic"}
+2025-07-10 18:30:58.046 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 消息在队列中的分数(投递时间戳): 1.752143468033E12
+2025-07-10 18:30:58.048 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第1次扫描延迟消息...
+2025-07-10 18:30:59.063 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第2次扫描延迟消息...
+2025-07-10 18:31:00.076 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第3次扫描延迟消息...
+2025-07-10 18:31:01.084 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第4次扫描延迟消息...
+2025-07-10 18:31:02.096 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第5次扫描延迟消息...
+2025-07-10 18:31:03.109 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第6次扫描延迟消息...
+2025-07-10 18:31:04.116 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第7次扫描延迟消息...
+2025-07-10 18:31:05.130 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第8次扫描延迟消息...
+2025-07-10 18:31:06.132 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第9次扫描延迟消息...
+2025-07-10 18:31:07.135 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第10次扫描延迟消息...
+2025-07-10 18:31:08.138 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第11次扫描延迟消息...
+2025-07-10 18:31:08.139 [Thread-1] INFO  c.e.mq.delay.DelayMessageSender - 扫描到1条到期的延迟消息
+2025-07-10 18:31:08.140 [Thread-1] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis消息发送成功，channel=test-delay-topic, messageId=e309cdde-7f4a-4b51-8031-b911d6961907, body=这是一条延迟10秒的测试消息 - 2025-07-10 18:30:58
+2025-07-10 18:31:08.142 [Thread-1] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息投递成功: messageId=e309cdde-7f4a-4b51-8031-b911d6961907, topic=test-delay-topic, tag=test-delay-tag, mqType=REDIS
+2025-07-10 18:31:09.155 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第12次扫描延迟消息...
+2025-07-10 18:31:10.168 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第13次扫描延迟消息...
+2025-07-10 18:31:11.175 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第14次扫描延迟消息...
+2025-07-10 18:31:12.180 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第15次扫描延迟消息...
+2025-07-10 18:31:13.062 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 扫描线程结束，共扫描15次
+2025-07-10 18:33:28.135 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis连接测试成功: ok
+2025-07-10 18:33:28.162 [main] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis适配器初始化成功
+2025-07-10 18:33:28.164 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息发送器初始化成功，已加载1个MQ适配器
+2025-07-10 18:33:28.164 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis延迟消息测试环境初始化完成
+2025-07-10 18:33:28.167 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - === 开始多条延迟消息测试 ===
+2025-07-10 18:33:28.177 [main] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消费者订阅成功 - channel: multi-delay-topic:multi-delay-tag
+2025-07-10 18:33:28.383 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息已保存: messageId=6dad93d0-27d2-4369-a708-5056ab6f5289, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS, deliverTime=2025-07-10T10:33:31.180Z
+2025-07-10 18:33:28.393 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息已保存: messageId=222e249a-7b69-4b49-bb44-369846138a55, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS, deliverTime=2025-07-10T10:33:34.390Z
+2025-07-10 18:33:28.406 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息已保存: messageId=32957f38-e2c1-4bcc-bfea-ee623d454e25, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS, deliverTime=2025-07-10T10:33:37.394Z
+2025-07-10 18:33:28.406 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 已发送3条延迟消息
+2025-07-10 18:33:31.432 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 扫描到1条到期的延迟消息
+2025-07-10 18:33:31.461 [Thread-0] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis消息发送成功，channel=multi-delay-topic:multi-delay-tag, messageId=6dad93d0-27d2-4369-a708-5056ab6f5289, body=消息1 - 延迟3秒
+2025-07-10 18:33:31.463 [RedisMessageListenerContainer-2] INFO  c.e.m.d.RedisDelayMessageRealTest - 接收到消息: 消息1 - 延迟3秒 (耗时: 3295ms)
+2025-07-10 18:33:31.463 [RedisMessageListenerContainer-2] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消息处理成功 - channel: multi-delay-topic:multi-delay-tag, message: 消息1 - 延迟3秒
+2025-07-10 18:33:31.464 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息投递成功: messageId=6dad93d0-27d2-4369-a708-5056ab6f5289, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS
+2025-07-10 18:33:34.480 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 扫描到1条到期的延迟消息
+2025-07-10 18:33:34.481 [Thread-0] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis消息发送成功，channel=multi-delay-topic:multi-delay-tag, messageId=222e249a-7b69-4b49-bb44-369846138a55, body=消息2 - 延迟6秒
+2025-07-10 18:33:34.481 [RedisMessageListenerContainer-3] INFO  c.e.m.d.RedisDelayMessageRealTest - 接收到消息: 消息2 - 延迟6秒 (耗时: 6313ms)
+2025-07-10 18:33:34.481 [RedisMessageListenerContainer-3] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消息处理成功 - channel: multi-delay-topic:multi-delay-tag, message: 消息2 - 延迟6秒
+2025-07-10 18:33:34.482 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息投递成功: messageId=222e249a-7b69-4b49-bb44-369846138a55, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS
+2025-07-10 18:33:37.506 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 扫描到1条到期的延迟消息
+2025-07-10 18:33:37.510 [Thread-0] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis消息发送成功，channel=multi-delay-topic:multi-delay-tag, messageId=32957f38-e2c1-4bcc-bfea-ee623d454e25, body=消息3 - 延迟9秒
+2025-07-10 18:33:37.510 [RedisMessageListenerContainer-4] INFO  c.e.m.d.RedisDelayMessageRealTest - 接收到消息: 消息3 - 延迟9秒 (耗时: 9342ms)
+2025-07-10 18:33:37.510 [RedisMessageListenerContainer-4] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消息处理成功 - channel: multi-delay-topic:multi-delay-tag, message: 消息3 - 延迟9秒
+2025-07-10 18:33:37.511 [Thread-0] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息投递成功: messageId=32957f38-e2c1-4bcc-bfea-ee623d454e25, topic=multi-delay-topic, tag=multi-delay-tag, mqType=REDIS
+2025-07-10 18:33:37.514 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 接收到的消息顺序: [消息1 - 延迟3秒, 消息2 - 延迟6秒, 消息3 - 延迟9秒]
+2025-07-10 18:33:37.515 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - === 多条延迟消息测试完成 ===
+2025-07-10 18:33:37.520 [main] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消费者取消订阅成功 - channel: multi-delay-topic:multi-delay-tag
+2025-07-10 18:33:37.570 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis连接测试成功: ok
+2025-07-10 18:33:37.570 [main] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis适配器初始化成功
+2025-07-10 18:33:37.570 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息发送器初始化成功，已加载1个MQ适配器
+2025-07-10 18:33:37.570 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis延迟消息测试环境初始化完成
+2025-07-10 18:33:37.571 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - === 开始Redis延迟消息真实测试 ===
+2025-07-10 18:33:37.574 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 发送时间: 2025-07-10 18:33:37.574
+2025-07-10 18:33:37.574 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 预期接收时间: 2025-07-10 18:33:47.574
+2025-07-10 18:33:37.575 [main] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消费者订阅成功 - channel: test-delay-topic:test-delay-tag
+2025-07-10 18:33:37.575 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 已订阅Redis通道: test-delay-topic:test-delay-tag
+2025-07-10 18:33:37.577 [main] INFO  c.e.mq.delay.DelayMessageSender - 延迟消息已保存: messageId=80ea9a38-79fb-4741-b52b-095bc8859fde, topic=test-delay-topic, tag=test-delay-tag, mqType=REDIS, deliverTime=2025-07-10T10:33:47.575Z
+2025-07-10 18:33:37.578 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 延迟消息已发送，消息ID: 80ea9a38-79fb-4741-b52b-095bc8859fde
+2025-07-10 18:33:37.578 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 消息内容: 这是一条延迟10秒的测试消息 - 2025-07-10 18:33:37
+2025-07-10 18:33:37.579 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 延迟时间: 10秒
+2025-07-10 18:33:37.584 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - Redis中保存的消息: {"body":"这是一条延迟10秒的测试消息 - 2025-07-10 18:33:37","createTimestamp":1752143617575,"deliverTimestamp":1752143627575,"id":"80ea9a38-79fb-4741-b52b-095bc8859fde","mqType":"REDIS","mqTypeEnum":"REDIS","properties":{"channel":"test-delay-topic:test-delay-tag"},"retryCount":0,"status":0,"statusEnum":"WAITING","tag":"test-delay-tag","topic":"test-delay-topic"}
+2025-07-10 18:33:37.584 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - 消息在队列中的分数(投递时间戳): 1.752143627575E12
+2025-07-10 18:33:37.585 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第1次扫描延迟消息...
+2025-07-10 18:33:38.596 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第2次扫描延迟消息...
+2025-07-10 18:33:39.603 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第3次扫描延迟消息...
+2025-07-10 18:33:40.618 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第4次扫描延迟消息...
+2025-07-10 18:33:41.623 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第5次扫描延迟消息...
+2025-07-10 18:33:42.627 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第6次扫描延迟消息...
+2025-07-10 18:33:43.642 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第7次扫描延迟消息...
+2025-07-10 18:33:44.645 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第8次扫描延迟消息...
+2025-07-10 18:33:45.660 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第9次扫描延迟消息...
+2025-07-10 18:33:46.673 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第10次扫描延迟消息...
+2025-07-10 18:33:47.687 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 第11次扫描延迟消息...
+2025-07-10 18:33:47.689 [Thread-1] INFO  c.e.mq.delay.DelayMessageSender - 扫描到1条到期的延迟消息
+2025-07-10 18:33:47.691 [Thread-1] INFO  c.e.mq.delay.adapter.RedisAdapter - Redis消息发送成功，channel=test-delay-topic:test-delay-tag, messageId=80ea9a38-79fb-4741-b52b-095bc8859fde, body=这是一条延迟10秒的测试消息 - 2025-07-10 18:33:37
+2025-07-10 18:33:47.692 [RedisMessageListenerContainer-2] INFO  c.e.m.d.RedisDelayMessageRealTest - 接收时间: 2025-07-10 18:33:47.692
+2025-07-10 18:33:47.692 [RedisMessageListenerContainer-2] INFO  c.e.m.d.RedisDelayMessageRealTest - 实际延迟: 10118毫秒 (10.118秒)
+2025-07-10 18:33:47.692 [RedisMessageListenerContainer-2] INFO  c.e.m.d.RedisDelayMessageRealTest - 接收到的消息: 这是一条延迟10秒的测试消息 - 2025-07-10 18:33:37
+2025-07-10 18:33:47.692 [RedisMessageListenerContainer-2] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消息处理成功 - channel: test-delay-topic:test-delay-tag, message: 这是一条延迟10秒的测试消息 - 2025-07-10 18:33:37
+2025-07-10 18:33:47.695 [main] INFO  c.e.m.d.RedisDelayMessageRealTest - === Redis延迟消息真实测试完成 ===
+2025-07-10 18:33:47.696 [Thread-1] ERROR c.e.mq.delay.DelayMessageSender - 处理延迟消息异常: messageId=80ea9a38-79fb-4741-b52b-095bc8859fde, error=Redis command interrupted; nested exception is io.lettuce.core.RedisCommandInterruptedException: Command interrupted
+org.springframework.data.redis.RedisSystemException: Redis command interrupted; nested exception is io.lettuce.core.RedisCommandInterruptedException: Command interrupted
+	at org.springframework.data.redis.connection.lettuce.LettuceExceptionConverter.convert(LettuceExceptionConverter.java:62)
+	at org.springframework.data.redis.connection.lettuce.LettuceExceptionConverter.convert(LettuceExceptionConverter.java:41)
+	at org.springframework.data.redis.PassThroughExceptionTranslationStrategy.translate(PassThroughExceptionTranslationStrategy.java:44)
+	at org.springframework.data.redis.FallbackExceptionTranslationStrategy.translate(FallbackExceptionTranslationStrategy.java:42)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnection.convertLettuceAccessException(LettuceConnection.java:275)
+	at org.springframework.data.redis.connection.lettuce.LettuceStringCommands.convertLettuceAccessException(LettuceStringCommands.java:799)
+	at org.springframework.data.redis.connection.lettuce.LettuceStringCommands.set(LettuceStringCommands.java:148)
+	at org.springframework.data.redis.connection.DefaultedRedisConnection.set(DefaultedRedisConnection.java:287)
+	at org.springframework.data.redis.connection.DefaultStringRedisConnection.set(DefaultStringRedisConnection.java:974)
+	at org.springframework.data.redis.core.DefaultValueOperations$3.inRedis(DefaultValueOperations.java:240)
+	at org.springframework.data.redis.core.AbstractOperations$ValueDeserializingRedisCallback.doInRedis(AbstractOperations.java:60)
+	at org.springframework.data.redis.core.RedisTemplate.execute(RedisTemplate.java:228)
+	at org.springframework.data.redis.core.RedisTemplate.execute(RedisTemplate.java:188)
+	at org.springframework.data.redis.core.AbstractOperations.execute(AbstractOperations.java:96)
+	at org.springframework.data.redis.core.DefaultValueOperations.set(DefaultValueOperations.java:236)
+	at com.example.mq.delay.DelayMessageSender.processExpiredMessage(DelayMessageSender.java:188)
+	at com.example.mq.delay.DelayMessageSender.scanAndDeliverMessages(DelayMessageSender.java:145)
+	at com.example.mq.delay.RedisDelayMessageRealTest.lambda$testRealRedisDelayMessage$1(RedisDelayMessageRealTest.java:167)
+	at java.base/java.lang.Thread.run(Thread.java:1570)
+Caused by: io.lettuce.core.RedisCommandInterruptedException: Command interrupted
+	at io.lettuce.core.protocol.AsyncCommand.await(AsyncCommand.java:85)
+	at io.lettuce.core.LettuceFutures.awaitOrCancel(LettuceFutures.java:117)
+	at io.lettuce.core.FutureSyncInvocationHandler.handleInvocation(FutureSyncInvocationHandler.java:75)
+	at io.lettuce.core.internal.AbstractInvocationHandler.invoke(AbstractInvocationHandler.java:79)
+	at jdk.proxy2/jdk.proxy2.$Proxy11.set(Unknown Source)
+	at org.springframework.data.redis.connection.lettuce.LettuceStringCommands.set(LettuceStringCommands.java:146)
+	... 12 common frames omitted
+Caused by: java.lang.InterruptedException: null
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:386)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at io.lettuce.core.protocol.AsyncCommand.await(AsyncCommand.java:81)
+	... 17 common frames omitted
+2025-07-10 18:33:47.698 [main] INFO  c.e.mq.consumer.impl.RedisConsumer - Redis消费者取消订阅成功 - channel: test-delay-topic:test-delay-tag
+2025-07-10 18:33:47.698 [Thread-1] ERROR c.e.mq.delay.DelayMessageSender - 处理消息失败异常: messageId=80ea9a38-79fb-4741-b52b-095bc8859fde, error=Redis command interrupted; nested exception is io.lettuce.core.RedisCommandInterruptedException: Command interrupted
+2025-07-10 18:33:47.698 [Thread-1] INFO  c.e.m.d.RedisDelayMessageRealTest - 扫描线程结束，共扫描11次

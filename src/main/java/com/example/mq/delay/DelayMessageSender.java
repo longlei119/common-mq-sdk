@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,6 +76,17 @@ public class DelayMessageSender {
         message.setBody(body);
         message.setMqTypeEnum(MQTypeEnum.fromString(mqType));
         message.setDeliverTimestamp(System.currentTimeMillis() + delayMillis);
+        
+        // 为Redis类型的消息设置正确的channel属性
+        if (MQTypeEnum.REDIS.getType().equals(mqType)) {
+            Map<String, String> properties = message.getProperties();
+            if (properties == null) {
+                properties = new HashMap<>();
+                message.setProperties(properties);
+            }
+            // 设置channel为topic:tag格式，与RedisConsumer的订阅格式一致
+            properties.put("channel", topic + ":" + tag);
+        }
         
         return sendDelayMessage(message);
     }

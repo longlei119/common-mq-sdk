@@ -226,6 +226,11 @@ public class RocketMQConsumer implements MQConsumer {
         }
     }
 
+    @Override
+    public MQTypeEnum getMQType() {
+        return MQTypeEnum.ROCKET_MQ;
+    }
+
     /**
      * 构建处理器映射的key
      */
