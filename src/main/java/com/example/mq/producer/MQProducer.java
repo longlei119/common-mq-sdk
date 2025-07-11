@@ -30,15 +30,18 @@ public interface MQProducer {
     void asyncSend(MQTypeEnum mqType, String topic, String tag, Object event);
 
     /**
-     * 异步发送延迟消息
+     * 异步发送延迟消息（基于Redis实现的统一延迟消息）
      *
      * @param mqType      MQ类型
      * @param topic       主题
      * @param tag         标签
-     * @param event       事件
+     * @param body        消息体
      * @param delaySecond 延迟时间（秒）
+     * @return messageId 消息ID
      */
-    void asyncSendDelay(MQTypeEnum mqType, String topic, String tag, MQEvent event, int delaySecond);
+    String asyncSendDelay(MQTypeEnum mqType, String topic, String tag, Object body, long delaySecond);
+
+
 
     /**
      * 获取MQ类型

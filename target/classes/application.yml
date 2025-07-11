@@ -5,6 +5,7 @@ mq:
   # RocketMQ配置
   # 注意：如果不需要使用RocketMQ，请保持以下配置注释状态
   rocketmq:
+    enabled: true
     # RocketMQ服务器地址，格式：host:port
     name-server-addr: localhost:9876
     # 生产者组名
@@ -25,21 +26,66 @@ mq:
 
   # Redis配置
   redis:
+    enabled: true
     host: localhost
     port: 6379
     database: 0
     timeout: 3000
+    password:
+    pool:
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
+      max-wait: -1
+
+  # RabbitMQ配置
+  rabbitmq:
+    enabled: false
+    host: 10.2.6.180
+    port: 5672
+    username: root
+    password: rootroot
+    virtual-host: /
+    connection-timeout: 15000
+    publisher-confirms: true
+    publisher-returns: true
+
+  # ActiveMQ配置
+  activemq:
+    enabled: false
+    broker-url: tcp://localhost:61616
+    username: admin
+    password: admin
+    pool:
+      enabled: true
+      max-connections: 10
+      idle-timeout: 30000
+
+  # Kafka配置
+  kafka:
+    enabled: false
+    bootstrap-servers: localhost:9092
+    producer-client-id: kafka-producer
+    consumer-group-id: kafka-consumer-group
+    auto-commit-interval: 1000
 
   # EMQX配置
   # 注意：如果不需要使用EMQX，请保持enabled为false
   emqx:
-    enabled: false
-    server-uri: tcp://localhost:1883
-    username: admin
-    password: public
+    enabled: true
+    server-uri: tcp://10.2.3.141:1883
+    username: user
+    password: Lachesis-mh_1024
     client-id: testClient
     clean-session: true
     keep-alive-interval: 60
+
+  # 延迟消息配置
+  delay:
+    enabled: true
+    redis-key-prefix: "delay_message:"
+    scan-interval: 1000
+    batch-size: 100
 
 logging:
   level:

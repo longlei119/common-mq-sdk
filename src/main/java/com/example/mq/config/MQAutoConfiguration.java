@@ -3,6 +3,8 @@ package com.example.mq.config;
 import com.example.mq.consumer.impl.ActiveMQConsumer;
 import com.example.mq.consumer.impl.RabbitMQConsumer;
 import com.example.mq.consumer.impl.RocketMQConsumer;
+import com.example.mq.producer.impl.EMQXProducer;
+import com.example.mq.consumer.impl.EMQXConsumer;
 import com.example.mq.delay.DelayMessageSender;
 import com.example.mq.delay.adapter.ActiveMQAdapter;
 import com.example.mq.delay.adapter.KafkaAdapter;
@@ -131,6 +133,20 @@ public class MQAutoConfiguration {
         return client;
     }
 
+    @Bean
+    @ConditionalOnBean(MqttClient.class)
+    @ConditionalOnMissingBean
+    public EMQXProducer emqxProducer(MqttClient mqttClient) {
+        return new EMQXProducer(mqttClient);
+    }
+
+    @Bean
+    @ConditionalOnBean(MqttClient.class)
+    @ConditionalOnMissingBean
+    public EMQXConsumer emqxConsumer(MqttClient mqttClient) {
+        return new EMQXConsumer(mqttClient);
+    }
+
     @Bean("rabbitConnectionFactory")
     @ConditionalOnProperty(prefix = "mq.rabbitmq", name = "enabled", havingValue = "true")
     @ConditionalOnMissingBean(name = "rabbitConnectionFactory")
@@ -191,9 +207,12 @@ public class MQAutoConfiguration {
                                @Nullable ActiveMQProducer activeMQProducer,
                                @Nullable ActiveMQConsumer activeMQConsumer,
                                @Nullable RabbitMQProducer rabbitMQProducer,
-                               @Nullable RabbitMQConsumer rabbitMQConsumer) {
+                               @Nullable RabbitMQConsumer rabbitMQConsumer,
+                               @Nullable EMQXProducer emqxProducer,
+                               @Nullable EMQXConsumer emqxConsumer) {
         return new MQFactory(rocketMQProducer, rocketMQConsumer, redisTemplate, redisListenerContainer, 
-                           activeMQProducer, activeMQConsumer, rabbitMQProducer, rabbitMQConsumer);
+                           activeMQProducer, activeMQConsumer, rabbitMQProducer, rabbitMQConsumer,
+                           emqxProducer, emqxConsumer);
     }
     
     @Bean

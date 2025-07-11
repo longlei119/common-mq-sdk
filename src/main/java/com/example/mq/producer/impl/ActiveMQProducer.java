@@ -1,10 +1,12 @@
 package com.example.mq.producer.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.example.mq.delay.DelayMessageSender;
 import com.example.mq.enums.MQTypeEnum;
 import com.example.mq.model.MQEvent;
 import com.example.mq.producer.MQProducer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,9 @@ import java.util.concurrent.CompletableFuture;
 public class ActiveMQProducer implements MQProducer {
 
     private final JmsTemplate jmsTemplate;
+    
+    @Autowired(required = false)
+    private DelayMessageSender delayMessageSender;
 
     public ActiveMQProducer(JmsTemplate jmsTemplate) {
         this.jmsTemplate = jmsTemplate;
@@ -51,19 +56,15 @@ public class ActiveMQProducer implements MQProducer {
     }
 
     @Override
-    public void asyncSendDelay(MQTypeEnum mqType, String topic, String tag, MQEvent event, int delaySecond) {
-        CompletableFuture.runAsync(() -> {
-            try {
-                // ActiveMQ的延迟消息实现
-                // 注意：这里需要配置ActiveMQ的延迟插件
-                Thread.sleep(delaySecond * 1000L);
-                jmsTemplate.convertAndSend(topic, JSON.toJSONString(event));
-                log.info("ActiveMQ异步延迟发送消息成功: topic={}, tag={}, delaySecond={}", topic, tag, delaySecond);
-            } catch (Exception e) {
-                log.error("ActiveMQ异步延迟发送消息失败: topic={}, tag={}, delaySecond={}", topic, tag, delaySecond, e);
-            }
-        });
+    public String asyncSendDelay(MQTypeEnum mqType, String topic, String tag, Object body, long delaySecond) {
+        if (mqType != MQTypeEnum.ACTIVE_MQ) {
+            return null;
+        }
+        String bodyStr = body instanceof String ? (String) body : JSON.toJSONString(body);
+        return delayMessageSender.sendDelayMessage(topic, tag, bodyStr, getMQType().name(), delaySecond * 1000);
     }
+
+
 
     @Override
     public MQTypeEnum getMQType() {

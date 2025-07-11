@@ -8,7 +8,7 @@
 2. 中间件隔离：底层实现与业务代码解耦
 3. 自动适配：根据配置动态选择中间件实现
 4. 扩展性：新增中间件只需添加新的适配器实现
-5. 支持多种消息队列：Redis、RocketMQ、Kafka、RabbitMQ、ActiveMQ等
+5. 支持多种消息队列：Redis、RocketMQ、Kafka、RabbitMQ、ActiveMQ、EMQX等
 6. 延迟消息：支持精确的延迟投递和消息重试机制
 
 ## 项目结构
@@ -151,6 +151,52 @@ public NewMQAdapter newMQAdapter() {
 4. 延迟消息功能依赖Redis，请确保Redis配置正确
 5. 延迟消息的最大延迟时间受Redis过期时间限制，默认为7天
 6. 消息重试机制使用指数退避策略，可通过配置调整重试次数和间隔
+
+## 测试说明
+
+### 运行测试
+项目包含多种消息队列的真实环境测试，需要相应的中间件服务运行：
+
+#### EMQX测试
+```bash
+# 启动EMQX服务器（默认端口1883）
+# 运行EMQX测试
+mvn test -Dtest.emqx.enabled=true -Dtest=EMQXRealTest
+```
+
+#### Redis测试
+```bash
+# 启动Redis服务器（默认端口6379）
+# 运行Redis测试
+mvn test -Dtest.redis.enabled=true -Dtest=RedisRealTest
+```
+
+#### RocketMQ测试
+```bash
+# 启动RocketMQ Name Server和Broker
+# 运行RocketMQ测试
+mvn test -Dtest.rocketmq.enabled=true -Dtest=RocketMQRealTest
+```
+
+#### RabbitMQ测试
+```bash
+# 启动RabbitMQ服务器（默认端口5672）
+# 运行RabbitMQ测试
+mvn test -Dtest.rabbitmq.enabled=true -Dtest=RabbitMQRealTest
+```
+
+#### ActiveMQ测试（已暂时禁用）
+```bash
+# 如需启用ActiveMQ测试，请启动ActiveMQ服务器并运行：
+mvn test -Dtest.activemq.enabled=true -Dtest=ActiveMQRealTest
+```
+
+### 测试配置文件
+- `application-test.yml`: 统一测试配置文件，使用Spring Profile区分不同测试场景
+  - 默认Profile: 包含所有MQ的基础配置
+  - `redis-only` Profile: 仅启用Redis的测试配置
+  - `emqx-only` Profile: 仅启用EMQX的测试配置
+  - `delay-example` Profile: 延迟消息示例配置
 
 ## 版本要求
 - JDK 1.8+

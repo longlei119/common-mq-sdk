@@ -1,10 +1,12 @@
 package com.example.mq.producer.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.example.mq.delay.DelayMessageSender;
 import com.example.mq.enums.MQTypeEnum;
 import com.example.mq.model.MQEvent;
 import com.example.mq.producer.MQProducer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.UUID;
@@ -15,6 +17,9 @@ import java.util.concurrent.TimeUnit;
 public class RedisProducer implements MQProducer {
 
     private final StringRedisTemplate redisTemplate;
+    
+    @Autowired(required = false)
+    private DelayMessageSender delayMessageSender;
 
     public RedisProducer(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -61,39 +66,15 @@ public class RedisProducer implements MQProducer {
     }
 
     @Override
-    public void asyncSendDelay(MQTypeEnum mqType, String topic, String tag, MQEvent event, int delaySecond) {
+    public String asyncSendDelay(MQTypeEnum mqType, String topic, String tag, Object body, long delaySecond) {
         if (mqType != MQTypeEnum.REDIS) {
-            return;
+            return null;
         }
-
-        String channel = topic + ":" + tag;
-        String message = JSON.toJSONString(event);
-        String delayKey = channel + ":delay:" + UUID.randomUUID().toString();
-
-        CompletableFuture.runAsync(() -> {
-            try {
-                // 设置延迟键值对
-                redisTemplate.opsForValue().set(delayKey, message, delaySecond, TimeUnit.SECONDS);
-                log.info("Redis延迟消息设置成功 - channel: {}, delayKey: {}, delaySeconds: {}, message: {}",
-                        channel, delayKey, delaySecond, message);
-
-                // 等待延迟时间
-                Thread.sleep(delaySecond * 1000L);
-
-                // 发送消息
-                redisTemplate.convertAndSend(channel, message);
-                log.info("Redis延迟消息发送成功 - channel: {}, delayKey: {}, message: {}",
-                        channel, delayKey, message);
-            } catch (Exception e) {
-                log.error("Redis延迟消息发送失败 - channel: {}, delayKey: {}, message: {}, error: {}",
-                        channel, delayKey, message, e.getMessage());
-                throw new RuntimeException("Redis延迟消息发送失败", e);
-            } finally {
-                // 清理延迟键
-                redisTemplate.delete(delayKey);
-            }
-        });
+        String bodyStr = body instanceof String ? (String) body : JSON.toJSONString(body);
+        return delayMessageSender.sendDelayMessage(topic, tag, bodyStr, getMQType().name(), delaySecond * 1000);
     }
+
+
 
     @Override
     public MQTypeEnum getMQType() {

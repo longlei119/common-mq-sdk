@@ -2,12 +2,14 @@ package com.example.mq.factory;
 
 import com.example.mq.consumer.MQConsumer;
 import com.example.mq.consumer.impl.ActiveMQConsumer;
+import com.example.mq.consumer.impl.EMQXConsumer;
 import com.example.mq.consumer.impl.RabbitMQConsumer;
 import com.example.mq.consumer.impl.RedisConsumer;
 import com.example.mq.consumer.impl.RocketMQConsumer;
 import com.example.mq.enums.MQTypeEnum;
 import com.example.mq.producer.MQProducer;
 import com.example.mq.producer.impl.ActiveMQProducer;
+import com.example.mq.producer.impl.EMQXProducer;
 import com.example.mq.producer.impl.RabbitMQProducer;
 import com.example.mq.producer.impl.RedisProducer;
 import com.example.mq.producer.impl.RocketMQProducer;
@@ -33,7 +35,9 @@ public class MQFactory {
                      @Nullable ActiveMQProducer activeMQProducer,
                      @Nullable ActiveMQConsumer activeMQConsumer,
                      @Nullable RabbitMQProducer rabbitMQProducer,
-                     @Nullable RabbitMQConsumer rabbitMQConsumer) {
+                     @Nullable RabbitMQConsumer rabbitMQConsumer,
+                     @Nullable EMQXProducer emqxProducer,
+                     @Nullable EMQXConsumer emqxConsumer) {
         // 注册RocketMQ生产者和消费者
         if (rocketMQProducer != null) {
             producerMap.put(MQTypeEnum.ROCKET_MQ, rocketMQProducer);
@@ -62,6 +66,14 @@ public class MQFactory {
         }
         if (rabbitMQConsumer != null) {
             consumerMap.put(MQTypeEnum.RABBIT_MQ, rabbitMQConsumer);
+        }
+        
+        // 注册EMQX生产者和消费者
+        if (emqxProducer != null) {
+            producerMap.put(MQTypeEnum.EMQX, emqxProducer);
+        }
+        if (emqxConsumer != null) {
+            consumerMap.put(MQTypeEnum.EMQX, emqxConsumer);
         }
     }
 

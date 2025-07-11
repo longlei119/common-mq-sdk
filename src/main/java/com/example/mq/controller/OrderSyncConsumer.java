@@ -6,7 +6,7 @@ import com.example.mq.enums.MQTypeEnum;
 import com.example.mq.model.OrderSyncEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -18,8 +18,8 @@ import javax.annotation.PostConstruct;
 @Component
 public class OrderSyncConsumer {
 
-    @Autowired
-    @Nullable
+    @Autowired(required = false)
+    @Qualifier("rocketMQConsumer")
     private MQConsumer mqConsumer;
 
     @PostConstruct
