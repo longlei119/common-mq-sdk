@@ -241,6 +241,13 @@
       "sourceType": "com.example.mq.config.MQConfig$KafkaProperties"
     },
     {
+      "name": "mq.rabbitmq.enabled",
+      "type": "java.lang.Boolean",
+      "description": "是否启用RabbitMQ",
+      "sourceType": "com.example.mq.config.MQConfig$RabbitMQProperties",
+      "defaultValue": false
+    },
+    {
       "name": "mq.rabbitmq.host",
       "type": "java.lang.String",
       "description": "服务器地址",

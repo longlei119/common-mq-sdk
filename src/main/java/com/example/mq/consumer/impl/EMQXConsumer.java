@@ -5,6 +5,7 @@ import com.example.mq.enums.MQTypeEnum;
 import org.eclipse.paho.client.mqttv3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,6 +15,7 @@ import java.util.function.Consumer;
  * EMQX消息消费者
  */
 @Component
+@ConditionalOnBean(MqttClient.class)
 public class EMQXConsumer implements MQConsumer, MqttCallback {
     
     private static final Logger logger = LoggerFactory.getLogger(EMQXConsumer.class);

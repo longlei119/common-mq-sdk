@@ -17,12 +17,11 @@ import java.util.concurrent.TimeUnit;
 public class RedisProducer implements MQProducer {
 
     private final StringRedisTemplate redisTemplate;
-    
-    @Autowired(required = false)
-    private DelayMessageSender delayMessageSender;
+    private final DelayMessageSender delayMessageSender;
 
-    public RedisProducer(StringRedisTemplate redisTemplate) {
+    public RedisProducer(StringRedisTemplate redisTemplate, DelayMessageSender delayMessageSender) {
         this.redisTemplate = redisTemplate;
+        this.delayMessageSender = delayMessageSender;
     }
 
     @Override
@@ -70,6 +69,11 @@ public class RedisProducer implements MQProducer {
         if (mqType != MQTypeEnum.REDIS) {
             return null;
         }
+        
+        if (delayMessageSender == null) {
+            throw new RuntimeException("DelayMessageSender未配置，请检查mq.delay.enabled配置和Redis连接");
+        }
+        
         String bodyStr = body instanceof String ? (String) body : JSON.toJSONString(body);
         return delayMessageSender.sendDelayMessage(topic, tag, bodyStr, getMQType().name(), delaySecond * 1000);
     }

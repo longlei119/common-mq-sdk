@@ -13,6 +13,7 @@ import com.example.mq.producer.impl.EMQXProducer;
 import com.example.mq.producer.impl.RabbitMQProducer;
 import com.example.mq.producer.impl.RedisProducer;
 import com.example.mq.producer.impl.RocketMQProducer;
+import com.example.mq.delay.DelayMessageSender;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
@@ -32,6 +33,7 @@ public class MQFactory {
                      @Nullable RocketMQConsumer rocketMQConsumer,
                      StringRedisTemplate redisTemplate,
                      RedisMessageListenerContainer redisListenerContainer,
+                     @Nullable DelayMessageSender delayMessageSender,
                      @Nullable ActiveMQProducer activeMQProducer,
                      @Nullable ActiveMQConsumer activeMQConsumer,
                      @Nullable RabbitMQProducer rabbitMQProducer,
@@ -47,7 +49,7 @@ public class MQFactory {
         }
         
         // 注册Redis生产者和消费者
-        RedisProducer redisProducer = new RedisProducer(redisTemplate);
+        RedisProducer redisProducer = new RedisProducer(redisTemplate, delayMessageSender);
         RedisConsumer redisConsumer = new RedisConsumer(redisListenerContainer);
         producerMap.put(MQTypeEnum.REDIS, redisProducer);
         consumerMap.put(MQTypeEnum.REDIS, redisConsumer);

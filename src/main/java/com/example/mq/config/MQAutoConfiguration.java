@@ -10,6 +10,7 @@ import com.example.mq.delay.adapter.ActiveMQAdapter;
 import com.example.mq.delay.adapter.KafkaAdapter;
 import com.example.mq.delay.adapter.MQAdapter;
 import com.example.mq.delay.adapter.RabbitMQAdapter;
+import com.example.mq.delay.adapter.RedisAdapter;
 import com.example.mq.delay.adapter.RocketMQAdapter;
 import com.example.mq.factory.MQFactory;
 import com.example.mq.producer.impl.ActiveMQProducer;
@@ -204,6 +205,7 @@ public class MQAutoConfiguration {
                                @Nullable RocketMQConsumer rocketMQConsumer,
                                StringRedisTemplate redisTemplate,
                                RedisMessageListenerContainer redisListenerContainer,
+                               @Nullable DelayMessageSender delayMessageSender,
                                @Nullable ActiveMQProducer activeMQProducer,
                                @Nullable ActiveMQConsumer activeMQConsumer,
                                @Nullable RabbitMQProducer rabbitMQProducer,
@@ -211,7 +213,7 @@ public class MQAutoConfiguration {
                                @Nullable EMQXProducer emqxProducer,
                                @Nullable EMQXConsumer emqxConsumer) {
         return new MQFactory(rocketMQProducer, rocketMQConsumer, redisTemplate, redisListenerContainer, 
-                           activeMQProducer, activeMQConsumer, rabbitMQProducer, rabbitMQConsumer,
+                           delayMessageSender, activeMQProducer, activeMQConsumer, rabbitMQProducer, rabbitMQConsumer,
                            emqxProducer, emqxConsumer);
     }
     
@@ -245,6 +247,15 @@ public class MQAutoConfiguration {
     }
     
     @Bean
+    @ConditionalOnProperty(prefix = "mq.redis", name = "host")
+    @ConditionalOnMissingBean
+    public RedisAdapter redisAdapter(StringRedisTemplate redisTemplate) {
+        return new RedisAdapter(redisTemplate);
+    }
+    
+    @Bean
+    @ConditionalOnBean(StringRedisTemplate.class)
+    @ConditionalOnProperty(prefix = "mq.delay", name = "enabled", havingValue = "true")
     @ConditionalOnMissingBean
     public DelayMessageSender delayMessageSender(StringRedisTemplate redisTemplate, 
                                                List<MQAdapter> mqAdapters,

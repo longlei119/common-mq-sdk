@@ -144,6 +144,11 @@ public class MQConfig {
     @Data
     public static class RabbitMQProperties {
         /**
+         * 是否启用RabbitMQ
+         */
+        private boolean enabled = false;
+        
+        /**
          * 服务器地址
          */
         private String host;

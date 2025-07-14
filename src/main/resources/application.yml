@@ -40,15 +40,12 @@ mq:
 
   # RabbitMQ配置
   rabbitmq:
-    enabled: false
+    enabled: true
     host: 10.2.6.180
     port: 5672
     username: root
-    password: rootroot
+    password: root
     virtual-host: /
-    connection-timeout: 15000
-    publisher-confirms: true
-    publisher-returns: true
 
   # ActiveMQ配置
   activemq:
@@ -84,8 +81,13 @@ mq:
   delay:
     enabled: true
     redis-key-prefix: "delay_message:"
-    scan-interval: 1000
+    scan-interval: 100  # 从1000ms改为100ms，提高延迟精度
     batch-size: 100
+    message-expire-time: 604800000  # 7天，单位毫秒
+    retry:
+      max-retries: 3
+      retry-interval: 5000
+      retry-multiplier: 2
 
 logging:
   level:

@@ -1,0 +1,73 @@
+# 测试环境配置
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 2000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+
+# MQ配置
+mq:
+  # Redis配置
+  redis:
+    enabled: true
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 2000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+  
+  # 延迟消息配置
+  delay:
+    enabled: true
+    redis-key-prefix: "real_test_delay_message:"
+    scan-interval: 1000
+    max-retry-count: 3
+    cleanup-threshold: 604800000  # 7天
+  
+  # RocketMQ配置（测试时禁用）
+  rocketmq:
+    enabled: false
+    # name-server-addr: localhost:9876  # 注释掉以避免创建RocketMQ Bean
+    # producer-group: test_producer_group
+    # consumer-group: test_consumer_group
+    # send-msg-timeout: 3000
+  
+  # RabbitMQ配置
+  rabbitmq:
+    enabled: true
+    host: 10.2.6.180
+    port: 5672
+    username: root
+    password: root
+    virtual-host: /
+  
+  # ActiveMQ配置（测试时禁用）
+  activemq:
+    enabled: false
+    broker-url: tcp://localhost:61616
+    username: admin
+    password: admin
+  
+  # EMQX配置 - 完全禁用
+  emqx:
+    enabled: false
+
+# 日志配置
+logging:
+  level:
+    com.example.mq: DEBUG
+    org.springframework.data.redis: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
