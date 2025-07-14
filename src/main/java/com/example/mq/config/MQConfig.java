@@ -97,6 +97,11 @@ public class MQConfig {
         @Data
         public static class ConsumerConfig {
             /**
+             * 消费者组名
+             */
+            private String groupName = "default-consumer-group";
+            
+            /**
              * 消费者最小线程数
              */
             private int threadMin = 20;
@@ -115,6 +120,11 @@ public class MQConfig {
              * 消费超时时间（毫秒）
              */
             private int consumeTimeout = 15000;
+            
+            /**
+             * 消费起始位置
+             */
+            private org.apache.rocketmq.common.consumer.ConsumeFromWhere consumeFromWhere = org.apache.rocketmq.common.consumer.ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET;
         }
     }
 

@@ -246,7 +246,9 @@
             <sun.stdout.encoding>UTF-8</sun.stdout.encoding>
             <sun.stderr.encoding>UTF-8</sun.stderr.encoding>
           </systemPropertyVariables>
-          <argLine>-Dfile.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8</argLine>
+          <argLine>-Dfile.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -Duser.language=zh -Duser.country=CN</argLine>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
         </configuration>
       </plugin>
     </plugins>

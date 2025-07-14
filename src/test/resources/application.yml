@@ -36,13 +36,13 @@ mq:
     max-retry-count: 3
     cleanup-threshold: 604800000  # 7天
   
-  # RocketMQ配置（测试时禁用）
+  # RocketMQ配置
   rocketmq:
-    enabled: false
-    # name-server-addr: localhost:9876  # 注释掉以避免创建RocketMQ Bean
-    # producer-group: test_producer_group
-    # consumer-group: test_consumer_group
-    # send-msg-timeout: 3000
+    enabled: true
+    name-server-addr: localhost:9876
+    producer-group: test_producer_group
+    consumer-group: test_consumer_group
+    send-msg-timeout: 3000
   
   # RabbitMQ配置
   rabbitmq:
@@ -60,9 +60,15 @@ mq:
     username: admin
     password: admin
   
-  # EMQX配置 - 完全禁用
+  # EMQX配置
   emqx:
-    enabled: false
+    enabled: true
+    server-uri: tcp://10.2.3.141:1883
+    username: user
+    password: Lachesis-mh_1024
+    client-id: testClient
+    clean-session: true
+    keep-alive-interval: 60
 
 # 日志配置
 logging:

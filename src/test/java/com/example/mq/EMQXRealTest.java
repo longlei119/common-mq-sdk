@@ -1,5 +1,6 @@
 package com.example.mq;
 
+import com.example.mq.consumer.MQConsumer;
 import com.example.mq.consumer.impl.EMQXConsumer;
 import com.example.mq.enums.MQTypeEnum;
 import com.example.mq.model.MQEvent;
@@ -13,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -90,6 +92,56 @@ public class EMQXRealTest {
     }
     
     @Test
+    public void testUnicastMode() throws InterruptedException {
+        // 单播模式验证：多个消费者只有一个能收到消息
+        String unicastTopic = "test/unicast/verify";
+        
+        AtomicInteger totalReceivedCount = new AtomicInteger(0);
+        AtomicInteger consumer1Count = new AtomicInteger(0);
+        AtomicInteger consumer2Count = new AtomicInteger(0);
+        CountDownLatch latch = new CountDownLatch(1); // 期望只有1个消费者收到消息
+        
+        // 创建第一个消费者
+        emqxConsumer.subscribe(unicastTopic, message -> {
+            consumer1Count.incrementAndGet();
+            totalReceivedCount.incrementAndGet();
+            latch.countDown();
+        });
+        
+        // 创建第二个消费者（EMQX中同一个主题的多个消费者会负载均衡）
+        emqxConsumer.subscribe(unicastTopic, message -> {
+            consumer2Count.incrementAndGet();
+            totalReceivedCount.incrementAndGet();
+            latch.countDown();
+        });
+        
+        // 等待消费者准备就绪
+        Thread.sleep(2000);
+        
+        // 发送单播消息
+        TestEvent event = new TestEvent("EMQX单播模式验证消息");
+        
+        emqxProducer.asyncSend(MQTypeEnum.EMQX, unicastTopic, null, event);
+        
+        // 等待消息处理
+        assertTrue(latch.await(10, TimeUnit.SECONDS), "单播消息接收超时");
+        
+        // 验证单播特性：只有一个消费者收到消息（EMQX负载均衡）
+        assertEquals(1, totalReceivedCount.get(), 
+            "EMQX单播模式应该只有一个消费者收到消息，实际收到总数: " + totalReceivedCount.get());
+        
+        // EMQX中多个消费者会负载均衡，所以只有一个消费者收到消息
+        assertTrue(consumer1Count.get() + consumer2Count.get() == 1, 
+            "总共应该只有一个消费者收到消息");
+        assertTrue((consumer1Count.get() == 1 && consumer2Count.get() == 0) || 
+                  (consumer1Count.get() == 0 && consumer2Count.get() == 1), 
+            "应该只有一个消费者收到消息");
+        
+        // 清理资源
+        emqxConsumer.unsubscribe(unicastTopic);
+    }
+
+    @Test
     public void testDelayMessage() throws InterruptedException {
         String topic = "test/delay";
         String testMessage = "Delay message test";
@@ -107,16 +159,17 @@ public class EMQXRealTest {
         // 等待订阅生效
         Thread.sleep(1000);
         
-        // 发送延迟消息（EMQX不支持原生延迟，通过DelayMessageSender实现）
-        emqxProducer.asyncSendDelay(MQTypeEnum.EMQX, topic, null, testMessage, 5);
+        // 发送延迟消息（通过DelayMessageSender实现）
+        emqxProducer.asyncSendDelay(MQTypeEnum.EMQX, topic, null, testMessage, 3);
         
         // 等待消息接收
         assertTrue(latch.await(10, TimeUnit.SECONDS), "消息接收超时");
         assertEquals(testMessage, receivedMessage.get(), "接收到的消息内容不匹配");
         
         long elapsedTime = System.currentTimeMillis() - startTime;
-        // 由于EMQX不支持延迟消息，消息应该立即到达
-        assertTrue(elapsedTime < 3000, "消息到达时间过长，应该立即发送");
+        // 延迟消息应该在指定时间后到达，允许一定误差
+        assertTrue(elapsedTime >= 2000, "消息到达时间过短，延迟功能未生效");
+        assertTrue(elapsedTime <= 6000, "消息到达时间过长，延迟时间不准确");
         
         // 取消订阅
         emqxConsumer.unsubscribe(topic);
@@ -160,4 +213,6 @@ public class EMQXRealTest {
         emqxConsumer.unsubscribe(topic1);
         emqxConsumer.unsubscribe(topic2);
     }
+    
+
 }

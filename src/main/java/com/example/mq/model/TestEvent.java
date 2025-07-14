@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class TestEvent extends MQEvent {
     private String message;
+    private String eventType = "TEST_EVENT";
 
     public TestEvent(String message) {
         this.message = message;

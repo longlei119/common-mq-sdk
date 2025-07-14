@@ -22,6 +22,7 @@ public class EMQXConsumer implements MQConsumer, MqttCallback {
     
     private final MqttClient mqttClient;
     private final ConcurrentHashMap<String, Consumer<String>> topicHandlers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Consumer<String>> broadcastHandlers = new ConcurrentHashMap<>();
     
     public EMQXConsumer(MqttClient mqttClient) {
         this.mqttClient = mqttClient;
@@ -67,12 +68,26 @@ public class EMQXConsumer implements MQConsumer, MqttCallback {
         String messageContent = new String(message.getPayload());
         logger.info("收到EMQX消息 - Topic: {}, Message: {}", topic, messageContent);
         
+        // 处理单播消息
         Consumer<String> handler = topicHandlers.get(topic);
         if (handler != null) {
             try {
                 handler.accept(messageContent);
             } catch (Exception e) {
                 logger.error("处理EMQX消息失败 - Topic: {}, Message: {}", topic, messageContent, e);
+            }
+            return;
+        }
+        
+        // 处理广播消息
+        if (topic.contains("/broadcast/")) {
+            for (Consumer<String> broadcastHandler : broadcastHandlers.values()) {
+                try {
+                    broadcastHandler.accept(messageContent);
+                    logger.debug("EMQX广播消息处理成功: topic={}, message={}", topic, messageContent);
+                } catch (Exception e) {
+                    logger.error("EMQX广播消息处理失败: topic={}, message={}, error={}", topic, messageContent, e.getMessage(), e);
+                }
             }
         } else {
             logger.warn("未找到主题 {} 的消息处理器", topic);
@@ -90,15 +105,144 @@ public class EMQXConsumer implements MQConsumer, MqttCallback {
         if (mqType != MQTypeEnum.EMQX) {
             throw new IllegalArgumentException("MQ type mismatch: expected EMQX, got " + mqType);
         }
-        subscribe(topic, handler);
+        
+        try {
+            // 同时订阅单播和广播消息
+            subscribeUnicastInternal(topic, tag, handler);
+            subscribeBroadcastInternal(topic, tag, handler);
+            
+            logger.info("EMQX统一订阅成功: topic={}, tag={}", topic, tag);
+        } catch (Exception e) {
+            logger.error("EMQX订阅失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+            throw new RuntimeException("EMQX订阅失败", e);
+        }
     }
     
+    @Override
+    public void subscribeUnicast(String topic, String tag, Consumer<String> handler, String consumerGroup) {
+        subscribeUnicastInternal(topic, tag, handler);
+    }
+
+    @Override
+    public void subscribeBroadcast(String topic, String tag, Consumer<String> handler) {
+        subscribeBroadcastInternal(topic, tag, handler);
+    }
+
+    @Override
+    public void subscribeBroadcast(MQTypeEnum mqType, String topic, String tag, Consumer<String> handler) {
+        if (mqType != MQTypeEnum.EMQX) {
+            return;
+        }
+        subscribeBroadcastInternal(topic, tag, handler);
+    }
+
+    /**
+     * 单播订阅的内部实现
+     */
+    private void subscribeUnicastInternal(String topic, String tag, Consumer<String> handler) {
+        try {
+            String fullTopic = tag != null ? topic + "/" + tag : topic;
+            topicHandlers.put(fullTopic, handler);
+            mqttClient.subscribe(fullTopic, 1); // QoS = 1
+            logger.debug("EMQX单播订阅成功: topic={}, tag={}", topic, tag);
+        } catch (Exception e) {
+            logger.error("EMQX单播订阅失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+            throw new RuntimeException("EMQX单播订阅失败", e);
+        }
+    }
+    
+    /**
+     * 广播订阅的内部实现
+     */
+    private void subscribeBroadcastInternal(String topic, String tag, Consumer<String> handler) {
+        try {
+            // MQTT广播模式使用通配符主题，添加UUID确保每个消费者独立
+            String broadcastTopic = topic + "/broadcast" + (tag != null ? "/" + tag : "") + "/+";
+            String consumerKey = topic + ":" + (tag != null ? tag : "") + ":" + java.util.UUID.randomUUID().toString();
+            
+            broadcastHandlers.put(consumerKey, handler);
+            mqttClient.subscribe(broadcastTopic, 1); // QoS = 1
+            
+            logger.info("EMQX广播订阅成功: topic={}, tag={}, consumerKey={}", topic, tag, consumerKey);
+        } catch (Exception e) {
+            logger.error("EMQX广播订阅失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+            throw new RuntimeException("EMQX广播订阅失败", e);
+        }
+    }
+
     @Override
     public void unsubscribe(MQTypeEnum mqType, String topic, String tag) {
         if (mqType != MQTypeEnum.EMQX) {
             throw new IllegalArgumentException("MQ type mismatch: expected EMQX, got " + mqType);
         }
-        unsubscribe(topic);
+        
+        try {
+            // 取消单播订阅
+            unsubscribeUnicast(topic, tag);
+            
+            // 取消广播订阅
+            unsubscribeBroadcastInternal(topic, tag);
+            
+            logger.info("EMQX取消订阅成功: topic={}, tag={}", topic, tag);
+        } catch (Exception e) {
+            logger.error("EMQX取消订阅失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+            throw new RuntimeException("EMQX取消订阅失败", e);
+        }
+    }
+    
+    @Override
+    public void unsubscribeBroadcast(MQTypeEnum mqType, String topic, String tag) {
+        if (mqType != MQTypeEnum.EMQX) {
+            return;
+        }
+        
+        try {
+            unsubscribeBroadcastInternal(topic, tag);
+            logger.info("EMQX取消广播订阅成功: topic={}, tag={}", topic, tag);
+        } catch (Exception e) {
+            logger.error("EMQX取消广播订阅失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+            throw new RuntimeException("EMQX取消广播订阅失败", e);
+        }
+    }
+    
+    /**
+     * 取消单播订阅的内部实现
+     */
+    private void unsubscribeUnicast(String topic, String tag) {
+        try {
+            String fullTopic = tag != null ? topic + "/" + tag : topic;
+            topicHandlers.remove(fullTopic);
+            mqttClient.unsubscribe(fullTopic);
+            logger.debug("EMQX取消单播订阅成功: topic={}, tag={}", topic, tag);
+        } catch (Exception e) {
+            logger.error("EMQX取消单播订阅失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+            throw new RuntimeException("EMQX取消单播订阅失败", e);
+        }
+    }
+    
+    /**
+     * 取消广播订阅的内部实现
+     */
+    private void unsubscribeBroadcastInternal(String topic, String tag) {
+        try {
+            String keyPrefix = topic + ":" + (tag != null ? tag : "") + ":";
+            String broadcastTopic = topic + "/broadcast" + (tag != null ? "/" + tag : "") + "/+";
+            
+            // 移除所有匹配的广播订阅
+            broadcastHandlers.entrySet().removeIf(entry -> {
+                if (entry.getKey().startsWith(keyPrefix)) {
+                    logger.info("EMQX取消广播订阅成功: consumerKey={}", entry.getKey());
+                    return true;
+                }
+                return false;
+            });
+            
+            // 取消MQTT主题订阅
+            mqttClient.unsubscribe(broadcastTopic);
+        } catch (Exception e) {
+            logger.error("EMQX取消广播订阅失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+            throw new RuntimeException("EMQX取消广播订阅失败", e);
+        }
     }
     
     @Override
@@ -114,6 +258,12 @@ public class EMQXConsumer implements MQConsumer, MqttCallback {
                 mqttClient.disconnect();
                 logger.info("EMQX消费者停止");
             }
+            
+            // 清理资源
+            topicHandlers.clear();
+            broadcastHandlers.clear();
+            
+            logger.info("EMQX消费者资源清理完成");
         } catch (Exception e) {
             logger.error("停止EMQX消费者失败", e);
         }

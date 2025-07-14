@@ -64,7 +64,54 @@ public class ActiveMQProducer implements MQProducer {
         return delayMessageSender.sendDelayMessage(topic, tag, bodyStr, getMQType().name(), delaySecond * 1000);
     }
 
+    @Override
+    public String syncSendBroadcast(MQTypeEnum mqType, String topic, String tag, MQEvent event) {
+        try {
+            String messageId = "activemq-broadcast-" + System.currentTimeMillis();
+            String broadcastDestination = "topic://" + topic + ".broadcast" + (tag != null ? "." + tag : "");
+            
+            // 设置为Topic模式（广播）
+            jmsTemplate.setPubSubDomain(true);
+            jmsTemplate.convertAndSend(broadcastDestination, JSON.toJSONString(event));
+            // 恢复默认的Queue模式
+            jmsTemplate.setPubSubDomain(false);
+            
+            log.info("ActiveMQ同步广播发送消息成功: topic={}, tag={}, messageId={}", topic, tag, messageId);
+            return messageId;
+        } catch (Exception e) {
+            log.error("ActiveMQ同步广播发送消息失败: topic={}, tag={}", topic, tag, e);
+            throw new RuntimeException("ActiveMQ广播发送消息失败", e);
+        }
+    }
 
+    @Override
+    public void asyncSendBroadcast(MQTypeEnum mqType, String topic, String tag, Object event) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                String broadcastDestination = "topic://" + topic + ".broadcast" + (tag != null ? "." + tag : "");
+                
+                // 设置为Topic模式（广播）
+                jmsTemplate.setPubSubDomain(true);
+                jmsTemplate.convertAndSend(broadcastDestination, event);
+                // 恢复默认的Queue模式
+                jmsTemplate.setPubSubDomain(false);
+                
+                log.info("ActiveMQ异步广播发送消息成功: topic={}, tag={}", topic, tag);
+            } catch (Exception e) {
+                log.error("ActiveMQ异步广播发送消息失败: topic={}, tag={}", topic, tag, e);
+            }
+        });
+    }
+
+    @Override
+    public String asyncSendDelayBroadcast(MQTypeEnum mqType, String topic, String tag, Object body, long delaySecond) {
+        if (mqType != MQTypeEnum.ACTIVE_MQ) {
+            return null;
+        }
+        String bodyStr = body instanceof String ? (String) body : JSON.toJSONString(body);
+        String broadcastTopic = topic + ".broadcast";
+        return delayMessageSender.sendDelayMessage(broadcastTopic, tag, bodyStr, getMQType().name(), delaySecond * 1000);
+    }
 
     @Override
     public MQTypeEnum getMQType() {

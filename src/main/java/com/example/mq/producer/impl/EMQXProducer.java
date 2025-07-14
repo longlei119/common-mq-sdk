@@ -95,7 +95,73 @@ public class EMQXProducer implements MQProducer {
         String bodyStr = body instanceof String ? (String) body : JSON.toJSONString(body);
         return delayMessageSender.sendDelayMessage(topic, tag, bodyStr, getMQType().name(), delaySecond * 1000);
     }
-    
+
+    @Override
+    public String syncSendBroadcast(MQTypeEnum mqType, String topic, String tag, MQEvent event) {
+        if (mqType != MQTypeEnum.EMQX) {
+            return null;
+        }
+        try {
+            String message = JSON.toJSONString(event);
+            log.info("EMQX同步广播发送消息：topic={}, tag={}, message={}", topic, tag, message);
+            
+            MqttMessage mqttMessage = new MqttMessage();
+            mqttMessage.setPayload(message.getBytes());
+            mqttMessage.setQos(1); // 设置QoS为1，确保消息至少被传递一次
+            mqttMessage.setRetained(false);
+            
+            // MQTT广播模式的topic格式：topic/broadcast/tag/uuid
+            String broadcastTopic = topic + "/broadcast" + (tag != null ? "/" + tag : "") + "/" + UUID.randomUUID().toString();
+            mqttClient.publish(broadcastTopic, mqttMessage);
+            
+            // 生成消息ID
+            String messageId = UUID.randomUUID().toString();
+            log.info("EMQX同步广播发送消息成功：topic={}, tag={}, messageId={}", topic, tag, messageId);
+            return messageId;
+        } catch (Exception e) {
+            log.error("EMQX同步广播发送消息失败：topic={}, tag={}, event={}", topic, tag, event, e);
+            return null;
+        }
+    }
+
+    @Override
+    public void asyncSendBroadcast(MQTypeEnum mqType, String topic, String tag, Object event) {
+        if (mqType != MQTypeEnum.EMQX) {
+            return;
+        }
+        try {
+            String message = event instanceof String ? (String) event : JSON.toJSONString(event);
+            log.info("EMQX异步广播发送消息：topic={}, tag={}, message={}", topic, tag, message);
+            
+            MqttMessage mqttMessage = new MqttMessage();
+            mqttMessage.setPayload(message.getBytes());
+            mqttMessage.setQos(1);
+            mqttMessage.setRetained(false);
+            
+            // MQTT广播模式的topic格式：topic/broadcast/tag/uuid
+            String broadcastTopic = topic + "/broadcast" + (tag != null ? "/" + tag : "") + "/" + UUID.randomUUID().toString();
+            
+            // MQTT发送本身就是异步的
+            mqttClient.publish(broadcastTopic, mqttMessage);
+            
+            String messageId = UUID.randomUUID().toString();
+            log.info("EMQX异步广播发送消息成功：topic={}, tag={}, messageId={}", topic, tag, messageId);
+        } catch (Exception e) {
+            log.error("EMQX异步广播发送消息失败：topic={}, tag={}, event={}", topic, tag, event, e);
+        }
+    }
+
+    @Override
+    public String asyncSendDelayBroadcast(MQTypeEnum mqType, String topic, String tag, Object body, long delaySecond) {
+        if (mqType != MQTypeEnum.EMQX) {
+            return null;
+        }
+        // MQTT协议本身不支持延迟消息，通过DelayMessageSender实现
+        String bodyStr = body instanceof String ? (String) body : JSON.toJSONString(body);
+        String broadcastTopic = topic + ".broadcast";
+        return delayMessageSender.sendDelayMessage(broadcastTopic, tag, bodyStr, getMQType().name(), delaySecond * 1000);
+    }
+
     @Override
     public MQTypeEnum getMQType() {
         return MQTypeEnum.EMQX;

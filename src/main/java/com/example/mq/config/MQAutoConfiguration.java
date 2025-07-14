@@ -1,8 +1,10 @@
 package com.example.mq.config;
 
+import com.example.mq.consumer.MQConsumerManager;
 import com.example.mq.consumer.impl.ActiveMQConsumer;
 import com.example.mq.consumer.impl.RabbitMQConsumer;
 import com.example.mq.consumer.impl.RocketMQConsumer;
+import com.example.mq.consumer.impl.RedisConsumer;
 import com.example.mq.producer.impl.EMQXProducer;
 import com.example.mq.consumer.impl.EMQXConsumer;
 import com.example.mq.delay.DelayMessageSender;
@@ -15,6 +17,7 @@ import com.example.mq.delay.adapter.RocketMQAdapter;
 import com.example.mq.factory.MQFactory;
 import com.example.mq.producer.impl.ActiveMQProducer;
 import com.example.mq.producer.impl.RabbitMQProducer;
+import com.example.mq.producer.impl.RedisProducer;
 import com.example.mq.producer.impl.RocketMQProducer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -24,11 +27,14 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -41,11 +47,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 @Configuration
 @EnableConfigurationProperties(MQConfig.class)
 @EnableScheduling
-public class MQAutoConfiguration {
+@ComponentScan(basePackages = "com.example.mq")
+public class MQAutoConfiguration implements ApplicationRunner {
 
     @Bean
     @ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
@@ -105,6 +116,20 @@ public class MQAutoConfiguration {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
         return container;
+    }
+    
+    @Bean
+    @ConditionalOnBean(RedisMessageListenerContainer.class)
+    @ConditionalOnMissingBean
+    public RedisConsumer redisConsumer(RedisMessageListenerContainer redisListenerContainer) {
+        return new RedisConsumer(redisListenerContainer);
+    }
+    
+    @Bean
+    @ConditionalOnBean({StringRedisTemplate.class, DelayMessageSender.class})
+    @ConditionalOnMissingBean
+    public RedisProducer redisProducer(StringRedisTemplate redisTemplate, DelayMessageSender delayMessageSender) {
+        return new RedisProducer(redisTemplate, delayMessageSender);
     }
 
     @Bean
@@ -203,17 +228,16 @@ public class MQAutoConfiguration {
     @ConditionalOnMissingBean
     public MQFactory mqFactory(@Nullable RocketMQProducer rocketMQProducer,
                                @Nullable RocketMQConsumer rocketMQConsumer,
-                               StringRedisTemplate redisTemplate,
-                               RedisMessageListenerContainer redisListenerContainer,
-                               @Nullable DelayMessageSender delayMessageSender,
+                               @Nullable RedisProducer redisProducer,
+                               @Nullable RedisConsumer redisConsumer,
                                @Nullable ActiveMQProducer activeMQProducer,
                                @Nullable ActiveMQConsumer activeMQConsumer,
                                @Nullable RabbitMQProducer rabbitMQProducer,
                                @Nullable RabbitMQConsumer rabbitMQConsumer,
                                @Nullable EMQXProducer emqxProducer,
                                @Nullable EMQXConsumer emqxConsumer) {
-        return new MQFactory(rocketMQProducer, rocketMQConsumer, redisTemplate, redisListenerContainer, 
-                           delayMessageSender, activeMQProducer, activeMQConsumer, rabbitMQProducer, rabbitMQConsumer,
+        return new MQFactory(rocketMQProducer, rocketMQConsumer, redisProducer, redisConsumer,
+                           activeMQProducer, activeMQConsumer, rabbitMQProducer, rabbitMQConsumer,
                            emqxProducer, emqxConsumer);
     }
     
@@ -261,5 +285,10 @@ public class MQAutoConfiguration {
                                                List<MQAdapter> mqAdapters,
                                                MQConfig mqConfig) {
         return new DelayMessageSender(redisTemplate, mqAdapters, mqConfig);
+    }
+    
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("MQ自动配置启动完成");
     }
 }

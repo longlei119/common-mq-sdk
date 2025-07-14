@@ -30,11 +30,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @SpringBootTest(classes = MQApplication.class)
 @TestPropertySource(properties = {
-    "mq.redis.host=localhost",
-    "mq.redis.port=6379",
-    "mq.delay.enabled=true",
-    "spring.redis.host=localhost",
-    "spring.redis.port=6379"
+    "mq.redis.enabled=true",
+    "mq.delay.enabled=true"
 })
 public class RedisRealTest {
 
@@ -178,6 +175,98 @@ public class RedisRealTest {
         assertEquals(10, messageIds.size(), "应该发送10条消息");
         
         log.info("Redis顺序消息测试完成，发送了{}条消息", messageIds.size());
+    }
+
+    @Test
+    @ConditionalOnProperty(name = "mq.redis.enabled", havingValue = "true")
+    void testUnicastMode() throws InterruptedException {
+        // 单播模式验证：多个消费者只有一个能收到消息
+        String unicastTopic = "test_unicast_verify";
+        String unicastTag = "unicast_tag";
+        
+        AtomicInteger totalReceivedCount = new AtomicInteger(0);
+        AtomicInteger consumer1Count = new AtomicInteger(0);
+        AtomicInteger consumer2Count = new AtomicInteger(0);
+        CountDownLatch latch = new CountDownLatch(1); // 期望只有1个消费者收到消息
+        
+        // 创建第一个消费者
+        log.info("创建单播消费者1");
+        // 注意：Redis的发布订阅模式是广播模式，这里我们测试的是队列模式的单播特性
+        // 在Redis中，单播通常通过List数据结构实现，多个消费者竞争消费同一个队列
+        
+        // 模拟Redis队列消费者1
+        CompletableFuture.runAsync(() -> {
+            try {
+                // 模拟从Redis队列中弹出消息（单播特性）
+                String queueKey = "queue:" + unicastTopic + ":" + unicastTag;
+                String message = redisTemplate.opsForList().rightPop(queueKey, 5, TimeUnit.SECONDS);
+                if (message != null) {
+                    log.info("单播消费者1收到消息: {}", message);
+                    consumer1Count.incrementAndGet();
+                    totalReceivedCount.incrementAndGet();
+                    latch.countDown();
+                }
+            } catch (Exception e) {
+                log.error("消费者1处理消息失败", e);
+            }
+        });
+        
+        // 创建第二个消费者
+        log.info("创建单播消费者2");
+        CompletableFuture.runAsync(() -> {
+            try {
+                // 模拟从Redis队列中弹出消息（单播特性）
+                String queueKey = "queue:" + unicastTopic + ":" + unicastTag;
+                String message = redisTemplate.opsForList().rightPop(queueKey, 5, TimeUnit.SECONDS);
+                if (message != null) {
+                    log.info("单播消费者2收到消息: {}", message);
+                    consumer2Count.incrementAndGet();
+                    totalReceivedCount.incrementAndGet();
+                    latch.countDown();
+                }
+            } catch (Exception e) {
+                log.error("消费者2处理消息失败", e);
+            }
+        });
+        
+        // 等待消费者准备就绪
+        Thread.sleep(1000);
+        
+        // 发送单播消息到Redis队列
+        TestEvent event = new TestEvent();
+        event.setMessage("Redis单播模式验证消息");
+        event.setTimestamp(System.currentTimeMillis());
+        event.setSequence(1);
+        
+        // 直接向Redis队列推送消息（模拟单播）
+        String queueKey = "queue:" + unicastTopic + ":" + unicastTag;
+        String messageContent = String.format(
+            "{\"message\":\"%s\",\"timestamp\":%d,\"sequence\":%d}",
+            event.getMessage(), event.getTimestamp(), event.getSequence()
+        );
+        
+        log.info("发送单播消息到Redis队列: {}", queueKey);
+        redisTemplate.opsForList().leftPush(queueKey, messageContent);
+        
+        // 等待消息处理
+        assertTrue(latch.await(10, TimeUnit.SECONDS), "单播消息接收超时");
+        
+        // 验证单播特性：只有一个消费者收到消息
+        assertEquals(1, totalReceivedCount.get(), 
+            "Redis单播模式应该只有一个消费者收到消息，实际收到总数: " + totalReceivedCount.get());
+        
+        // Redis队列模式中多个消费者竞争消费，只有一个消费者能收到消息
+        assertTrue(consumer1Count.get() + consumer2Count.get() == 1, 
+            "总共应该只有一个消费者收到消息");
+        assertTrue((consumer1Count.get() == 1 && consumer2Count.get() == 0) || 
+                  (consumer1Count.get() == 0 && consumer2Count.get() == 1), 
+            "应该只有一个消费者收到消息");
+        
+        log.info("Redis单播模式验证完成 - 消费者1收到: {}, 消费者2收到: {}, 总计: {}", 
+            consumer1Count.get(), consumer2Count.get(), totalReceivedCount.get());
+        
+        // 清理队列
+        redisTemplate.delete(queueKey);
     }
 
     @Test

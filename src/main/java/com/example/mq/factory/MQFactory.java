@@ -13,9 +13,6 @@ import com.example.mq.producer.impl.EMQXProducer;
 import com.example.mq.producer.impl.RabbitMQProducer;
 import com.example.mq.producer.impl.RedisProducer;
 import com.example.mq.producer.impl.RocketMQProducer;
-import com.example.mq.delay.DelayMessageSender;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -31,9 +28,8 @@ public class MQFactory {
 
     public MQFactory(@Nullable RocketMQProducer rocketMQProducer,
                      @Nullable RocketMQConsumer rocketMQConsumer,
-                     StringRedisTemplate redisTemplate,
-                     RedisMessageListenerContainer redisListenerContainer,
-                     @Nullable DelayMessageSender delayMessageSender,
+                     @Nullable RedisProducer redisProducer,
+                     @Nullable RedisConsumer redisConsumer,
                      @Nullable ActiveMQProducer activeMQProducer,
                      @Nullable ActiveMQConsumer activeMQConsumer,
                      @Nullable RabbitMQProducer rabbitMQProducer,
@@ -49,10 +45,12 @@ public class MQFactory {
         }
         
         // 注册Redis生产者和消费者
-        RedisProducer redisProducer = new RedisProducer(redisTemplate, delayMessageSender);
-        RedisConsumer redisConsumer = new RedisConsumer(redisListenerContainer);
-        producerMap.put(MQTypeEnum.REDIS, redisProducer);
-        consumerMap.put(MQTypeEnum.REDIS, redisConsumer);
+        if (redisProducer != null) {
+            producerMap.put(MQTypeEnum.REDIS, redisProducer);
+        }
+        if (redisConsumer != null) {
+            consumerMap.put(MQTypeEnum.REDIS, redisConsumer);
+        }
         
         // 注册ActiveMQ生产者和消费者
         if (activeMQProducer != null) {

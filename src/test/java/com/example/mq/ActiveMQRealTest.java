@@ -1,5 +1,6 @@
 package com.example.mq;
 
+import com.example.mq.consumer.MQConsumer;
 import com.example.mq.enums.MQTypeEnum;
 import com.example.mq.factory.MQFactory;
 import com.example.mq.model.MQEvent;
@@ -69,6 +70,56 @@ public class ActiveMQRealTest {
         @Override
         public String getTag() {
             return TAG;
+        }
+        
+        // 手动添加setter方法以解决编译问题
+        public void setMessage(String message) {
+            this.message = message;
+        }
+        
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+        }
+        
+        public void setSequence(int sequence) {
+            this.sequence = sequence;
+        }
+        
+        public void setOrderId(String orderId) {
+            this.orderId = orderId;
+        }
+        
+        public void setAmount(double amount) {
+            this.amount = amount;
+        }
+        
+        public void setCustomerInfo(String customerInfo) {
+            this.customerInfo = customerInfo;
+        }
+        
+        // 手动添加getter方法
+        public String getMessage() {
+            return message;
+        }
+        
+        public long getTimestamp() {
+            return timestamp;
+        }
+        
+        public int getSequence() {
+            return sequence;
+        }
+        
+        public String getOrderId() {
+            return orderId;
+        }
+        
+        public double getAmount() {
+            return amount;
+        }
+        
+        public String getCustomerInfo() {
+            return customerInfo;
         }
     }
 
@@ -473,6 +524,92 @@ public class ActiveMQRealTest {
     }
 
     @Test
+    void testUnicastMode() throws Exception {
+        // 单播模式验证：多个消费者只有一个能收到消息
+        String unicastQueueName = QUEUE_NAME + ".unicast.verify";
+        Destination unicastDestination = session.createQueue(unicastQueueName);
+        MessageProducer unicastProducer = session.createProducer(unicastDestination);
+        
+        AtomicInteger totalReceivedCount = new AtomicInteger(0);
+        AtomicInteger consumer1Count = new AtomicInteger(0);
+        AtomicInteger consumer2Count = new AtomicInteger(0);
+        CountDownLatch latch = new CountDownLatch(1); // 期望只有1个消费者收到消息
+        
+        // 创建第一个消费者
+        MessageConsumer unicastConsumer1 = session.createConsumer(unicastDestination);
+        log.info("创建单播消费者1");
+        unicastConsumer1.setMessageListener(message -> {
+            try {
+                log.info("单播消费者1收到消息: {}", ((TextMessage) message).getText());
+                consumer1Count.incrementAndGet();
+                totalReceivedCount.incrementAndGet();
+                latch.countDown();
+            } catch (Exception e) {
+                log.error("消费者1处理消息失败", e);
+            }
+        });
+        
+        // 创建第二个消费者（ActiveMQ中同一个队列的多个消费者会负载均衡）
+        MessageConsumer unicastConsumer2 = session.createConsumer(unicastDestination);
+        log.info("创建单播消费者2");
+        unicastConsumer2.setMessageListener(message -> {
+            try {
+                log.info("单播消费者2收到消息: {}", ((TextMessage) message).getText());
+                consumer2Count.incrementAndGet();
+                totalReceivedCount.incrementAndGet();
+                latch.countDown();
+            } catch (Exception e) {
+                log.error("消费者2处理消息失败", e);
+            }
+        });
+        
+        // 等待消费者准备就绪
+        Thread.sleep(1000);
+        
+        // 发送单播消息
+        TestEvent event = new TestEvent();
+        event.setMessage("ActiveMQ单播模式验证消息");
+        event.setTimestamp(System.currentTimeMillis());
+        event.setSequence(1);
+        event.setOrderId("unicast-order-001");
+        event.setAmount(99.99);
+        event.setCustomerInfo("{\"name\":\"测试用户\",\"phone\":\"13800138000\"}");
+        
+        TextMessage message = session.createTextMessage();
+        String messageContent = String.format(
+            "{\"message\":\"%s\",\"timestamp\":%d,\"orderId\":\"%s\",\"amount\":%.2f}",
+            event.getMessage(), event.getTimestamp(), event.getOrderId(), event.getAmount()
+        );
+        message.setText(messageContent);
+        message.setStringProperty("tag", event.getTag());
+        
+        log.info("发送单播消息");
+        unicastProducer.send(message);
+        
+        // 等待消息处理
+        assertTrue(latch.await(10, TimeUnit.SECONDS), "单播消息接收超时");
+        
+        // 验证单播特性：只有一个消费者收到消息（ActiveMQ负载均衡）
+        assertEquals(1, totalReceivedCount.get(), 
+            "ActiveMQ单播模式应该只有一个消费者收到消息，实际收到总数: " + totalReceivedCount.get());
+        
+        // ActiveMQ中多个消费者会负载均衡，所以只有一个消费者收到消息
+        assertTrue(consumer1Count.get() + consumer2Count.get() == 1, 
+            "总共应该只有一个消费者收到消息");
+        assertTrue((consumer1Count.get() == 1 && consumer2Count.get() == 0) || 
+                  (consumer1Count.get() == 0 && consumer2Count.get() == 1), 
+            "应该只有一个消费者收到消息");
+        
+        log.info("ActiveMQ单播模式验证完成 - 消费者1收到: {}, 消费者2收到: {}, 总计: {}", 
+            consumer1Count.get(), consumer2Count.get(), totalReceivedCount.get());
+        
+        // 清理资源
+        unicastConsumer1.close();
+        unicastConsumer2.close();
+        unicastProducer.close();
+    }
+
+    @Test
     void testTransactionMessages() throws Exception {
         // 创建事务会话
         Session transactionSession = connection.createSession(true, Session.SESSION_TRANSACTED);
@@ -487,15 +624,15 @@ public class ActiveMQRealTest {
         transactionConsumer.setMessageListener(message -> {
             try {
                 int count = transactionReceivedCount.incrementAndGet();
-                log.info("收到ActiveMQ事务消息 {}: {}", count, ((TextMessage) message).getText());
+                System.out.println("收到ActiveMQ事务消息 " + count + ": " + ((TextMessage) message).getText());
                 transactionSession.commit(); // 提交事务
                 transactionLatch.countDown();
             } catch (Exception e) {
-                log.error("处理ActiveMQ事务消息失败", e);
+                System.err.println("处理ActiveMQ事务消息失败: " + e.getMessage());
                 try {
                     transactionSession.rollback(); // 回滚事务
                 } catch (JMSException ex) {
-                    log.error("事务回滚失败", ex);
+                    System.err.println("事务回滚失败: " + ex.getMessage());
                 }
             }
         });
@@ -555,10 +692,10 @@ public class ActiveMQRealTest {
         consumer.setMessageListener(message -> {
             try {
                 int count = resilienceReceivedCount.incrementAndGet();
-                log.info("收到ActiveMQ弹性测试消息 {}: {}", count, ((TextMessage) message).getText());
+                System.out.println("收到ActiveMQ弹性测试消息 " + count + ": " + ((TextMessage) message).getText());
                 resilienceLatch.countDown();
             } catch (Exception e) {
-                log.error("处理ActiveMQ弹性测试消息失败", e);
+                System.err.println("处理ActiveMQ弹性测试消息失败: " + e.getMessage());
             }
         });
         
@@ -597,10 +734,10 @@ public class ActiveMQRealTest {
         consumer.setMessageListener(message -> {
             try {
                 int count = resilienceReceivedCount.incrementAndGet();
-                log.info("收到ActiveMQ弹性测试消息 {}: {}", count, ((TextMessage) message).getText());
+                System.out.println("收到ActiveMQ弹性测试消息 " + count + ": " + ((TextMessage) message).getText());
                 resilienceLatch.countDown();
             } catch (Exception e) {
-                log.error("处理ActiveMQ弹性测试消息失败", e);
+                System.err.println("处理ActiveMQ弹性测试消息失败: " + e.getMessage());
             }
         });
         
@@ -622,6 +759,8 @@ public class ActiveMQRealTest {
         
         log.info("ActiveMQ真实连接弹性测试完成");
     }
+
+
 
     void tearDown() throws Exception {
         if (consumer != null) {
