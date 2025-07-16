@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000"/>
+    </marker>
+  </defs>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">消息发布订阅时序图</text>
+  
+  <!-- 垂直生命线 -->
+  <line x1="100" y1="100" x2="100" y2="550" stroke="#ddd" stroke-dasharray="5,5"/>
+  <line x1="250" y1="100" x2="250" y2="550" stroke="#ddd" stroke-dasharray="5,5"/>
+  <line x1="400" y1="100" x2="400" y2="550" stroke="#ddd" stroke-dasharray="5,5"/>
+  <line x1="550" y1="100" x2="550" y2="550" stroke="#ddd" stroke-dasharray="5,5"/>
+  <line x1="700" y1="100" x2="700" y2="550" stroke="#ddd" stroke-dasharray="5,5"/>
+  
+  <!-- 角色框 -->
+  <rect x="50" y="60" width="100" height="40" fill="#E3F2FD" stroke="#1565C0"/>
+  <text x="100" y="85" text-anchor="middle">应用程序</text>
+  
+  <rect x="200" y="60" width="100" height="40" fill="#E8F5E9" stroke="#2E7D32"/>
+  <text x="250" y="85" text-anchor="middle">Publisher</text>
+  
+  <rect x="350" y="60" width="100" height="40" fill="#FFF3E0" stroke="#E65100"/>
+  <text x="400" y="85" text-anchor="middle">适配器</text>
+  
+  <rect x="500" y="60" width="100" height="40" fill="#F3E5F5" stroke="#4A148C"/>
+  <text x="550" y="85" text-anchor="middle">消息中间件</text>
+  
+  <rect x="650" y="60" width="100" height="40" fill="#E1F5FE" stroke="#01579B"/>
+  <text x="700" y="85" text-anchor="middle">订阅者</text>
+  
+  <!-- 消息流转 -->
+  <!-- 发布消息 -->
+  <line x1="100" y1="150" x2="250" y2="150" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="175" y="140" text-anchor="middle" font-size="12">发布消息</text>
+  
+  <!-- 消息转换 -->
+  <line x1="250" y1="200" x2="400" y2="200" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="325" y="190" text-anchor="middle" font-size="12">消息转换</text>
+  
+  <!-- 发送消息 -->
+  <line x1="400" y1="250" x2="550" y2="250" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="475" y="240" text-anchor="middle" font-size="12">发送消息</text>
+  
+  <!-- 消息到达 -->
+  <line x1="550" y1="300" x2="400" y2="300" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="475" y="290" text-anchor="middle" font-size="12">消息到达</text>
+  
+  <!-- 触发订阅者 -->
+  <line x1="400" y1="350" x2="700" y2="350" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="550" y="340" text-anchor="middle" font-size="12">触发订阅者</text>
+  
+  <!-- 重试机制 -->
+  <path d="M 400 400 C 450 400, 450 450, 400 450" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="470" y="430" text-anchor="middle" font-size="12">重试机制</text>
+  
+  <!-- 熔断保护 -->
+  <path d="M 400 480 C 450 480, 450 530, 400 530" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="470" y="510" text-anchor="middle" font-size="12">熔断保护</text>
+</svg>

@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1400" height="800" xmlns="http://www.w3.org/2000/svg">
+  <!-- 标题 -->
+  <text x="700" y="40" text-anchor="middle" font-size="24" font-weight="bold">消息中间件特性对比</text>
+  
+  <!-- 表头 -->
+  <g transform="translate(50,80)">
+    <rect width="180" height="40" fill="#E0E0E0" stroke="#424242"/>
+    <text x="90" y="25" text-anchor="middle" font-size="16">特性</text>
+  </g>
+  
+  <g transform="translate(230,80)">
+    <rect width="180" height="40" fill="#E3F2FD" stroke="#1565C0"/>
+    <text x="90" y="25" text-anchor="middle" font-size="16">Redis</text>
+  </g>
+  
+  <g transform="translate(410,80)">
+    <rect width="180" height="40" fill="#E8F5E9" stroke="#2E7D32"/>
+    <text x="90" y="25" text-anchor="middle" font-size="16">RocketMQ</text>
+  </g>
+  
+  <g transform="translate(590,80)">
+    <rect width="180" height="40" fill="#FFF3E0" stroke="#E65100"/>
+    <text x="90" y="25" text-anchor="middle" font-size="16">ActiveMQ</text>
+  </g>
+  
+  <g transform="translate(770,80)">
+    <rect width="180" height="40" fill="#EDE7F6" stroke="#4527A0"/>
+    <text x="90" y="25" text-anchor="middle" font-size="16">RabbitMQ</text>
+  </g>
+
+  <g transform="translate(950,80)">
+    <rect width="180" height="40" fill="#FFF8E1" stroke="#FF6F00"/>
+    <text x="90" y="25" text-anchor="middle" font-size="16">Kafka</text>
+  </g>
+  
+  <g transform="translate(1130,80)">
+    <rect width="180" height="40" fill="#F3E5F5" stroke="#4A148C"/>
+    <text x="90" y="25" text-anchor="middle" font-size="16">EMQX</text>
+  </g>
+  
+  <!-- 死信队列 -->
+  <g transform="translate(50,120)">
+    <rect width="180" height="120" fill="#F5F5F5" stroke="#424242"/>
+    <text x="90" y="30" text-anchor="middle" font-size="14" font-weight="bold">死信队列</text>
+    <text x="10" y="60" font-size="12">- 支持方式</text>
+    <text x="10" y="80" font-size="12">- 处理机制</text>
+    <text x="10" y="100" font-size="12">- 应用场景</text>
+  </g>
+  
+  <g transform="translate(230,120)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#1565C0"/>
+    <text x="10" y="30" font-size="12">- 不支持</text>
+    <text x="10" y="60" font-size="12">- 应用层实现</text>
+    <text x="10" y="80" font-size="12">- 自定义重试</text>
+    <text x="10" y="100" font-size="12">- 简单场景</text>
+  </g>
+  
+  <g transform="translate(410,120)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#2E7D32"/>
+    <text x="10" y="30" font-size="12">- 原生支持</text>
+    <text x="10" y="60" font-size="12">- 死信队列</text>
+    <text x="10" y="80" font-size="12">- 重试队列</text>
+    <text x="10" y="100" font-size="12">- 复杂业务</text>
+  </g>
+  
+  <g transform="translate(590,120)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#E65100"/>
+    <text x="10" y="30" font-size="12">- DLQ支持</text>
+    <text x="10" y="60" font-size="12">- 独立队列</text>
+    <text x="10" y="80" font-size="12">- 策略配置</text>
+    <text x="10" y="100" font-size="12">- 企业应用</text>
+  </g>
+  
+  <g transform="translate(770,120)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4527A0"/>
+    <text x="10" y="30" font-size="12">- 原生支持</text>
+    <text x="10" y="60" font-size="12">- 交换机绑定</text>
+    <text x="10" y="80" font-size="12">- 策略配置</text>
+    <text x="10" y="100" font-size="12">- 微服务</text>
+  </g>
+
+  <g transform="translate(950,120)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#FF6F00"/>
+    <text x="10" y="30" font-size="12">- 应用层实现</text>
+    <text x="10" y="60" font-size="12">- 独立Topic</text>
+    <text x="10" y="80" font-size="12">- 消费者组</text>
+    <text x="10" y="100" font-size="12">- 大数据场景</text>
+  </g>
+  
+  <g transform="translate(1130,120)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4A148C"/>
+    <text x="10" y="30" font-size="12">- 不支持</text>
+    <text x="10" y="60" font-size="12">- 会话重连</text>
+    <text x="10" y="80" font-size="12">- QoS重试</text>
+    <text x="10" y="100" font-size="12">- IoT场景</text>
+  </g>
+  
+  <!-- 重试机制 -->
+  <g transform="translate(50,240)">
+    <rect width="180" height="120" fill="#F5F5F5" stroke="#424242"/>
+    <text x="90" y="30" text-anchor="middle" font-size="14" font-weight="bold">重试机制</text>
+    <text x="10" y="60" font-size="12">- 重试策略</text>
+    <text x="10" y="80" font-size="12">- 实现方式</text>
+    <text x="10" y="100" font-size="12">- 配置灵活性</text>
+  </g>
+  
+  <g transform="translate(230,240)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#1565C0"/>
+    <text x="10" y="30" font-size="12">- 应用层重试</text>
+    <text x="10" y="60" font-size="12">- 自定义实现</text>
+    <text x="10" y="80" font-size="12">- 完全自定义</text>
+    <text x="10" y="100" font-size="12">- 高度灵活</text>
+  </g>
+  
+  <g transform="translate(410,240)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#2E7D32"/>
+    <text x="10" y="30" font-size="12">- 内置重试</text>
+    <text x="10" y="60" font-size="12">- 指数退避</text>
+    <text x="10" y="80" font-size="12">- 重试队列</text>
+    <text x="10" y="100" font-size="12">- 配置丰富</text>
+  </g>
+  
+  <g transform="translate(590,240)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#E65100"/>
+    <text x="10" y="30" font-size="12">- 内置重试</text>
+    <text x="10" y="60" font-size="12">- 间隔策略</text>
+    <text x="10" y="80" font-size="12">- 重试策略</text>
+    <text x="10" y="100" font-size="12">- 中等灵活</text>
+  </g>
+  
+  <g transform="translate(770,240)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4527A0"/>
+    <text x="10" y="30" font-size="12">- 内置重试</text>
+    <text x="10" y="60" font-size="12">- 重试队列</text>
+    <text x="10" y="80" font-size="12">- 策略配置</text>
+    <text x="10" y="100" font-size="12">- 高度灵活</text>
+  </g>
+
+  <g transform="translate(950,240)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#FF6F00"/>
+    <text x="10" y="30" font-size="12">- 消费者重试</text>
+    <text x="10" y="60" font-size="12">- 应用层实现</text>
+    <text x="10" y="80" font-size="12">- 手动提交</text>
+    <text x="10" y="100" font-size="12">- 完全自定义</text>
+  </g>
+  
+  <g transform="translate(1130,240)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4A148C"/>
+    <text x="10" y="30" font-size="12">- 会话重试</text>
+    <text x="10" y="60" font-size="12">- QoS机制</text>
+    <text x="10" y="80" font-size="12">- 协议层</text>
+    <text x="10" y="100" font-size="12">- 协议限制</text>
+  </g>
+  
+  <!-- 确认机制 -->
+  <g transform="translate(50,360)">
+    <rect width="180" height="120" fill="#F5F5F5" stroke="#424242"/>
+    <text x="90" y="30" text-anchor="middle" font-size="14" font-weight="bold">确认机制</text>
+    <text x="10" y="60" font-size="12">- 确认方式</text>
+    <text x="10" y="80" font-size="12">- 实现机制</text>
+    <text x="10" y="100" font-size="12">- 可靠性</text>
+  </g>
+  
+  <g transform="translate(230,360)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#1565C0"/>
+    <text x="10" y="30" font-size="12">- 发布确认</text>
+    <text x="10" y="60" font-size="12">- WATCH机制</text>
+    <text x="10" y="80" font-size="12">- 客户端ACK</text>
+    <text x="10" y="100" font-size="12">- 基本可靠</text>
+  </g>
+  
+  <g transform="translate(410,360)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#2E7D32"/>
+    <text x="10" y="30" font-size="12">- 多级确认</text>
+    <text x="10" y="60" font-size="12">- 同步/异步</text>
+    <text x="10" y="80" font-size="12">- 批量确认</text>
+    <text x="10" y="100" font-size="12">- 高度可靠</text>
+  </g>
+  
+  <g transform="translate(590,360)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#E65100"/>
+    <text x="10" y="30" font-size="12">- JMS确认</text>
+    <text x="10" y="60" font-size="12">- 事务会话</text>
+    <text x="10" y="80" font-size="12">- 客户端确认</text>
+    <text x="10" y="100" font-size="12">- 较高可靠</text>
+  </g>
+  
+  <g transform="translate(770,360)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4527A0"/>
+    <text x="10" y="30" font-size="12">- 消息确认</text>
+    <text x="10" y="60" font-size="12">- 发布确认</text>
+    <text x="10" y="80" font-size="12">- 消费者确认</text>
+    <text x="10" y="100" font-size="12">- 高度可靠</text>
+  </g>
+
+  <g transform="translate(950,360)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#FF6F00"/>
+    <text x="10" y="30" font-size="12">- 偏移量提交</text>
+    <text x="10" y="60" font-size="12">- 自动/手动</text>
+    <text x="10" y="80" font-size="12">- 副本机制</text>
+    <text x="10" y="100" font-size="12">- 高度可靠</text>
+  </g>
+  
+  <g transform="translate(1130,360)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4A148C"/>
+    <text x="10" y="30" font-size="12">- QoS级别</text>
+    <text x="10" y="60" font-size="12">- 0/1/2级别</text>
+    <text x="10" y="80" font-size="12">- MQTT协议</text>
+    <text x="10" y="100" font-size="12">- 可配置</text>
+  </g>
+  
+  <!-- 延迟消息 -->
+  <g transform="translate(50,480)">
+    <rect width="180" height="120" fill="#F5F5F5" stroke="#424242"/>
+    <text x="90" y="30" text-anchor="middle" font-size="14" font-weight="bold">延迟消息</text>
+    <text x="10" y="60" font-size="12">- 支持方式</text>
+    <text x="10" y="80" font-size="12">- 实现机制</text>
+    <text x="10" y="100" font-size="12">- 精度</text>
+  </g>
+  
+  <g transform="translate(230,480)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#1565C0"/>
+    <text x="10" y="30" font-size="12">- Zset实现</text>
+    <text x="10" y="60" font-size="12">- 时间戳排序</text>
+    <text x="10" y="80" font-size="12">- 定时轮询</text>
+    <text x="10" y="100" font-size="12">- 秒级</text>
+  </g>
+  
+  <g transform="translate(410,480)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#2E7D32"/>
+    <text x="10" y="30" font-size="12">- 18个级别</text>
+    <text x="10" y="60" font-size="12">- 定时投递</text>
+    <text x="10" y="80" font-size="12">- 延迟队列</text>
+    <text x="10" y="100" font-size="12">- 毫秒级</text>
+  </g>
+  
+  <g transform="translate(590,480)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#E65100"/>
+    <text x="10" y="30" font-size="12">- 调度器</text>
+    <text x="10" y="60" font-size="12">- 定时投递</text>
+    <text x="10" y="80" font-size="12">- 延迟队列</text>
+    <text x="10" y="100" font-size="12">- 秒级</text>
+  </g>
+  
+  <g transform="translate(770,480)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4527A0"/>
+    <text x="10" y="30" font-size="12">- 插件支持</text>
+    <text x="10" y="60" font-size="12">- 延迟交换机</text>
+    <text x="10" y="80" font-size="12">- 定时投递</text>
+    <text x="10" y="100" font-size="12">- 毫秒级</text>
+  </g>
+
+  <g transform="translate(950,480)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#FF6F00"/>
+    <text x="10" y="30" font-size="12">- 时间轮</text>
+    <text x="10" y="60" font-size="12">- 应用层实现</text>
+    <text x="10" y="80" font-size="12">- 定时任务</text>
+    <text x="10" y="100" font-size="12">- 秒级</text>
+  </g>
+  
+  <g transform="translate(1130,480)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4A148C"/>
+    <text x="10" y="30" font-size="12">- 不支持</text>
+    <text x="10" y="60" font-size="12">- 外部实现</text>
+    <text x="10" y="80" font-size="12">- -</text>
+    <text x="10" y="100" font-size="12">- -</text>
+  </g>
+  
+  <!-- 事务消息 -->
+  <g transform="translate(50,600)">
+    <rect width="180" height="120" fill="#F5F5F5" stroke="#424242"/>
+    <text x="90" y="30" text-anchor="middle" font-size="14" font-weight="bold">事务消息</text>
+    <text x="10" y="60" font-size="12">- 支持类型</text>
+    <text x="10" y="80" font-size="12">- 实现机制</text>
+    <text x="10" y="100" font-size="12">- 一致性</text>
+  </g>
+  
+  <g transform="translate(230,600)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#1565C0"/>
+    <text x="10" y="30" font-size="12">- MULTI/EXEC</text>
+    <text x="10" y="60" font-size="12">- 原子操作</text>
+    <text x="10" y="80" font-size="12">- Watch机制</text>
+    <text x="10" y="100" font-size="12">- 最终一致</text>
+  </g>
+  
+  <g transform="translate(410,600)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#2E7D32"/>
+    <text x="10" y="30" font-size="12">- 分布式事务</text>
+    <text x="10" y="60" font-size="12">- 两阶段提交</text>
+    <text x="10" y="80" font-size="12">- 事务回查</text>
+    <text x="10" y="100" font-size="12">- 强一致性</text>
+  </g>
+  
+  <g transform="translate(590,600)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#E65100"/>
+    <text x="10" y="30" font-size="12">- XA事务</text>
+    <text x="10" y="60" font-size="12">- JMS事务</text>
+    <text x="10" y="80" font-size="12">- 本地事务</text>
+    <text x="10" y="100" font-size="12">- 最终一致</text>
+  </g>
+  
+  <g transform="translate(770,600)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4527A0"/>
+    <text x="10" y="30" font-size="12">- 发布者确认</text>
+    <text x="10" y="60" font-size="12">- 信道事务</text>
+    <text x="10" y="80" font-size="12">- 本地事务</text>
+    <text x="10" y="100" font-size="12">- 最终一致</text>
+  </g>
+
+  <g transform="translate(950,600)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#FF6F00"/>
+    <text x="10" y="30" font-size="12">- 事务API</text>
+    <text x="10" y="60" font-size="12">- 原子提交</text>
+    <text x="10" y="80" font-size="12">- 幂等性</text>
+    <text x="10" y="100" font-size="12">- 最终一致</text>
+  </g>
+  
+  <g transform="translate(1130,600)">
+    <rect width="180" height="120" fill="#FFFFFF" stroke="#4A148C"/>
+    <text x="10" y="30" font-size="12">- 不支持</text>
+    <text x="10" y="60" font-size="12">- -</text>
+    <text x="10" y="80" font-size="12">- -</text>
+    <text x="10" y="100" font-size="12">- -</text>
+  </g>
+</svg>

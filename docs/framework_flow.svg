@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="1000" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: bold 14px sans-serif; }
+    .box { fill: #f0f8ff; stroke: #4682b4; stroke-width: 2; }
+    .arrow { stroke: #4682b4; stroke-width: 2; marker-end: url(#arrowhead); }
+    .text { font: 12px sans-serif; }
+    .small-text { font: 10px sans-serif; }
+    .highlight { fill: #e6f3ff; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4682b4"/>
+    </marker>
+  </defs>
+
+  <!-- 标题 -->
+  <text x="300" y="30" class="title" text-anchor="middle">消息中间件适配平台架构流程图</text>
+
+  <!-- 开发者应用 -->
+  <rect x="50" y="60" width="200" height="80" rx="10" class="box"/>
+  <text x="150" y="100" class="title" text-anchor="middle">开发者应用</text>
+  <text x="150" y="120" class="small-text" text-anchor="middle">(SDK/API调用)</text>
+
+  <!-- MQ适配平台 -->
+  <rect x="350" y="60" width="200" height="80" rx="10" class="box"/>
+  <text x="450" y="100" class="title" text-anchor="middle">MQ适配平台</text>
+  <text x="450" y="120" class="small-text" text-anchor="middle">(统一接口+适配器)</text>
+
+  <!-- 适配器层 -->
+  <rect x="350" y="200" width="200" height="150" rx="10" class="box"/>
+  <text x="450" y="230" class="title" text-anchor="middle">适配器层(Adapter)</text>
+  <text x="450" y="255" class="text" text-anchor="middle">RocketMQAdapter</text>
+  <text x="450" y="275" class="text" text-anchor="middle">RabbitMQAdapter</text>
+  <text x="450" y="295" class="text" text-anchor="middle">KafkaAdapter</text>
+  <text x="450" y="315" class="text" text-anchor="middle">RedisStreamAdapter</text>
+  <text x="450" y="335" class="text" text-anchor="middle">EMQXAdapter</text>
+
+  <!-- 核心逻辑处理层 -->
+  <rect x="350" y="400" width="200" height="120" rx="10" class="box"/>
+  <text x="450" y="430" class="title" text-anchor="middle">核心逻辑处理层</text>
+  <text x="450" y="455" class="text" text-anchor="middle">重试机制</text>
+  <text x="450" y="475" class="text" text-anchor="middle">死信队列(DLQ)</text>
+  <text x="450" y="495" class="text" text-anchor="middle">延迟消息</text>
+
+  <!-- 持久化层 -->
+  <rect x="350" y="570" width="200" height="120" rx="10" class="box"/>
+  <text x="450" y="600" class="title" text-anchor="middle">持久化层(DB/Redis)</text>
+  <text x="450" y="625" class="text" text-anchor="middle">消息记录表</text>
+  <text x="450" y="645" class="text" text-anchor="middle">消费状态表</text>
+  <text x="450" y="665" class="text" text-anchor="middle">失败消息表</text>
+
+  <!-- 消息生命周期流程 -->
+  <rect x="50" y="400" width="200" height="290" rx="10" class="box"/>
+  <text x="150" y="430" class="title" text-anchor="middle">消息生命周期</text>
+  <text x="70" y="460" class="small-text">1. 消息生成</text>
+  <text x="90" y="480" class="small-text">- 生成唯一ID</text>
+  <text x="90" y="500" class="small-text">- 记录到消息表</text>
+  <text x="70" y="530" class="small-text">2. 消息发送</text>
+  <text x="90" y="550" class="small-text">- 通过适配器发送</text>
+  <text x="90" y="570" class="small-text">- 更新发送状态</text>
+  <text x="70" y="600" class="small-text">3. 消息消费</text>
+  <text x="90" y="620" class="small-text">- 消费处理</text>
+  <text x="90" y="640" class="small-text">- 更新消费状态</text>
+  <text x="70" y="670" class="small-text">4. 失败处理</text>
+  <text x="90" y="690" class="small-text">- 记录失败消息</text>
+
+  <!-- 连接线 -->
+  <line x1="250" y1="100" x2="350" y2="100" class="arrow"/>
+  <line x1="450" y1="140" x2="450" y2="200" class="arrow"/>
+  <line x1="450" y1="350" x2="450" y2="400" class="arrow"/>
+  <line x1="450" y1="520" x2="450" y2="570" class="arrow"/>
+  <line x1="250" y1="545" x2="350" y2="545" class="arrow"/>
+
+  <!-- 数据流说明 -->
+  <text x="600" y="90" class="small-text">双向通信</text>
+  <text x="600" y="270" class="small-text">消息路由</text>
+  <text x="600" y="460" class="small-text">消息处理</text>
+  <text x="600" y="630" class="small-text">数据持久化</text>
+</svg>
