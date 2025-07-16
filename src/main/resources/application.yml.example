@@ -15,7 +15,7 @@ mq:
 
   # RocketMQ配置
   rocketmq:
-    name-server: localhost:9876
+    name-server-addr: localhost:9876
     producer-group: producer-group
     consumer-group: consumer-group
     send-msg-timeout: 3000

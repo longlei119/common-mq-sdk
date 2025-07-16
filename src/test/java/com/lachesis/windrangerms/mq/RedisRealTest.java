@@ -31,7 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = MQApplication.class)
 @TestPropertySource(properties = {
     "mq.redis.enabled=true",
-    "mq.delay.enabled=true"
+    "mq.delay.enabled=true",
+    "mq.redis.host=localhost"
 })
 public class RedisRealTest {
 

@@ -36,7 +36,7 @@ mq:
     max-retry-count: 3
     cleanup-threshold: 604800000  # 7天
   
-  # RocketMQ配置
+  # RocketMQ配置（测试时禁用）
   rocketmq:
     enabled: true
     name-server-addr: localhost:9876

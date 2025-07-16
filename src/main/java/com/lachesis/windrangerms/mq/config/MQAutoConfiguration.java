@@ -8,6 +8,7 @@ import com.lachesis.windrangerms.mq.producer.impl.EMQXProducer;
 import com.lachesis.windrangerms.mq.consumer.impl.EMQXConsumer;
 import com.lachesis.windrangerms.mq.delay.DelayMessageSender;
 import com.lachesis.windrangerms.mq.delay.adapter.ActiveMQAdapter;
+import com.lachesis.windrangerms.mq.delay.adapter.EMQXAdapter;
 import com.lachesis.windrangerms.mq.delay.adapter.KafkaAdapter;
 import com.lachesis.windrangerms.mq.delay.adapter.MQAdapter;
 import com.lachesis.windrangerms.mq.delay.adapter.RabbitMQAdapter;
@@ -76,12 +77,9 @@ public class MQAutoConfiguration implements ApplicationRunner {
     @ConditionalOnClass(name = "org.springframework.amqp.rabbit.core.RabbitTemplate")
     @Configuration
     public static class RabbitMQAutoConfiguration {
-        @Bean
-        @ConditionalOnBean(RabbitTemplate.class)
-        @ConditionalOnMissingBean
-        public RabbitMQAdapter rabbitMQAdapter(RabbitTemplate rabbitTemplate) {
-            return new RabbitMQAdapter(rabbitTemplate);
-        }
+
+        
+
     }
 
     @ConditionalOnClass(name = "org.apache.kafka.clients.producer.KafkaProducer")
@@ -92,6 +90,17 @@ public class MQAutoConfiguration implements ApplicationRunner {
         @ConditionalOnMissingBean
         public KafkaAdapter kafkaAdapter(KafkaProducer<String, byte[]> kafkaProducer) {
             return new KafkaAdapter(kafkaProducer);
+        }
+    }
+
+    @ConditionalOnClass(name = "org.eclipse.paho.client.mqttv3.MqttClient")
+    @Configuration
+    public static class EMQXAutoConfiguration {
+        @Bean
+        @ConditionalOnBean(MqttClient.class)
+        @ConditionalOnMissingBean
+        public EMQXAdapter emqxAdapter(MqttClient mqttClient) {
+            return new EMQXAdapter(mqttClient);
         }
     }
 
@@ -111,18 +120,26 @@ public class MQAutoConfiguration implements ApplicationRunner {
         public RedisConsumer redisConsumer(RedisMessageListenerContainer listenerContainer) {
             return new RedisConsumer(listenerContainer);
         }
+        // 新增 RedisProducer Bean
+        @Bean
+        @ConditionalOnProperty(prefix = "mq.redis", name = "host")
+        @ConditionalOnMissingBean
+        public RedisProducer redisProducer(StringRedisTemplate redisTemplate, @Autowired(required = false) DelayMessageSender delayMessageSender) {
+            return new RedisProducer(redisTemplate, delayMessageSender);
+        }
     }
 
-    @ConditionalOnClass(name = "org.springframework.data.redis.core.StringRedisTemplate")
-    @Configuration
-    public static class DelayQueueAutoConfiguration {
-        @Bean
-        @ConditionalOnBean(StringRedisTemplate.class)
-        @ConditionalOnProperty(prefix = "mq.delay", name = "enabled", havingValue = "true")
-        @ConditionalOnMissingBean
-        public DelayMessageSender delayMessageSender(StringRedisTemplate redisTemplate, List<MQAdapter> mqAdapters, MQConfig mqConfig) {
-            return new DelayMessageSender(redisTemplate, mqAdapters, mqConfig);
+    @Bean
+    @ConditionalOnBean(StringRedisTemplate.class)
+    @ConditionalOnProperty(prefix = "mq.delay", name = "enabled", havingValue = "true")
+    @ConditionalOnMissingBean
+    public DelayMessageSender delayMessageSender(StringRedisTemplate redisTemplate, @Autowired(required = false) List<MQAdapter> mqAdapters, MQConfig mqConfig) {
+        if (mqAdapters == null || mqAdapters.isEmpty()) {
+            log.warn("No MQAdapter beans found, DelayMessageSender will be created with empty adapter list");
+            mqAdapters = new ArrayList<>();
         }
+        log.info("Creating DelayMessageSender with {} MQAdapters", mqAdapters.size());
+        return new DelayMessageSender(redisTemplate, mqAdapters, mqConfig);
     }
 
     @Bean
@@ -143,7 +160,14 @@ public class MQAutoConfiguration implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("MQ自动配置启动完成");
+        log.info("RabbitMQ配置: enabled={}, host={}, port={}", 
+                mqConfig.getRabbitmq().isEnabled(),
+                mqConfig.getRabbitmq().getHost(),
+                mqConfig.getRabbitmq().getPort());
     }
+    
+    @Autowired
+    private MQConfig mqConfig;
 
     @Bean
     public static ApplicationListener<ApplicationEnvironmentPreparedEvent> environmentPreparedEventApplicationListener() {
@@ -161,5 +185,63 @@ public class MQAutoConfiguration implements ApplicationRunner {
                 // 可以根据需要添加日志
             }
         };
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "mq.rabbitmq", name = "enabled", havingValue = "true")
+    @ConditionalOnMissingBean
+    public ConnectionFactory rabbitConnectionFactory(MQConfig mqConfig) {
+        log.info("创建RabbitMQ ConnectionFactory, enabled={}, host={}, port={}", 
+                mqConfig.getRabbitmq().isEnabled(), 
+                mqConfig.getRabbitmq().getHost(), 
+                mqConfig.getRabbitmq().getPort());
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setHost(mqConfig.getRabbitmq().getHost());
+        connectionFactory.setPort(mqConfig.getRabbitmq().getPort());
+        connectionFactory.setUsername(mqConfig.getRabbitmq().getUsername());
+        connectionFactory.setPassword(mqConfig.getRabbitmq().getPassword());
+        connectionFactory.setVirtualHost(mqConfig.getRabbitmq().getVirtualHost());
+        return connectionFactory;
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "mq.rabbitmq", name = "enabled", havingValue = "true")
+    @ConditionalOnMissingBean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        log.info("创建RabbitTemplate Bean");
+        return new RabbitTemplate(connectionFactory);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "mq.rabbitmq", name = "enabled", havingValue = "true")
+    @ConditionalOnMissingBean
+    public org.springframework.amqp.rabbit.core.RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        return new org.springframework.amqp.rabbit.core.RabbitAdmin(connectionFactory);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "mq.rabbitmq", name = "enabled", havingValue = "true")
+    @ConditionalOnBean(RabbitTemplate.class)
+    @ConditionalOnMissingBean
+    public RabbitMQProducer rabbitMQProducer(RabbitTemplate rabbitTemplate) {
+        log.info("创建RabbitMQProducer Bean");
+        return new RabbitMQProducer(rabbitTemplate);
+    }
+    
+    @Bean
+    @ConditionalOnProperty(prefix = "mq.rabbitmq", name = "enabled", havingValue = "true")
+    @ConditionalOnBean(RabbitTemplate.class)
+    @ConditionalOnMissingBean
+    public RabbitMQConsumer rabbitMQConsumer(RabbitTemplate rabbitTemplate) {
+        log.info("创建RabbitMQConsumer Bean");
+        return new RabbitMQConsumer(rabbitTemplate);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "mq.rabbitmq", name = "enabled", havingValue = "true")
+    @ConditionalOnMissingBean
+    public RabbitMQAdapter rabbitMQAdapter(RabbitTemplate rabbitTemplate) {
+        log.info("创建RabbitMQAdapter Bean");
+        return new RabbitMQAdapter(rabbitTemplate);
     }
 }

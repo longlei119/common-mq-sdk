@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
  * 用于延迟消息发送到EMQX
  */
 @Slf4j
-@Component
-@ConditionalOnProperty(prefix = "mq.emqx", name = "enabled", havingValue = "true")
 public class EMQXAdapter implements MQAdapter {
 
     private final MqttClient mqttClient;
