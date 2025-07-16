@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8083
 
 # mq:
 #   # RocketMQ配置
@@ -91,4 +91,4 @@ server:
 
 logging:
   level:
-    com.example.mq: debug
+    com.lachesis.windrangerms.mq: debug

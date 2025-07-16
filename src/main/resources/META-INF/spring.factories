@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.mq.config.MQAutoConfiguration
+  com.lachesis.windrangerms.mq.config.MQAutoConfiguration
