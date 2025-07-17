@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -116,6 +117,33 @@ public class ActiveMQProducer implements MQProducer {
     @Override
     public MQTypeEnum getMQType() {
         return MQTypeEnum.ACTIVE_MQ;
+    }
+    
+    @Override
+    public boolean send(String topic, String tag, String body, Map<String, String> properties) {
+        try {
+            log.info("ActiveMQ发送消息：topic={}, tag={}, body={}", topic, tag, body);
+            String destination = buildDestination(topic, tag);
+            
+            jmsTemplate.convertAndSend(destination, body, message -> {
+                // 添加用户自定义属性
+                if (properties != null) {
+                    properties.forEach((key, value) -> {
+                        try {
+                            message.setStringProperty(key, value);
+                        } catch (Exception e) {
+                            log.warn("设置消息属性失败: key={}, value={}", key, value, e);
+                        }
+                    });
+                }
+                return message;
+            });
+            
+            return true;
+        } catch (Exception e) {
+            log.error("ActiveMQ发送消息失败：topic={}, tag={}, body={}", topic, tag, body, e);
+            return false;
+        }
     }
 
     private String buildDestination(String topic, String tag) {

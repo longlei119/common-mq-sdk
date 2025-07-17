@@ -4,6 +4,7 @@ import com.lachesis.windrangerms.mq.consumer.MQConsumerManager;
 import com.lachesis.windrangerms.mq.consumer.impl.ActiveMQConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RabbitMQConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RedisConsumer;
+import com.lachesis.windrangerms.mq.deadletter.DeadLetterServiceFactory;
 import com.lachesis.windrangerms.mq.producer.impl.EMQXProducer;
 import com.lachesis.windrangerms.mq.consumer.impl.EMQXConsumer;
 import com.lachesis.windrangerms.mq.delay.DelayMessageSender;
@@ -35,6 +36,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -60,6 +62,14 @@ import org.springframework.boot.env.YamlPropertySourceLoader;
 @EnableScheduling
 @ComponentScan(basePackages = "com.lachesis.windrangerms.mq")
 public class MQAutoConfiguration implements ApplicationRunner {
+    
+    /**
+     * 引入死信队列自动配置
+     */
+    @Configuration
+    @Import(DeadLetterAutoConfiguration.class)
+    public static class DeadLetterConfiguration {}
+    
 
     // 其它 MQ 配置同前
 

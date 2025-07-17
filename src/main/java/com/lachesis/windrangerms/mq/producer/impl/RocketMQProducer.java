@@ -5,7 +5,8 @@ import com.lachesis.windrangerms.mq.delay.DelayMessageSender;
 import com.lachesis.windrangerms.mq.enums.MQTypeEnum;
 import com.lachesis.windrangerms.mq.model.MQEvent;
 import com.lachesis.windrangerms.mq.producer.MQProducer;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,13 +15,16 @@ import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 
+import java.util.Map;
+
 /**
  * RocketMQ生产者实现
  */
-@Slf4j
 @Component
 @ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
 public class RocketMQProducer implements MQProducer {
+    
+    private static final Logger log = LoggerFactory.getLogger(RocketMQProducer.class);
 
     private final DefaultMQProducer producer;
     
@@ -135,8 +139,10 @@ public class RocketMQProducer implements MQProducer {
             // 添加用户自定义属性
             if (event instanceof MQEvent) {
                 MQEvent mqEvent = (MQEvent) event;
-                if (mqEvent.getUserProperties() != null) {
-                    mqEvent.getUserProperties().forEach(msg::putUserProperty);
+                // 获取用户属性并添加到消息中
+                Map<String, String> userProps = mqEvent.getUserProperties();
+                if (userProps != null) {
+                    userProps.forEach(msg::putUserProperty);
                 }
             }
             
@@ -171,5 +177,24 @@ public class RocketMQProducer implements MQProducer {
     @Override
     public MQTypeEnum getMQType() {
         return MQTypeEnum.ROCKET_MQ;
+    }
+    
+    @Override
+    public boolean send(String topic, String tag, String body, Map<String, String> properties) {
+        try {
+            log.info("RocketMQ发送消息：topic={}, tag={}, body={}", topic, tag, body);
+            Message msg = new Message(topic, tag, body.getBytes());
+            
+            // 添加用户自定义属性
+            if (properties != null) {
+                properties.forEach(msg::putUserProperty);
+            }
+            
+            SendResult sendResult = producer.send(msg);
+            return sendResult != null;
+        } catch (Exception e) {
+            log.error("RocketMQ发送消息失败：topic={}, tag={}, body={}", topic, tag, body, e);
+            return false;
+        }
     }
 }

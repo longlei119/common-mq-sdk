@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -165,5 +166,26 @@ public class EMQXProducer implements MQProducer {
     @Override
     public MQTypeEnum getMQType() {
         return MQTypeEnum.EMQX;
+    }
+    
+    @Override
+    public boolean send(String topic, String tag, String body, Map<String, String> properties) {
+        try {
+            log.info("EMQX发送消息：topic={}, tag={}, body={}", topic, tag, body);
+            
+            // MQTT的topic格式：topic/tag
+            String mqttTopic = topic + (tag != null && !tag.isEmpty() ? "/" + tag : "");
+            
+            MqttMessage mqttMessage = new MqttMessage(body.getBytes());
+            mqttMessage.setQos(1); // 设置QoS级别为1，确保消息至少被传递一次
+            
+            // MQTT协议不支持在消息中添加自定义属性，如果需要可以将属性序列化到消息体中
+            
+            mqttClient.publish(mqttTopic, mqttMessage);
+            return true;
+        } catch (Exception e) {
+            log.error("EMQX发送消息失败：topic={}, tag={}, body={}", topic, tag, body, e);
+            return false;
+        }
     }
 }

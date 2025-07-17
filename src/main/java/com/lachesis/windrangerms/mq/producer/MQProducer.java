@@ -3,6 +3,8 @@ package com.lachesis.windrangerms.mq.producer;
 import com.lachesis.windrangerms.mq.enums.MQTypeEnum;
 import com.lachesis.windrangerms.mq.model.MQEvent;
 
+import java.util.Map;
+
 /**
  * MQ生产者接口
  * 注意：广播模式现在由消费者端的@MQConsumer注解决定，生产者只负责发送消息
@@ -81,4 +83,15 @@ public interface MQProducer {
      * @return MQ类型
      */
     MQTypeEnum getMQType();
+    
+    /**
+     * 发送消息
+     *
+     * @param topic      主题
+     * @param tag        标签
+     * @param body       消息体
+     * @param properties 属性
+     * @return 是否发送成功
+     */
+    boolean send(String topic, String tag, String body, Map<String, String> properties);
 }

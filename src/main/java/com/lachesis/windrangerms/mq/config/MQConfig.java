@@ -1,10 +1,9 @@
 package com.lachesis.windrangerms.mq.config;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 消息队列配置类
@@ -37,16 +36,28 @@ public class MQConfig {
      * EMQX配置
      */
     private EMQXProperties emqx = new EMQXProperties();
-    
+
     /**
      * ActiveMQ配置
      */
     private ActiveMQProperties activemq = new ActiveMQProperties();
-    
+
     /**
      * 延迟消息配置
      */
     private DelayMessageProperties delay = new DelayMessageProperties();
+
+    /**
+     * 死信队列配置
+     */
+    private DeadLetterProperties deadLetter = new DeadLetterProperties();
+
+    /**
+     * 获取死信队列配置
+     */
+    public DeadLetterProperties getDeadLetter() {
+        return deadLetter;
+    }
 
     @Data
     public static class RedisProperties {
@@ -57,6 +68,8 @@ public class MQConfig {
         private Integer timeout = 2000;
 
         private Pool pool = new Pool();
+
+        public boolean isEnabled = true;
 
         @Data
         public static class Pool {
@@ -69,10 +82,25 @@ public class MQConfig {
 
     @Data
     public static class RocketMQProperties {
+
+        /**
+         * 获取消费者配置
+         */
+        public ConsumerConfig getConsumer() {
+            return consumer;
+        }
+
         /**
          * NameServer地址
          */
         private String nameServerAddr;
+
+        /**
+         * 获取NameServer地址
+         */
+        public String getNameServerAddr() {
+            return nameServerAddr;
+        }
 
         /**
          * 生产者组
@@ -94,13 +122,44 @@ public class MQConfig {
          */
         private ConsumerConfig consumer = new ConsumerConfig();
 
+        private boolean isEnabled = true;
+
         @Data
         public static class ConsumerConfig {
+
+            /**
+             * 获取消费者组名
+             */
+            public String getGroupName() {
+                return groupName;
+            }
+
+            /**
+             * 获取消费者最小线程数
+             */
+            public int getThreadMin() {
+                return threadMin;
+            }
+
+            /**
+             * 获取消费者最大线程数
+             */
+            public int getThreadMax() {
+                return threadMax;
+            }
+
+            /**
+             * 获取批量消费最大消息数
+             */
+            public int getBatchMaxSize() {
+                return batchMaxSize;
+            }
+
             /**
              * 消费者组名
              */
             private String groupName = "default-consumer-group";
-            
+
             /**
              * 消费者最小线程数
              */
@@ -120,11 +179,26 @@ public class MQConfig {
              * 消费超时时间（毫秒）
              */
             private int consumeTimeout = 15000;
-            
+
+            /**
+             * 获取消费超时时间
+             */
+            public int getConsumeTimeout() {
+                return consumeTimeout;
+            }
+
             /**
              * 消费起始位置
              */
-            private org.apache.rocketmq.common.consumer.ConsumeFromWhere consumeFromWhere = org.apache.rocketmq.common.consumer.ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET;
+            private org.apache.rocketmq.common.consumer.ConsumeFromWhere consumeFromWhere =
+                org.apache.rocketmq.common.consumer.ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET;
+
+            /**
+             * 获取消费起始位置
+             */
+            public org.apache.rocketmq.common.consumer.ConsumeFromWhere getConsumeFromWhere() {
+                return consumeFromWhere;
+            }
         }
     }
 
@@ -157,7 +231,7 @@ public class MQConfig {
          * 是否启用RabbitMQ
          */
         private boolean enabled = false;
-        
+
         /**
          * 服务器地址
          */
@@ -221,7 +295,7 @@ public class MQConfig {
          */
         private int keepAliveInterval = 60;
     }
-    
+
     @Data
     public static class ActiveMQProperties {
         /**
@@ -257,66 +331,194 @@ public class MQConfig {
             private int idleTimeout = 30000;
         }
     }
-    
+
     @Data
     public static class DelayMessageProperties {
         /**
          * 是否启用延迟消息功能
          */
         private boolean enabled = true;
-        
+
         /**
          * 延迟消息存储的Redis键前缀
          */
         private String redisKeyPrefix = "delay_message:";
-        
+
         /**
          * 延迟消息扫描间隔（毫秒）
          */
         private int scanInterval = 1000;
-        
+
         /**
          * 每次扫描处理的最大消息数
          */
         private int batchSize = 100;
-        
+
         /**
          * 消息重试配置
          */
         private RetryConfig retry = new RetryConfig();
-        
+
         /**
          * 消息过期时间（毫秒），默认7天
          */
         private long messageExpireTime = 7 * 24 * 60 * 60 * 1000L;
-        
+
         /**
          * 默认的消息队列类型，当未指定时使用
          */
         private String defaultMQType = "ROCKET_MQ";
-        
+
         /**
          * 消息队列类型与延迟级别的映射
          * 例如：RocketMQ的延迟级别为1s/5s/10s/30s/1m/2m/3m/4m/5m/6m/7m/8m/9m/10m/20m/30m/1h/2h
          */
         private Map<String, Integer> delayLevelMapping = new HashMap<>();
-        
+
         @Data
         public static class RetryConfig {
             /**
              * 最大重试次数
              */
             private int maxRetries = 3;
-            
+
             /**
              * 重试间隔（毫秒）
              */
             private int retryInterval = 5000;
-            
+
             /**
              * 重试间隔倍数（指数退避策略）
              */
             private int retryMultiplier = 2;
+        }
+    }
+
+    @Data
+    public static class DeadLetterProperties {
+
+        /**
+         * 获取死信队列配置
+         */
+        public DeadLetterProperties getDeadLetter() {
+            return this;
+        }
+
+        /**
+         * 是否启用死信队列
+         */
+        private boolean enabled = true;
+
+        /**
+         * 存储类型：redis, mysql
+         */
+        private String storageType = "redis";
+
+        /**
+         * Redis配置
+         */
+        private RedisConfig redis = new RedisConfig();
+
+        /**
+         * MySQL配置
+         */
+        private MySQLConfig mysql = new MySQLConfig();
+
+        /**
+         * 重试配置
+         */
+        private RetryConfig retry = new RetryConfig();
+
+        /**
+         * 清理配置
+         */
+        private CleanupConfig cleanup = new CleanupConfig();
+
+        /**
+         * 扫描间隔（毫秒）
+         */
+        private int scanInterval = 5000;
+
+        /**
+         * 每次扫描处理的最大消息数
+         */
+        private int batchSize = 100;
+
+        @Data
+        public static class RedisConfig {
+            /**
+             * 死信消息存储的Redis键前缀
+             */
+            private String keyPrefix = "dead_letter:";
+
+            /**
+             * 死信队列键名
+             */
+            private String queueKey = "dead_letter:queue";
+
+            /**
+             * 死信消息过期时间（毫秒），默认30天
+             */
+            private long messageExpireTime = 30 * 24 * 60 * 60 * 1000L;
+        }
+
+        @Data
+        public static class MySQLConfig {
+            /**
+             * 是否自动创建表
+             */
+            private boolean autoCreateTable = true;
+
+            /**
+             * 死信队列表名
+             */
+            private String deadLetterTableName = "mq_dead_letter_queue";
+
+            /**
+             * 重试历史表名
+             */
+            private String retryHistoryTableName = "mq_retry_history";
+
+            /**
+             * 数据源名称，为空则使用默认数据源
+             */
+            private String dataSourceName = "";
+        }
+
+        @Data
+        public static class RetryConfig {
+            /**
+             * 最大重试次数
+             */
+            private int maxRetries = 3;
+
+            /**
+             * 重试间隔（毫秒）
+             */
+            private int retryInterval = 60000; // 1分钟
+
+            /**
+             * 重试间隔倍数（指数退避策略）
+             */
+            private int retryMultiplier = 2;
+        }
+
+        @Data
+        public static class CleanupConfig {
+            /**
+             * 是否启用自动清理
+             */
+            private boolean enabled = true;
+
+            /**
+             * 清理周期（毫秒），默认1天
+             */
+            private long cleanupInterval = 24 * 60 * 60 * 1000L;
+
+            /**
+             * 消息保留时间（毫秒），默认30天
+             */
+            private long messageRetentionTime = 30 * 24 * 60 * 60 * 1000L;
         }
     }
 }

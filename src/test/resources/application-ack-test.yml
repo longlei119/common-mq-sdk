@@ -1,0 +1,57 @@
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 10000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+
+mq:
+  # Redis MQ配置
+  redis:
+    enabled: true
+    topic-prefix: "mq:topic:"
+    consumer-group-prefix: "mq:consumer:group:"
+    consumer-name-prefix: "mq:consumer:name:"
+    consumer-retry-times: 3
+    consumer-retry-interval: 5000
+    consumer-concurrency: 5
+    consumer-batch-size: 1
+    consumer-poll-timeout: 5000
+    consumer-max-poll-records: 100
+    consumer-auto-commit: false  # 设置为手动确认模式
+    consumer-auto-commit-interval: 1000
+    producer-retry-times: 3
+    producer-retry-interval: 1000
+    producer-batch-size: 16384
+    producer-linger-ms: 1
+    producer-buffer-memory: 33554432
+    producer-acks: all
+  
+  # 死信队列配置
+  dead-letter:
+    enabled: true
+    storage-type: redis  # 使用Redis存储死信消息
+    redis:
+      key-prefix: "mq:dead-letter:"
+      queue-key: "mq:dead-letter:queue"
+      message-expiration: 604800000  # 7天过期时间
+    retry:
+      max-retries: 3
+      retry-interval: 60000  # 60秒
+      retry-multiplier: 2.0  # 指数退避策略
+    cleanup:
+      auto-cleanup: true
+      cleanup-interval: 3600000  # 1小时清理一次
+      message-retention: 604800000  # 7天保留期
+    scan-interval: 60000  # 60秒扫描一次
+    batch-size: 100  # 每次处理100条消息
+
+logging:
+  level:
+    com.lachesis.windrangerms.mq: debug

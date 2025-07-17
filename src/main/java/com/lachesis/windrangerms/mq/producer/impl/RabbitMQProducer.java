@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -184,5 +185,43 @@ public class RabbitMQProducer implements MQProducer {
     @Override
     public MQTypeEnum getMQType() {
         return MQTypeEnum.RABBIT_MQ;
+    }
+    
+    @Override
+    public boolean send(String topic, String tag, String body, Map<String, String> properties) {
+        try {
+            log.info("RabbitMQ发送消息: topic={}, tag={}, body={}", topic, tag, body);
+            
+            // 确保交换机存在
+            DirectExchange exchange = new DirectExchange(topic, true, false);
+            rabbitAdmin.declareExchange(exchange);
+            
+            // 创建消息属性
+            MessageProperties messageProperties = new MessageProperties();
+            messageProperties.setContentType(MessageProperties.CONTENT_TYPE_TEXT_PLAIN);
+            
+            // 设置tag作为header
+            if (tag != null && !tag.isEmpty()) {
+                messageProperties.setHeader("tag", tag);
+            }
+            
+            // 添加自定义属性
+            if (properties != null && !properties.isEmpty()) {
+                for (Map.Entry<String, String> entry : properties.entrySet()) {
+                    messageProperties.setHeader(entry.getKey(), entry.getValue());
+                }
+            }
+            
+            // 创建消息
+            Message message = new Message(body.getBytes(), messageProperties);
+            
+            // 发送消息，使用tag作为routing key
+            rabbitTemplate.send(topic, tag != null ? tag : "", message);
+            log.info("RabbitMQ发送消息成功: topic={}, tag={}", topic, tag);
+            return true;
+        } catch (Exception e) {
+            log.error("RabbitMQ发送消息失败: topic={}, tag={}, body={}", topic, tag, body, e);
+            return false;
+        }
     }
 }

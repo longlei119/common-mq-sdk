@@ -16,14 +16,16 @@ import com.lachesis.windrangerms.mq.producer.impl.RocketMQProducer;
 
 import java.util.EnumMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 消息队列工厂类
  */
-@Slf4j
 public class MQFactory {
+    
+    private static final Logger log = LoggerFactory.getLogger(MQFactory.class);
 
     private final Map<MQTypeEnum, MQProducer> producerMap = new EnumMap<>(MQTypeEnum.class);
     private final Map<MQTypeEnum, MQConsumer> consumerMap = new EnumMap<>(MQTypeEnum.class);

@@ -4,6 +4,8 @@ import com.lachesis.windrangerms.mq.enums.MQTypeEnum;
 import com.lachesis.windrangerms.mq.model.MQEvent;
 import com.lachesis.windrangerms.mq.producer.MQProducer;
 
+import java.util.Map;
+
 /**
  * 空实现 MQProducer，未配置 MQ 时抛出异常
  */
@@ -34,4 +36,9 @@ public class NoopMQProducer implements MQProducer {
     }
     @Override
     public MQTypeEnum getMQType() { return null; }
+    
+    @Override
+    public boolean send(String topic, String tag, String body, Map<String, String> properties) {
+        throw new UnsupportedOperationException("未配置可用的 MQProducer，无法发送消息");
+    }
 }

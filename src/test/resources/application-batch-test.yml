@@ -1,4 +1,4 @@
-# 测试环境配置
+# 批量死信队列测试配置
 spring:
   redis:
     host: localhost
@@ -33,71 +33,45 @@ mq:
         max-idle: 8
         min-idle: 0
   
-  # 延迟消息配置
-  delay:
-    enabled: true
-    redis-key-prefix: "real_test_delay_message:"
-    scan-interval: 1000
-    max-retry-count: 3
-    cleanup-threshold: 604800000  # 7天
-    
-  # 死信队列配置
+  # 死信队列配置（快速重试用于测试）
   dead-letter:
     enabled: true
     storage-type: redis
     redis:
-      key-prefix: test_dead_letter_
-      queue-key: test_dead_letter_queue
+      key-prefix: batch_test_dead_letter_
+      queue-key: batch_test_dead_letter_queue
       message-expiration: 604800000  # 7天，单位毫秒
     retry:
-      max-retries: 3
-      retry-interval: 60000  # 初始重试间隔，单位毫秒
-      retry-multiplier: 2.0  # 重试间隔倍数
+      max-retries: 2  # 减少重试次数
+      retry-interval: 2000  # 2秒重试间隔，加快测试速度
+      retry-multiplier: 1.5  # 重试间隔倍数
     cleanup:
       auto-cleanup: true
       cleanup-interval: 86400000  # 清理间隔，单位毫秒，默认1天
       message-retention: 604800000  # 消息保留时间，单位毫秒，默认7天
-    scan-interval: 60000  # 扫描间隔，单位毫秒，默认1分钟
+    scan-interval: 5000  # 5秒扫描间隔，加快测试速度
     batch-size: 100  # 批处理大小
-  
-  # RocketMQ配置（测试时禁用）
-  rocketmq:
-    enabled: true
-    name-server-addr: localhost:9876
-    producer-group: test_producer_group
-    consumer-group: test_consumer_group
-    send-msg-timeout: 3000
   
   # RabbitMQ配置
   rabbitmq:
-    enabled: true
-    host: 10.2.6.180
-    port: 5672
-    username: root
-    password: root
-    virtual-host: /
+    enabled: false  # 禁用RabbitMQ
+  
+  # RocketMQ配置（测试时禁用）
+  rocketmq:
+    enabled: false
   
   # ActiveMQ配置（测试时禁用）
   activemq:
     enabled: false
-    broker-url: tcp://localhost:61616
-    username: admin
-    password: admin
   
-  # EMQX配置
+  # EMQX配置（测试时禁用）
   emqx:
-    enabled: true
-    server-uri: tcp://10.2.3.141:1883
-    username: user
-    password: Lachesis-mh_1024
-    client-id: testClient
-    clean-session: true
-    keep-alive-interval: 60
+    enabled: false
 
 # 日志配置
 logging:
   level:
-    com.example.mq: DEBUG
+    com.lachesis.windrangerms.mq: DEBUG
     org.springframework.data.redis: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

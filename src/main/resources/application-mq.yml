@@ -78,12 +78,12 @@ mq:
 
   # EMQX配置
   emqx:
-    enabled: false
-    server-uri: tcp://localhost:1883
-    username: admin
-    password: public
+    enabled: true
+    server-uri: tcp://10.2.3.172:1883
+    username: user
+    password: Lachesis-mh_1024
     client-id: defaultClient
-    clean-session: true
+    clean-session: false
     keep-alive-interval: 60
 
   # 延迟消息配置

@@ -16,14 +16,17 @@ import org.apache.rocketmq.remoting.exception.RemotingConnectException;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RocketMQ消费者实现
  */
-@Slf4j
 @Component
 @ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
 public class RocketMQConsumer implements MQConsumer {
+    
+    private static final Logger log = LoggerFactory.getLogger(RocketMQConsumer.class);
 
     /**
      * 消息处理器映射，key为topic:tag
@@ -63,9 +66,10 @@ public class RocketMQConsumer implements MQConsumer {
         this.rocketMQProperties = rocketMQProperties;
 
         // 配置消费者参数
-        consumer.setConsumeThreadMin(rocketMQProperties.getConsumer().getThreadMin());
-        consumer.setConsumeThreadMax(rocketMQProperties.getConsumer().getThreadMax());
-        consumer.setConsumeMessageBatchMaxSize(rocketMQProperties.getConsumer().getBatchMaxSize());
+        MQConfig.RocketMQProperties.ConsumerConfig consumerConfig = rocketMQProperties.getConsumer();
+        consumer.setConsumeThreadMin(consumerConfig.getThreadMin());
+        consumer.setConsumeThreadMax(consumerConfig.getThreadMax());
+        consumer.setConsumeMessageBatchMaxSize(consumerConfig.getBatchMaxSize());
 
         // 在构造函数中注册全局消息监听器
         consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
