@@ -11,6 +11,7 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
     <lombok.version>1.18.20</lombok.version>
@@ -21,6 +22,7 @@
     <activemq.version>5.16.3</activemq.version>
     <paho.mqtt.version>1.2.5</paho.mqtt.version>
     <spring.integration.mqtt.version>5.3.9.RELEASE</spring.integration.mqtt.version>
+    <mysql.version>8.0.28</mysql.version>
   </properties>
 
   <dependencyManagement>
@@ -65,11 +67,6 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure</artifactId>
-      <version>${spring.boot.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
       <version>${spring.boot.version}</version>
       <optional>true</optional>
@@ -96,7 +93,7 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.30</version>
-      <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
 
     <!-- FastJSON -->
@@ -227,20 +224,42 @@
       <artifactId>jackson-datatype-jsr310</artifactId>
       <version>2.11.4</version>
     </dependency>
+    
+    <!-- MySQL Driver -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>${mysql.version}</version>
+      <optional>true</optional>
+    </dependency>
+    
+    <!-- Spring JDBC -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+      <version>${spring.boot.version}</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
-      </plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>${maven-compiler-plugin.version}</version>
+      <configuration>
+        <source>${maven.compiler.source}</source>
+        <target>${maven.compiler.target}</target>
+        <annotationProcessorPaths>
+          <path>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+          </path>
+        </annotationProcessorPaths>
+      </configuration>
+    </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -273,11 +292,6 @@
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>${spring.boot.version}</version>
       </plugin>
     </plugins>
   </build>
