@@ -15,7 +15,7 @@ spring:
 mq:
   # Redis配置
   redis:
-    enabled: false
+    enabled: true
     host: localhost
     port: 6379
     database: 0
@@ -29,7 +29,7 @@ mq:
 
   # RocketMQ配置
   rocketmq:
-    enabled: false
+    enabled: true
     # RocketMQ服务器地址，格式：host:port
     name-server-addr: localhost:9876
     # 生产者组名

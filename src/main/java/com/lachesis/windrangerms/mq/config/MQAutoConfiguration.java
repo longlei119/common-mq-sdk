@@ -1,12 +1,10 @@
 package com.lachesis.windrangerms.mq.config;
 
-import com.lachesis.windrangerms.mq.consumer.MQConsumerManager;
 import com.lachesis.windrangerms.mq.consumer.impl.ActiveMQConsumer;
+import com.lachesis.windrangerms.mq.consumer.impl.EMQXConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RabbitMQConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RedisConsumer;
-import com.lachesis.windrangerms.mq.deadletter.DeadLetterServiceFactory;
-import com.lachesis.windrangerms.mq.producer.impl.EMQXProducer;
-import com.lachesis.windrangerms.mq.consumer.impl.EMQXConsumer;
+import com.lachesis.windrangerms.mq.consumer.impl.RocketMQConsumer;
 import com.lachesis.windrangerms.mq.delay.DelayMessageSender;
 import com.lachesis.windrangerms.mq.delay.adapter.ActiveMQAdapter;
 import com.lachesis.windrangerms.mq.delay.adapter.EMQXAdapter;
@@ -16,45 +14,41 @@ import com.lachesis.windrangerms.mq.delay.adapter.RabbitMQAdapter;
 import com.lachesis.windrangerms.mq.delay.adapter.RedisAdapter;
 import com.lachesis.windrangerms.mq.factory.MQFactory;
 import com.lachesis.windrangerms.mq.producer.impl.ActiveMQProducer;
+import com.lachesis.windrangerms.mq.producer.impl.EMQXProducer;
 import com.lachesis.windrangerms.mq.producer.impl.RabbitMQProducer;
 import com.lachesis.windrangerms.mq.producer.impl.RedisProducer;
+import com.lachesis.windrangerms.mq.producer.impl.RocketMQProducer;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
-import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.PreDestroy;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Slf4j
 @Configuration
@@ -154,7 +148,10 @@ public class MQAutoConfiguration implements ApplicationRunner {
 
     @Bean
     @ConditionalOnMissingBean
+    @Lazy
     public MQFactory mqFactory(
+            @Autowired(required = false) RocketMQProducer rocketMQProducer,
+            @Autowired(required = false) RocketMQConsumer rocketMQConsumer,
             @Autowired(required = false) RedisProducer redisProducer,
             @Autowired(required = false) RedisConsumer redisConsumer,
             @Autowired(required = false) ActiveMQProducer activeMQProducer,
@@ -164,7 +161,7 @@ public class MQAutoConfiguration implements ApplicationRunner {
             @Autowired(required = false) EMQXProducer emqxProducer,
             @Autowired(required = false) EMQXConsumer emqxConsumer
     ) {
-        return new MQFactory(null, null, redisProducer, redisConsumer, activeMQProducer, activeMQConsumer, rabbitMQProducer, rabbitMQConsumer, emqxProducer, emqxConsumer);
+        return new MQFactory(rocketMQProducer, rocketMQConsumer, redisProducer, redisConsumer, activeMQProducer, activeMQConsumer, rabbitMQProducer, rabbitMQConsumer, emqxProducer, emqxConsumer);
     }
 
     @Override

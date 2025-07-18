@@ -33,13 +33,21 @@ mq:
     producer-buffer-memory: 33554432
     producer-acks: all
   
+  # RocketMQ配置
+  rocketmq:
+    enabled: true
+    name-server-addr: localhost:9876
+    producer-group: test_producer_group
+    consumer-group: test_consumer_group
+    send-msg-timeout: 3000
+  
   # RabbitMQ配置
   rabbitmq:
     enabled: true
-    host: localhost
+    host: 10.2.6.180
     port: 5672
-    username: guest
-    password: guest
+    username: root
+    password: root
     virtual-host: /
     publisher-confirms: true
     publisher-returns: true

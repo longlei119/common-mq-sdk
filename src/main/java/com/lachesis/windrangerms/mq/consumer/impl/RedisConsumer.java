@@ -2,7 +2,8 @@ package com.lachesis.windrangerms.mq.consumer.impl;
 
 import com.lachesis.windrangerms.mq.consumer.MQConsumer;
 import com.lachesis.windrangerms.mq.enums.MQTypeEnum;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -13,8 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-@Slf4j
 public class RedisConsumer implements MQConsumer {
+
+    private static final Logger log = LoggerFactory.getLogger(RedisConsumer.class);
 
     private final RedisMessageListenerContainer listenerContainer;
     private final Map<String, MessageListenerAdapter> listenerMap;
@@ -83,13 +85,15 @@ public class RedisConsumer implements MQConsumer {
         }
         
         MessageListener listener = (message, pattern) -> {
+            String messageBody = new String(message.getBody(), StandardCharsets.UTF_8);
+            log.debug("Redis收到原始消息 - channel: {}, message: {}", channel, messageBody);
             try {
-                String messageBody = new String(message.getBody(), StandardCharsets.UTF_8);
-                log.debug("Redis收到原始消息 - channel: {}, message: {}", channel, messageBody);
                 messageHandler.accept(messageBody);
                 log.info("Redis消息处理成功 - channel: {}, message: {}", channel, messageBody);
             } catch (Exception e) {
-                log.error("Redis消息处理失败 - channel: {}, error: {}", channel, e.getMessage(), e);
+                log.error("Redis消息处理失败 - channel: {}, message: {}, error: {}", channel, messageBody, e.getMessage(), e);
+                // 对于Redis，我们不能直接重试，因为Redis pub/sub不支持消息重试
+                // 异常已经被MQConsumerAnnotationProcessor处理了
             }
         };
 
@@ -116,13 +120,15 @@ public class RedisConsumer implements MQConsumer {
         String consumerKey = broadcastChannel + ":" + java.util.UUID.randomUUID().toString();
         
         MessageListener listener = (message, pattern) -> {
+            String messageBody = new String(message.getBody(), StandardCharsets.UTF_8);
+            log.debug("Redis收到广播消息 - channel: {}, message: {}", broadcastChannel, messageBody);
             try {
-                String messageBody = new String(message.getBody(), StandardCharsets.UTF_8);
-                log.debug("Redis收到广播消息 - channel: {}, message: {}", broadcastChannel, messageBody);
                 messageHandler.accept(messageBody);
                 log.info("Redis广播消息处理成功 - channel: {}, message: {}", broadcastChannel, messageBody);
             } catch (Exception e) {
-                log.error("Redis广播消息处理失败 - channel: {}, error: {}", broadcastChannel, e.getMessage(), e);
+                log.error("Redis广播消息处理失败 - channel: {}, message: {}, error: {}", broadcastChannel, messageBody, e.getMessage(), e);
+                // 对于Redis，我们不能直接重试，因为Redis pub/sub不支持消息重试
+                // 异常已经被MQConsumerAnnotationProcessor处理了
             }
         };
 

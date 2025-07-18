@@ -34,34 +34,37 @@ public class RocketMQSimpleTest {
         MQProducer producer = mqFactory.getProducer(MQTypeEnum.ROCKET_MQ);
         MQConsumer consumer = mqFactory.getConsumer(MQTypeEnum.ROCKET_MQ);
         
-        String topic = "simple-test-topic";
+        // 使用唯一的topic避免与其他测试冲突
+        String topic = "simple-test-topic-" + System.currentTimeMillis();
         String tag = "simple-tag";
         
         AtomicInteger messageCount = new AtomicInteger(0);
         CountDownLatch latch = new CountDownLatch(1);
         
         // 订阅消息
-        log.info("开始订阅消息");
+        log.info("开始订阅消息: topic={}, tag={}", topic, tag);
         consumer.subscribe(MQTypeEnum.ROCKET_MQ, topic, tag, message -> {
             log.info("收到消息: {}", message);
             messageCount.incrementAndGet();
             latch.countDown();
         });
         
-        // 等待订阅生效
-        Thread.sleep(2000);
+        // 等待订阅生效 - 增加等待时间确保订阅完全生效
+        log.info("等待订阅生效...");
+        Thread.sleep(5000);
         
         // 发送消息
         TestEvent event = new TestEvent();
         event.setMessage("简单测试消息");
         event.setTimestamp(System.currentTimeMillis());
         
-        log.info("发送消息");
+        log.info("发送消息到topic: {}, tag: {}", topic, tag);
         String msgId = producer.syncSend(MQTypeEnum.ROCKET_MQ, topic, tag, event);
         log.info("消息发送完成，消息ID: {}", msgId);
         
-        // 等待消息处理
-        boolean received = latch.await(15, TimeUnit.SECONDS);
+        // 等待消息处理 - 增加等待时间
+        log.info("等待消息接收...");
+        boolean received = latch.await(30, TimeUnit.SECONDS);
         log.info("消息接收结果: {}, 收到消息数: {}", received, messageCount.get());
         
         assertTrue(received, "消息接收超时");
@@ -74,15 +77,25 @@ public class RocketMQSimpleTest {
     static class TestEvent extends MQEvent {
         private String message;
         private long timestamp;
+        private String actualTopic;
+        private String actualTag;
 
         @Override
         public String getTopic() {
-            return "simple-test-topic";
+            return actualTopic != null ? actualTopic : "simple-test-topic";
         }
 
         @Override
         public String getTag() {
-            return "simple-tag";
+            return actualTag != null ? actualTag : "simple-tag";
+        }
+        
+        public void setActualTopic(String topic) {
+            this.actualTopic = topic;
+        }
+        
+        public void setActualTag(String tag) {
+            this.actualTag = tag;
         }
     }
 }

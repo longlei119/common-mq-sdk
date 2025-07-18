@@ -39,6 +39,7 @@ public class RocketMQAutoConfiguration {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer();
         consumer.setNamesrvAddr(mqConfig.getRocketmq().getNameServerAddr());
         consumer.setConsumerGroup(mqConfig.getRocketmq().getConsumerGroup());
+        // 不在这里启动消费者，由RocketMQConsumer管理生命周期
         return consumer;
     }
     @Bean

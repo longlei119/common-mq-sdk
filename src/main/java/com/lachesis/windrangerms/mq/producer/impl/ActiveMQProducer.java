@@ -5,25 +5,26 @@ import com.lachesis.windrangerms.mq.delay.DelayMessageSender;
 import com.lachesis.windrangerms.mq.enums.MQTypeEnum;
 import com.lachesis.windrangerms.mq.model.MQEvent;
 import com.lachesis.windrangerms.mq.producer.MQProducer;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
 /**
  * ActiveMQ生产者实现
  */
-@Slf4j
 @Component
 @ConditionalOnBean(JmsTemplate.class)
 public class ActiveMQProducer implements MQProducer {
 
+    private static final Logger log = LoggerFactory.getLogger(ActiveMQProducer.class);
+
     private final JmsTemplate jmsTemplate;
-    
+
     @Autowired(required = false)
     private DelayMessageSender delayMessageSender;
 
@@ -70,13 +71,13 @@ public class ActiveMQProducer implements MQProducer {
         try {
             String messageId = "activemq-broadcast-" + System.currentTimeMillis();
             String broadcastDestination = "topic://" + topic + ".broadcast" + (tag != null ? "." + tag : "");
-            
+
             // 设置为Topic模式（广播）
             jmsTemplate.setPubSubDomain(true);
             jmsTemplate.convertAndSend(broadcastDestination, JSON.toJSONString(event));
             // 恢复默认的Queue模式
             jmsTemplate.setPubSubDomain(false);
-            
+
             log.info("ActiveMQ同步广播发送消息成功: topic={}, tag={}, messageId={}", topic, tag, messageId);
             return messageId;
         } catch (Exception e) {
@@ -90,13 +91,13 @@ public class ActiveMQProducer implements MQProducer {
         CompletableFuture.runAsync(() -> {
             try {
                 String broadcastDestination = "topic://" + topic + ".broadcast" + (tag != null ? "." + tag : "");
-                
+
                 // 设置为Topic模式（广播）
                 jmsTemplate.setPubSubDomain(true);
                 jmsTemplate.convertAndSend(broadcastDestination, event);
                 // 恢复默认的Queue模式
                 jmsTemplate.setPubSubDomain(false);
-                
+
                 log.info("ActiveMQ异步广播发送消息成功: topic={}, tag={}", topic, tag);
             } catch (Exception e) {
                 log.error("ActiveMQ异步广播发送消息失败: topic={}, tag={}", topic, tag, e);
@@ -118,13 +119,13 @@ public class ActiveMQProducer implements MQProducer {
     public MQTypeEnum getMQType() {
         return MQTypeEnum.ACTIVE_MQ;
     }
-    
+
     @Override
     public boolean send(String topic, String tag, String body, Map<String, String> properties) {
         try {
             log.info("ActiveMQ发送消息：topic={}, tag={}, body={}", topic, tag, body);
             String destination = buildDestination(topic, tag);
-            
+
             jmsTemplate.convertAndSend(destination, body, message -> {
                 // 添加用户自定义属性
                 if (properties != null) {
@@ -138,7 +139,7 @@ public class ActiveMQProducer implements MQProducer {
                 }
                 return message;
             });
-            
+
             return true;
         } catch (Exception e) {
             log.error("ActiveMQ发送消息失败：topic={}, tag={}, body={}", topic, tag, body, e);

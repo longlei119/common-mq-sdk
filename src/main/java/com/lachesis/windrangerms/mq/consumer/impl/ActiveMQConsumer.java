@@ -2,7 +2,8 @@ package com.lachesis.windrangerms.mq.consumer.impl;
 
 import com.lachesis.windrangerms.mq.consumer.MQConsumer;
 import com.lachesis.windrangerms.mq.enums.MQTypeEnum;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -19,10 +20,11 @@ import java.util.function.Consumer;
 /**
  * ActiveMQ消费者实现
  */
-@Slf4j
 @Component
 @ConditionalOnBean(JmsTemplate.class)
 public class ActiveMQConsumer implements MQConsumer {
+
+    private static final Logger log = LoggerFactory.getLogger(ActiveMQConsumer.class);
 
     private final JmsTemplate jmsTemplate;
     private final Map<String, Consumer<String>> handlerMap = new ConcurrentHashMap<>();

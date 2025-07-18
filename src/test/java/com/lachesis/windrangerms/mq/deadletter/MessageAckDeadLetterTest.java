@@ -8,6 +8,7 @@ import com.lachesis.windrangerms.mq.deadletter.model.RetryHistory;
 import com.lachesis.windrangerms.mq.enums.MQTypeEnum;
 import com.lachesis.windrangerms.mq.factory.MQFactory;
 import com.lachesis.windrangerms.mq.producer.MQProducer;
+import com.lachesis.windrangerms.mq.enums.MessageAckResult;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 消息确认和死信队列测试
  */
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("multi-mq-test")
 public class MessageAckDeadLetterTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageAckDeadLetterTest.class);
@@ -237,14 +238,24 @@ public class MessageAckDeadLetterTest {
         private AtomicBoolean messageRejected = new AtomicBoolean(false);
 
         @MQConsumer(mqType = MQTypeEnum.ROCKET_MQ, topic = "test-topic", tag = "test-tag")
-        public void consume(String message) {
+        public MessageAckResult consume(String message) {
             String messageId = "unknown";
             logger.info("接收到消息: {}, ID: {}", message, messageId);
 
             if (shouldFail && currentFailureCount < failureCount) {
                 currentFailureCount++;
                 logger.error("消息处理失败，当前失败次数: {}/{}", currentFailureCount, failureCount);
-                throw new RuntimeException("模拟消费失败");
+                
+                // 如果达到最大失败次数，触发latch并返回REJECT让消息进入死信队列
+                if (currentFailureCount >= failureCount) {
+                    logger.info("达到最大失败次数，消息将进入死信队列");
+                    if (latch != null) {
+                        latch.countDown();
+                    }
+                    return MessageAckResult.REJECT;
+                }
+                
+                return MessageAckResult.RETRY;
             }
 
             // 消息处理成功
@@ -256,10 +267,12 @@ public class MessageAckDeadLetterTest {
             if (latch != null) {
                 latch.countDown();
             }
+            
+            return MessageAckResult.SUCCESS;
         }
 
         @MQConsumer(mqType = MQTypeEnum.ROCKET_MQ, topic = "test-topic", tag = "ack-tag")
-        public void consumeAckMessage(String message) {
+        public MessageAckResult consumeAckMessage(String message) {
             String messageId = "unknown";
             logger.info("接收到需要手动确认的消息: {}, ID: {}", message, messageId);
 
@@ -273,11 +286,14 @@ public class MessageAckDeadLetterTest {
                 if (ackLatch != null) {
                     ackLatch.countDown();
                 }
+                return MessageAckResult.SUCCESS;
             }
+            
+            return MessageAckResult.SUCCESS;
         }
 
         @MQConsumer(mqType = MQTypeEnum.ROCKET_MQ, topic = "test-topic", tag = "reject-tag")
-        public void consumeRejectMessage(String message) {
+        public MessageAckResult consumeRejectMessage(String message) {
             String messageId = "unknown";
             logger.info("接收到将被拒绝的消息: {}, ID: {}", message, messageId);
 
@@ -291,8 +307,10 @@ public class MessageAckDeadLetterTest {
                 if (rejectLatch != null) {
                     rejectLatch.countDown();
                 }
-                throw new RuntimeException("模拟消息拒绝");
+                return MessageAckResult.REJECT;
             }
+            
+            return MessageAckResult.SUCCESS;
         }
 
         public void setShouldFail(boolean shouldFail) {

@@ -362,6 +362,18 @@ public class RocketMQConsumer implements MQConsumer {
         if (!started) {
             synchronized (this) {
                 if (!started) {
+                    // 检查消费者当前状态
+                    try {
+                        org.apache.rocketmq.client.impl.consumer.DefaultMQPushConsumerImpl consumerImpl = consumer.getDefaultMQPushConsumerImpl();
+                        if (consumerImpl != null && consumerImpl.getServiceState() == org.apache.rocketmq.common.ServiceState.RUNNING) {
+                            log.info("RocketMQ消费者已经在运行状态，无需重复启动");
+                            started = true;
+                            return;
+                        }
+                    } catch (Exception e) {
+                        log.debug("检查消费者状态时发生异常，继续启动流程: {}", e.getMessage());
+                    }
+                    
                     int retryCount = 0;
                     Exception lastException = null;
 
@@ -374,6 +386,13 @@ public class RocketMQConsumer implements MQConsumer {
                             return;
                         } catch (Exception e) {
                             lastException = e;
+                            // 检查是否是重复启动异常
+                            if (e.getMessage() != null && e.getMessage().contains("service state not OK")) {
+                                log.info("RocketMQ消费者已经启动，跳过重复启动");
+                                started = true;
+                                return;
+                            }
+                            
                             if (e.getCause() instanceof RemotingConnectException) {
                                 log.warn("RocketMQ服务器连接失败（{}:{}），{}秒后重试：{}", 
                                     consumer.getNamesrvAddr(),

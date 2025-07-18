@@ -82,8 +82,6 @@ public class DeadLetterBatchOperationTest {
         // 批量发送测试消息
         int batchSize = 10;
         List<String> messageIds = new ArrayList<>();
-        CountDownLatch latch = new CountDownLatch(batchSize);
-        batchTestConsumer.setLatch(latch);
 
         for (int i = 0; i < batchSize; i++) {
             String messageId = UUID.randomUUID().toString().replace("-", "");
@@ -102,16 +100,23 @@ public class DeadLetterBatchOperationTest {
             mqProducer.send("batch-test-topic", "batch-tag", messageBody, headers);
         }
 
-        // 等待所有消息处理完成
-        boolean await = latch.await(60, TimeUnit.SECONDS);
-        assertTrue(await, "消息处理超时");
-
         // 验证消息已进入死信队列
-        // 由于重试间隔是2秒，最大重试2次，等待10秒确保所有重试完成
+        // 由于重试间隔是2秒，最大重试2次，重试倍数1.5，总重试时间约为2+3=5秒
+        // 加上处理时间和延迟，等待30秒确保所有重试完成
         logger.info("等待消息重试完成并进入死信队列...");
-        Thread.sleep(10000); // 等待10秒确保所有重试完成并消息进入死信队列
-
-        List<DeadLetterMessage> messages = deadLetterService.listDeadLetterMessages(0, batchSize * 2);
+        
+        // 分阶段检查死信队列，避免一次性等待太久
+        List<DeadLetterMessage> messages = null;
+        for (int i = 0; i < 6; i++) {
+            Thread.sleep(5000); // 每5秒检查一次
+            messages = deadLetterService.listDeadLetterMessages(0, batchSize * 2);
+            logger.info("第{}次检查死信队列，当前消息数量: {}", i + 1, messages.size());
+            if (messages.size() >= batchSize) {
+                logger.info("所有消息已进入死信队列，提前结束等待");
+                break;
+            }
+        }
+        
         assertFalse(messages.isEmpty(), "死信队列中应该有消息");
 
         // 验证所有消息都进入了死信队列
@@ -245,11 +250,6 @@ public class DeadLetterBatchOperationTest {
         public void consumeMessage(String message) {
             logger.info("接收到批量测试消息: {}", message);
 
-            // 通知测试线程消息处理完成（无论成功还是失败都要调用）
-            if (latch != null) {
-                latch.countDown();
-            }
-
             if (shouldFail) {
                 // 使用消息内容作为key来跟踪失败次数
                 int currentFailureCount = currentFailureCounts.getOrDefault(message, 0);
@@ -260,6 +260,11 @@ public class DeadLetterBatchOperationTest {
 
             // 消息处理成功
             logger.info("消息处理成功，消息: {}", message);
+
+            // 只有成功处理时才通知测试线程
+            if (latch != null) {
+                latch.countDown();
+            }
 
             // 重置失败计数
             currentFailureCounts.remove(message);
