@@ -71,7 +71,7 @@ mq:
   # RabbitMQ配置
   rabbitmq:
     enabled: true
-    host: localhost
+    host: 10.2.6.180
     port: 5672
     username: root
     password: root
@@ -98,6 +98,7 @@ mq:
 logging:
   level:
     com.example.mq: DEBUG
-    org.springframework.data.redis: DEBUG
+    org.springframework.data.redis: WARN  # 减少Redis连接日志
+    org.springframework.data.redis.core.RedisConnectionUtils: WARN  # 减少连接工具类日志
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -20,6 +20,15 @@ mq:
         max-idle: 8
         min-idle: 0
   
+  # RabbitMQ配置
+  rabbitmq:
+    enabled: true
+    host: 10.2.6.180
+    port: 5672
+    username: root
+    password: root
+    virtual-host: /
+  
   # 延迟消息配置
   delay:
     enabled: true

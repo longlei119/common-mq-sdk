@@ -78,6 +78,8 @@ public class RocketMQConsumer implements MQConsumer {
                 Consumer<String> messageHandler = handlerMap.get(messageKey);
                 log.info("RocketMQ收到消息：topic={}, tag={}, key={}, 是否有处理器={}", 
                         msg.getTopic(), msg.getTags(), messageKey, messageHandler != null);
+                log.info("消息详情：msgId={}, queueId={}, reconsumeTimes={}, body={}", 
+                        msg.getMsgId(), msg.getQueueId(), msg.getReconsumeTimes(), new String(msg.getBody()));
                 
                 if (messageHandler != null) {
                     try {
@@ -88,22 +90,25 @@ public class RocketMQConsumer implements MQConsumer {
                         
                         // 直接调用处理器，不使用CompletableFuture
                         messageHandler.accept(messageBody);
-                        log.info("RocketMQ消息处理完成：topic={}, tag={}, msgId={}", msg.getTopic(), msg.getTags(), msg.getMsgId());
+                        log.info("RocketMQ消息处理完成：topic={}, tag={}, msgId={}, reconsumeTimes={}", 
+                                msg.getTopic(), msg.getTags(), msg.getMsgId(), msg.getReconsumeTimes());
                     } catch (Exception e) {
                         log.error("处理RocketMQ消息失败：topic={}, tag={}, msgId={}", 
                             msg.getTopic(), msg.getTags(), msg.getMsgId(), e);
                         
                         // 检查重试次数
                         if (msg.getReconsumeTimes() >= MAX_RETRY_TIMES) {
-                            log.error("消息处理失败且超过最大重试次数，将被跳过：topic={}, tag={}, msgId={}, retryTimes={}", 
+                            log.error("消息处理失败且超过最大重试次数，将进入死信队列：topic={}, tag={}, msgId={}, retryTimes={}", 
                                 msg.getTopic(), msg.getTags(), msg.getMsgId(), msg.getReconsumeTimes(), e);
-                            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS; // 不再重试
+                            log.info("返回 CONSUME_SUCCESS，消息将进入死信队列：msgId={}", msg.getMsgId());
+                            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS; // 不再重试，进入死信队列
                         }
                         
                         log.warn("处理消息失败，将进行重试：topic={}, tag={}, msgId={}, retryTimes={}", 
                             msg.getTopic(), msg.getTags(), msg.getMsgId(), msg.getReconsumeTimes(), e);
                         // 只对当前失败的消息进行重试，而不是整个批次
                         context.setDelayLevelWhenNextConsume(1); // 1秒后重试
+                        log.info("返回 RECONSUME_LATER，消息将重新消费：msgId={}", msg.getMsgId());
                         return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                     }
                 } else {

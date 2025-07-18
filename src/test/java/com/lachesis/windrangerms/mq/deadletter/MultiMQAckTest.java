@@ -1,6 +1,7 @@
 package com.lachesis.windrangerms.mq.deadletter;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.lachesis.windrangerms.mq.annotation.MQConsumer;
 import com.lachesis.windrangerms.mq.config.MQConfig;
 import com.lachesis.windrangerms.mq.consumer.MQConsumerManager;
@@ -58,7 +59,7 @@ public class MultiMQAckTest {
 
     @BeforeEach
     public void setup() {
-        mqProducer = mqFactory.getProducer(MQTypeEnum.ROCKET_MQ);
+        // 不在这里初始化生产者，而是在每个测试方法中根据需要初始化
     }
 
     /**
@@ -87,7 +88,8 @@ public class MultiMQAckTest {
         rabbitMQAckConsumer.setAckLatch(ackLatch);
 
         logger.info("发送RabbitMQ测试消息，ID: {}", messageId);
-        mqProducer.send("rabbit-ack-topic", "ack-tag", "这是一条需要手动确认的RabbitMQ测试消息", headers);
+        MQProducer rabbitMQProducer = mqFactory.getProducer(MQTypeEnum.RABBIT_MQ);
+        rabbitMQProducer.send("rabbit-ack-topic", "ack-tag", "这是一条需要手动确认的RabbitMQ测试消息", headers);
 
         // 等待消息处理
         boolean processAwait = processLatch.await(30, TimeUnit.SECONDS);
@@ -127,7 +129,8 @@ public class MultiMQAckTest {
         redisMQAckConsumer.setAckLatch(ackLatch);
 
         logger.info("发送Redis测试消息，ID: {}", messageId);
-        mqProducer.send("redis-ack-topic", "ack-tag", "这是一条需要手动确认的Redis测试消息", headers);
+        MQProducer redisProducer = mqFactory.getProducer(MQTypeEnum.REDIS);
+        redisProducer.send("redis-ack-topic", "ack-tag", "这是一条需要手动确认的Redis测试消息", headers);
 
         // 等待消息处理
         boolean processAwait = processLatch.await(30, TimeUnit.SECONDS);
@@ -173,7 +176,8 @@ public class MultiMQAckTest {
         rabbitMQAckConsumer.setRejectLatch(rejectLatch);
 
         logger.info("发送RabbitMQ测试消息（将被拒绝），ID: {}", messageId);
-        mqProducer.send("rabbit-ack-topic", "reject-tag", "这是一条将被拒绝的RabbitMQ测试消息", headers);
+        MQProducer rabbitMQProducer = mqFactory.getProducer(MQTypeEnum.RABBIT_MQ);
+        rabbitMQProducer.send("rabbit-ack-topic", "reject-tag", "这是一条将被拒绝的RabbitMQ测试消息", headers);
 
         // 等待消息处理
         boolean processAwait = processLatch.await(30, TimeUnit.SECONDS);
@@ -187,7 +191,8 @@ public class MultiMQAckTest {
         assertTrue(rabbitMQAckConsumer.isMessageRejected(), "消息应该已被拒绝");
 
         // 验证消息已进入死信队列
-        Thread.sleep(1000); // 等待一段时间确保消息已进入死信队列
+        // RabbitMQ消息需要重试3次才会进入死信队列，每次重试间隔可能较长
+        Thread.sleep(10000); // 等待足够时间确保消息完成所有重试并进入死信队列
 
         List<DeadLetterMessage> messages = deadLetterService.listDeadLetterMessages(0, 10);
         boolean found = false;
@@ -202,6 +207,46 @@ public class MultiMQAckTest {
         }
 
         assertTrue(found, "应该在死信队列中找到被拒绝的RabbitMQ消息");
+    }
+
+    /**
+     * 从消息中提取消息ID的辅助方法
+     */
+    private static String extractMessageIdFromMessage(String message) {
+        try {
+            // 首先尝试解析整个消息为JSON
+            JSONObject jsonObject = JSON.parseObject(message);
+            String messageId = jsonObject.getString("id");
+            if (messageId != null && !messageId.trim().isEmpty()) {
+                return messageId;
+            }
+        } catch (Exception ignored) {
+            // 解析失败，可能是Redis消息格式，尝试解析properties部分
+        }
+        
+        // 处理Redis消息格式：properties JSON + "\n" + body
+        try {
+            if (message.contains("\n")) {
+                String[] parts = message.split("\n", 2);
+                if (parts.length >= 1) {
+                    // 尝试解析第一部分为properties JSON
+                    JSONObject properties = JSON.parseObject(parts[0]);
+                    String messageId = properties.getString("messageId");
+                    if (messageId != null && !messageId.trim().isEmpty()) {
+                        return messageId;
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+            // 解析失败，忽略
+        }
+        
+        // 使用消息内容的哈希值作为稳定的ID
+        String stableId = String.valueOf(message.hashCode());
+        if (stableId.startsWith("-")) {
+            stableId = "0" + stableId.substring(1); // 移除负号
+        }
+        return stableId;
     }
 
     /**
@@ -242,7 +287,7 @@ public class MultiMQAckTest {
 
         @MQConsumer(topic = "rabbit-ack-topic", tag = "ack-tag", mqType = MQTypeEnum.RABBIT_MQ)
         public void consumeAckMessage(String message) {
-            String messageId = "unknown";
+            String messageId = extractMessageIdFromMessage(message);
             logger.info("RabbitMQ Ack Consumer 接收到消息: {}, ID: {}", message, messageId);
 
             if (processLatch != null) {
@@ -265,6 +310,24 @@ public class MultiMQAckTest {
                 }
                 throw new RuntimeException("模拟消息拒绝"); // 抛出异常以触发拒绝
             }
+        }
+
+        @MQConsumer(topic = "rabbit-ack-topic", tag = "reject-tag", mqType = MQTypeEnum.RABBIT_MQ)
+        public void consumeRejectMessage(String message) {
+            String messageId = extractMessageIdFromMessage(message);
+            logger.info("RabbitMQ Reject Consumer 接收到消息: {}, ID: {}", message, messageId);
+
+            if (processLatch != null) {
+                processLatch.countDown();
+            }
+
+            // 对于reject-tag的消息，直接拒绝
+            logger.warn("RabbitMQ Reject Consumer 拒绝消息: {}", messageId);
+            messageRejected = true;
+            if (rejectLatch != null) {
+                rejectLatch.countDown();
+            }
+            throw new RuntimeException("模拟消息拒绝"); // 抛出异常以触发拒绝
         }
 
         @Override
@@ -315,7 +378,7 @@ public class MultiMQAckTest {
 
         @MQConsumer(topic = "redis-ack-topic", tag = "ack-tag", mqType = MQTypeEnum.REDIS)
         public void consumeAckMessage(String message) {
-            String messageId = "unknown";
+            String messageId = extractMessageIdFromMessage(message);
             logger.info("Redis Ack Consumer 接收到消息: {}, ID: {}", message, messageId);
 
             if (processLatch != null) {

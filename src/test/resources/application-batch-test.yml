@@ -54,7 +54,12 @@ mq:
   
   # RabbitMQ配置
   rabbitmq:
-    enabled: false  # 禁用RabbitMQ
+    enabled: true
+    host: 10.2.6.180
+    port: 5672
+    username: root
+    password: root
+    virtual-host: /
   
   # RocketMQ配置（测试时禁用）
   rocketmq:

@@ -33,6 +33,15 @@ mq:
     producer-buffer-memory: 33554432
     producer-acks: all
   
+  # RabbitMQ配置
+  rabbitmq:
+    enabled: true
+    host: 10.2.6.180
+    port: 5672
+    username: root
+    password: root
+    virtual-host: /
+  
   # 死信队列配置
   dead-letter:
     enabled: true

@@ -87,6 +87,10 @@ public class MQConfig {
          * 获取消费者配置
          */
         public ConsumerConfig getConsumer() {
+            // 如果ConsumerConfig的groupName为空，使用主配置的consumerGroup
+            if (consumer.getGroupName() == null || consumer.getGroupName().isEmpty()) {
+                consumer.groupName = this.consumerGroup;
+            }
             return consumer;
         }
 
@@ -158,7 +162,7 @@ public class MQConfig {
             /**
              * 消费者组名
              */
-            private String groupName = "default-consumer-group";
+            private String groupName;
 
             /**
              * 消费者最小线程数

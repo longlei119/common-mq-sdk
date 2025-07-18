@@ -80,13 +80,30 @@ public class RedisDeadLetterService extends AbstractDeadLetterService {
     @Override
     public List<DeadLetterMessage> listDeadLetterMessages(int offset, int limit) {
         try {
-            // 获取队列中的消息ID列表
+            // 获取队列总长度
+            Long totalSize = redisTemplate.opsForList().size(mqConfig.getDeadLetter().getRedis().getQueueKey());
+            if (totalSize == null || totalSize == 0) {
+                return Collections.emptyList();
+            }
+            
+            // 计算从右端开始的索引范围，获取最新的消息
+            long startIndex = Math.max(0, totalSize - offset - limit);
+            long endIndex = totalSize - offset - 1;
+            
+            if (startIndex > endIndex) {
+                return Collections.emptyList();
+            }
+            
+            // 获取队列中的消息ID列表（从最新到最旧）
             List<String> messageIds = redisTemplate.opsForList().range(
-                    mqConfig.getDeadLetter().getRedis().getQueueKey(), offset, offset + limit - 1);
+                    mqConfig.getDeadLetter().getRedis().getQueueKey(), startIndex, endIndex);
             
             if (messageIds == null || messageIds.isEmpty()) {
                 return Collections.emptyList();
             }
+            
+            // 反转列表，使最新的消息排在前面
+            Collections.reverse(messageIds);
             
             // 批量获取消息详情
             List<DeadLetterMessage> messages = new ArrayList<>();
@@ -133,6 +150,7 @@ public class RedisDeadLetterService extends AbstractDeadLetterService {
             if (!StringUtils.hasText(messageJson)) {
                 return null;
             }
+            
             return JSON.parseObject(messageJson, DeadLetterMessage.class);
         } catch (Exception e) {
             log.error("Failed to get dead letter message: {}", id, e);

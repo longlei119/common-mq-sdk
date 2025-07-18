@@ -10,13 +10,20 @@ import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.rabbitmq.client.Channel;
+import com.lachesis.windrangerms.mq.deadletter.DeadLetterService;
+import com.lachesis.windrangerms.mq.deadletter.DeadLetterServiceFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -37,6 +44,9 @@ public class RabbitMQConsumer implements MQConsumer {
     // 广播模式的处理器和容器映射
     private final Map<String, Consumer<String>> broadcastHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, SimpleMessageListenerContainer> broadcastContainerMap = new ConcurrentHashMap<>();
+    
+    @Autowired(required = false)
+    private DeadLetterServiceFactory deadLetterServiceFactory;
 
     public RabbitMQConsumer(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
@@ -105,17 +115,74 @@ public class RabbitMQConsumer implements MQConsumer {
     private void subscribeUnicastInternal(String topic, String tag, Consumer<String> handler, String key) {
         try {
             String queueName = buildQueueName(topic, tag);
+            String deadLetterQueueName = queueName + ".dlq";
+            String deadLetterExchangeName = topic + ".dlx";
             
             // 声明DirectExchange用于单播
             DirectExchange exchange = new DirectExchange(topic, true, false);
             rabbitAdmin.declareExchange(exchange);
             
-            // 声明队列
-            Queue queue = new Queue(queueName, true, false, false);
-            rabbitAdmin.declareQueue(queue);
+            // 声明死信交换机
+            DirectExchange deadLetterExchange = new DirectExchange(deadLetterExchangeName, true, false);
+            rabbitAdmin.declareExchange(deadLetterExchange);
+            
+            // 声明死信队列
+            Queue deadLetterQueue = new Queue(deadLetterQueueName, true, false, false);
+            rabbitAdmin.declareQueue(deadLetterQueue);
+            
+            // 绑定死信队列到死信交换机
+            String routingKey = tag != null ? tag : "";
+            Binding deadLetterBinding = BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(routingKey);
+            rabbitAdmin.declareBinding(deadLetterBinding);
+            
+            // 尝试声明主队列，如果队列已存在且参数不匹配，则删除并重新创建
+            Queue queue;
+            try {
+                Map<String, Object> args = new HashMap<>();
+                args.put("x-dead-letter-exchange", deadLetterExchangeName);
+                args.put("x-dead-letter-routing-key", routingKey);
+                // 注释掉TTL设置，避免与已存在队列的参数冲突
+                // args.put("x-message-ttl", 60000); // 消息TTL 60秒
+                queue = new Queue(queueName, true, false, false, args);
+                rabbitAdmin.declareQueue(queue);
+            } catch (Exception e) {
+                // 检查异常链中是否包含PRECONDITION_FAILED错误
+                boolean isPreconditionFailed = false;
+                Throwable cause = e;
+                while (cause != null) {
+                    if (cause.getMessage() != null && cause.getMessage().contains("PRECONDITION_FAILED")) {
+                        isPreconditionFailed = true;
+                        break;
+                    }
+                    cause = cause.getCause();
+                }
+                
+                if (isPreconditionFailed) {
+                    log.warn("队列 {} 已存在且参数不匹配，尝试删除并重新创建: {}", queueName, e.getMessage());
+                    try {
+                        // 删除现有队列
+                        rabbitAdmin.deleteQueue(queueName);
+                        log.info("已删除队列: {}", queueName);
+                        
+                        // 重新创建队列，带有正确的死信队列参数
+                        Map<String, Object> args = new HashMap<>();
+                        args.put("x-dead-letter-exchange", deadLetterExchangeName);
+                        args.put("x-dead-letter-routing-key", routingKey);
+                        queue = new Queue(queueName, true, false, false, args);
+                        rabbitAdmin.declareQueue(queue);
+                        log.info("已重新创建队列: {} 带有死信队列参数", queueName);
+                    } catch (Exception deleteException) {
+                        log.warn("删除队列失败，使用被动声明: {}", deleteException.getMessage());
+                        // 如果删除失败，使用被动声明
+                        queue = new Queue(queueName, true, false, false);
+                        rabbitAdmin.declareQueue(queue);
+                    }
+                } else {
+                    throw e;
+                }
+            }
             
             // 绑定队列到Exchange
-            String routingKey = tag != null ? tag : "";
             Binding binding = BindingBuilder.bind(queue).to(exchange).with(routingKey);
             rabbitAdmin.declareBinding(binding);
             
@@ -124,6 +191,10 @@ public class RabbitMQConsumer implements MQConsumer {
             // 创建消息监听容器
             SimpleMessageListenerContainer container = createMessageListenerContainer(queueName, handler, topic, tag, "单播");
             containerMap.put(key, container);
+            
+            // 创建死信队列监听容器
+            SimpleMessageListenerContainer deadLetterContainer = createDeadLetterMessageListenerContainer(deadLetterQueueName, topic, tag);
+            containerMap.put(key + ":dlq", deadLetterContainer);
             
             log.debug("RabbitMQ单播订阅成功: topic={}, tag={}, queue={}", topic, tag, queueName);
         } catch (Exception e) {
@@ -247,15 +318,42 @@ public class RabbitMQConsumer implements MQConsumer {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(queueName);
-        container.setMessageListener(new MessageListener() {
+        
+        // 设置手动确认模式，以支持消息重试
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        
+        container.setMessageListener(new ChannelAwareMessageListener() {
             @Override
-            public void onMessage(Message message) {
+            public void onMessage(Message message, Channel channel) throws Exception {
                 try {
                     String messageBody = new String(message.getBody());
-                    handler.accept(messageBody);
-                    log.debug("RabbitMQ{}消息处理成功: topic={}, tag={}, message={}", mode, topic, tag, messageBody);
+                    
+                    // 检查消息headers中是否包含messageId
+                    String messageId = null;
+                    if (message.getMessageProperties() != null && message.getMessageProperties().getHeaders() != null) {
+                        Object messageIdObj = message.getMessageProperties().getHeaders().get("messageId");
+                        if (messageIdObj != null) {
+                            messageId = messageIdObj.toString();
+                        }
+                    }
+                    
+                    // 如果headers中有messageId，将其包装到消息体中
+                    String finalMessage;
+                    if (messageId != null) {
+                        // 创建包含messageId的JSON格式消息
+                        finalMessage = "{\"id\":\"" + messageId + "\",\"body\":\"" + messageBody.replace("\"", "\\\"") + "\"}";
+                    } else {
+                        finalMessage = messageBody;
+                    }
+                    
+                    handler.accept(finalMessage);
+                    // 手动确认消息
+                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                    log.debug("RabbitMQ{}消息处理成功: topic={}, tag={}, message={}", mode, topic, tag, finalMessage);
                 } catch (Exception e) {
                     log.error("RabbitMQ{}消息处理失败: topic={}, tag={}, error={}", mode, topic, tag, e.getMessage(), e);
+                    // 拒绝消息但不重新入队，让消息过期进入死信队列
+                    channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
                 }
             }
         });
@@ -283,6 +381,96 @@ public class RabbitMQConsumer implements MQConsumer {
         if (!container.isRunning()) {
             throw new RuntimeException("RabbitMQ" + mode + "消息监听容器启动失败");
         }
+        
+        return container;
+    }
+    
+    /**
+     * 创建死信队列消息监听容器
+     */
+    private SimpleMessageListenerContainer createDeadLetterMessageListenerContainer(String deadLetterQueueName, String topic, String tag) {
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        container.setQueueNames(deadLetterQueueName);
+        
+        // 设置手动确认模式
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        
+        container.setMessageListener(new ChannelAwareMessageListener() {
+            @Override
+            public void onMessage(Message message, Channel channel) throws Exception {
+                try {
+                    String messageBody = new String(message.getBody());
+                    
+                    // 检查消息headers中是否包含messageId
+                    String messageId = null;
+                    if (message.getMessageProperties() != null && message.getMessageProperties().getHeaders() != null) {
+                        Object messageIdObj = message.getMessageProperties().getHeaders().get("messageId");
+                        if (messageIdObj != null) {
+                            messageId = messageIdObj.toString();
+                        }
+                    }
+                    
+                    // 如果headers中有messageId，将其包装到消息体中
+                    String finalMessage;
+                    if (messageId != null) {
+                        // 创建包含messageId的JSON格式消息
+                        finalMessage = "{\"id\":\"" + messageId + "\",\"body\":\"" + messageBody.replace("\"", "\\\"") + "\"}";
+                    } else {
+                        finalMessage = messageBody;
+                    }
+                    
+                    // 将消息发送到死信队列服务进行处理
+                     log.info("RabbitMQ死信队列接收到消息: topic={}, tag={}, message={}", topic, tag, finalMessage);
+                     
+                     if (deadLetterServiceFactory != null) {
+                         DeadLetterService deadLetterService = deadLetterServiceFactory.getDeadLetterService();
+                         if (deadLetterService != null) {
+                             // 创建死信消息对象
+                             com.lachesis.windrangerms.mq.deadletter.model.DeadLetterMessage deadLetterMessage = new com.lachesis.windrangerms.mq.deadletter.model.DeadLetterMessage();
+                             deadLetterMessage.setId(java.util.UUID.randomUUID().toString().replace("-", ""));
+                             deadLetterMessage.setOriginalMessageId(messageId);
+                             deadLetterMessage.setTopic(topic);
+                             deadLetterMessage.setTag(tag);
+                             deadLetterMessage.setBody(finalMessage);
+                             deadLetterMessage.setMqType(MQTypeEnum.RABBIT_MQ.name());
+                             deadLetterMessage.setFailureReason("RabbitMQ消息处理失败");
+                             deadLetterMessage.setRetryCount(0);
+                             deadLetterMessage.setMaxRetryCount(3);
+                             deadLetterMessage.setCreateTimestamp(System.currentTimeMillis());
+                             deadLetterMessage.setUpdateTimestamp(System.currentTimeMillis());
+                             
+                             // 保存到死信队列服务中
+                             boolean saved = deadLetterService.saveDeadLetterMessage(deadLetterMessage);
+                             if (saved) {
+                                 log.info("消息已添加到死信队列服务: messageId={}, topic={}, tag={}", messageId, topic, tag);
+                             } else {
+                                 log.error("保存消息到死信队列失败: messageId={}, topic={}, tag={}", messageId, topic, tag);
+                             }
+                         } else {
+                             log.warn("死信队列服务未启用，无法处理死信消息: messageId={}, topic={}, tag={}", messageId, topic, tag);
+                         }
+                     } else {
+                         log.warn("死信队列服务工厂未配置，无法处理死信消息: messageId={}, topic={}, tag={}", messageId, topic, tag);
+                     }
+                     
+                     // 确认消息已处理
+                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                     log.debug("RabbitMQ死信队列消息处理完成: topic={}, tag={}, message={}", topic, tag, finalMessage);
+                } catch (Exception e) {
+                    log.error("RabbitMQ死信队列消息处理失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+                    // 拒绝消息，避免无限循环
+                    channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
+                }
+            }
+        });
+        
+        // 设置容器启动超时时间
+        container.setStartConsumerMinInterval(1000);
+        container.setConsecutiveActiveTrigger(1);
+        container.setConsecutiveIdleTrigger(1);
+        
+        container.start();
         
         return container;
     }

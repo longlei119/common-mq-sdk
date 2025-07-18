@@ -6,6 +6,8 @@ import com.lachesis.windrangerms.mq.annotation.MQConsumer;
 import com.lachesis.windrangerms.mq.config.MQConfig;
 import com.lachesis.windrangerms.mq.consumer.MQConsumerManager;
 import com.lachesis.windrangerms.mq.deadletter.model.DeadLetterMessage;
+import com.lachesis.windrangerms.mq.deadletter.model.DeadLetterStatusEnum;
+import com.lachesis.windrangerms.mq.deadletter.model.RetryHistory;
 import com.lachesis.windrangerms.mq.deadletter.DeadLetterService;
 import com.lachesis.windrangerms.mq.deadletter.DeadLetterServiceFactory;
 import com.lachesis.windrangerms.mq.enums.MessageMode;
@@ -20,6 +22,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -215,7 +218,7 @@ public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
                 int maxRetries = deadLetterEnabled ? mqConfig.getDeadLetter().getRetry().getMaxRetries() : 3;
                 
                 if (deadLetterEnabled && retryCount >= maxRetries) {
-                    sendToDeadLetterQueue(messageId, message, annotation.mqType().name(), annotation.topic(), annotation.tag(), errorMessage != null ? errorMessage : "重试次数超限");
+                    sendToDeadLetterQueue(messageId, message, annotation.mqType().getType(), annotation.topic(), annotation.tag(), errorMessage != null ? errorMessage : "重试次数超限");
                     messageRetryCountMap.remove(messageId);
                 } else {
                     throw new RuntimeException("消息需要重试: " + (errorMessage != null ? errorMessage : "业务处理失败"));
@@ -226,7 +229,7 @@ public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
                 // 拒绝消息，直接发送到死信队列
                 boolean dlqEnabled = mqConfig.getDeadLetter() != null && mqConfig.getDeadLetter().isEnabled();
                 if (dlqEnabled) {
-                    sendToDeadLetterQueue(messageId, message, annotation.mqType().name(), annotation.topic(), annotation.tag(), errorMessage != null ? errorMessage : "消息被拒绝");
+                    sendToDeadLetterQueue(messageId, message, annotation.mqType().getType(), annotation.topic(), annotation.tag(), errorMessage != null ? errorMessage : "消息被拒绝");
                 }
                 messageRetryCountMap.remove(messageId);
                 log.info("消息被拒绝: messageId={}", messageId);
@@ -261,7 +264,7 @@ public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
         if (annotation.mqType() == MQTypeEnum.REDIS) {
             log.info("Redis消息处理失败，由于Redis pub/sub不支持重试，直接发送到死信队列: messageId={}", messageId);
             if (deadLetterEnabled) {
-                sendToDeadLetterQueue(messageId, message, annotation.mqType().name(), annotation.topic(), annotation.tag(), e.getMessage());
+                sendToDeadLetterQueue(messageId, message, annotation.mqType().getType(), annotation.topic(), annotation.tag(), e.getMessage());
                 messageRetryCountMap.remove(messageId);
                 return; // Redis消息不抛出异常，避免影响其他消息处理
             }
@@ -275,7 +278,7 @@ public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
             // 如果重试次数超过最大重试次数，将消息放入死信队列
             if (deadLetterEnabled && retryCount >= maxRetries) {
                 log.info("消息重试次数超限，发送到死信队列: messageId={}, retryCount={}, maxRetries={}", messageId, retryCount, maxRetries);
-                sendToDeadLetterQueue(messageId, message, annotation.mqType().name(), annotation.topic(), annotation.tag(), e.getMessage());
+                sendToDeadLetterQueue(messageId, message, annotation.mqType().getType(), annotation.topic(), annotation.tag(), e.getMessage());
                 // 清除重试计数
                 messageRetryCountMap.remove(messageId);
             } else {
@@ -391,6 +394,10 @@ public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
             deadLetterMessage.setTopic(topic);
             deadLetterMessage.setTag(tag);
             deadLetterMessage.setBody(messageBody);
+            // 设置原始字段
+            deadLetterMessage.setOriginalTopic(topic);
+            deadLetterMessage.setOriginalTag(tag);
+            deadLetterMessage.setOriginalBody(messageBody);
             // 转换properties类型
             Map<String, String> stringProperties = new HashMap<>();
             for (Map.Entry<String, Object> entry : properties.entrySet()) {
@@ -401,6 +408,20 @@ public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
             deadLetterMessage.setFailureReason(failureReason);
             deadLetterMessage.setRetryCount(0);
             deadLetterMessage.setCreateTimestamp(System.currentTimeMillis());
+            deadLetterMessage.setDeadLetterTime(System.currentTimeMillis());
+            deadLetterMessage.setStatusEnum(DeadLetterStatusEnum.PENDING);
+            
+            // 创建重试历史
+            List<RetryHistory> retryHistories = new ArrayList<>();
+            RetryHistory retryHistory = new RetryHistory();
+            retryHistory.setId(UUID.randomUUID().toString().replace("-", ""));
+            retryHistory.setMessageId(deadLetterMessage.getId());
+            retryHistory.setRetryTimestamp(System.currentTimeMillis());
+            retryHistory.setSuccess(false);
+            retryHistory.setFailureReason(failureReason);
+            retryHistory.setRetryCount(messageRetryCountMap.getOrDefault(messageId, 0));
+            retryHistories.add(retryHistory);
+            deadLetterMessage.setRetryHistory(retryHistories);
             
             // 保存到死信队列
             boolean result = deadLetterService.saveDeadLetterMessage(deadLetterMessage);
