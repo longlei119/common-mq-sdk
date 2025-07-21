@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 注意：此测试需要配置MySQL数据源才能运行
  */
 @SpringBootTest
-@ActiveProfiles("mysql-test") // 需要创建一个mysql-test的配置文件
+// 使用默认统一配置
 public class DeadLetterQueueMySQLTest {
 
     @Autowired

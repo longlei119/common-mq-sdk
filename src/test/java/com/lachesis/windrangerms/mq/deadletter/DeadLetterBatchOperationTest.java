@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 测试死信队列的批量操作功能
  */
 @SpringBootTest
-@TestPropertySource(locations = "classpath:application-batch-test.yml")
+// 使用默认统一配置
 public class DeadLetterBatchOperationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(DeadLetterBatchOperationTest.class);

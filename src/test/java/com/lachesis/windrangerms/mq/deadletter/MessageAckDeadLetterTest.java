@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 消息确认和死信队列测试
  */
 @SpringBootTest
-@ActiveProfiles("multi-mq-test")
+// 使用默认统一配置
 public class MessageAckDeadLetterTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageAckDeadLetterTest.class);

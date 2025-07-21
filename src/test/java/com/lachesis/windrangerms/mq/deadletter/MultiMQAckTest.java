@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 注意：此测试需要配置相应的MQ服务才能运行
  */
 @SpringBootTest
-@ActiveProfiles("multi-mq-test") // 使用multi-mq-test配置文件
+// 使用默认统一配置
 public class MultiMQAckTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MultiMQAckTest.class);

@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 测试消费者注册情况
  */
 @SpringBootTest
-@ActiveProfiles("multi-mq-test")
+// 使用默认统一配置
 public class ConsumerRegistrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ConsumerRegistrationTest.class);

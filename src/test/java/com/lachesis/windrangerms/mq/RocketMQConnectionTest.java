@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 测试RocketMQ连接
  */
 @SpringBootTest
-@ActiveProfiles("multi-mq-test")
+// 使用默认统一配置
 public class RocketMQConnectionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(RocketMQConnectionTest.class);

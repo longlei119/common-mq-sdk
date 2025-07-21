@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 需要启动真实的EMQX服务器才能运行
  */
 @SpringBootTest
-@ActiveProfiles("emqx-only")
+// 使用默认统一配置
 @ConditionalOnProperty(name = "mq.emqx.enabled", havingValue = "true")
 public class EMQXRealTest {
 

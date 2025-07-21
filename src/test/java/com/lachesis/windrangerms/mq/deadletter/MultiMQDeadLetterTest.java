@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 测试多MQ死信队列功能
  */
 @SpringBootTest
-@ActiveProfiles("multi-mq-test") // 使用multi-mq-test配置文件
+// 使用默认统一配置
 public class MultiMQDeadLetterTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MultiMQDeadLetterTest.class);
