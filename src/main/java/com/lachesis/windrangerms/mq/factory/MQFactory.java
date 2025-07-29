@@ -3,6 +3,7 @@ package com.lachesis.windrangerms.mq.factory;
 import com.lachesis.windrangerms.mq.consumer.MQConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.ActiveMQConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.EMQXConsumer;
+import com.lachesis.windrangerms.mq.consumer.impl.KafkaConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RabbitMQConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RedisConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RocketMQConsumer;
@@ -10,6 +11,7 @@ import com.lachesis.windrangerms.mq.enums.MQTypeEnum;
 import com.lachesis.windrangerms.mq.producer.MQProducer;
 import com.lachesis.windrangerms.mq.producer.impl.ActiveMQProducer;
 import com.lachesis.windrangerms.mq.producer.impl.EMQXProducer;
+import com.lachesis.windrangerms.mq.producer.impl.KafkaProducer;
 import com.lachesis.windrangerms.mq.producer.impl.RabbitMQProducer;
 import com.lachesis.windrangerms.mq.producer.impl.RedisProducer;
 import com.lachesis.windrangerms.mq.producer.impl.RocketMQProducer;
@@ -39,7 +41,9 @@ public class MQFactory {
                      @Nullable RabbitMQProducer rabbitMQProducer,
                      @Nullable RabbitMQConsumer rabbitMQConsumer,
                      @Nullable EMQXProducer emqxProducer,
-                     @Nullable EMQXConsumer emqxConsumer) {
+                     @Nullable EMQXConsumer emqxConsumer,
+                     @Nullable KafkaProducer kafkaProducer,
+                     @Nullable KafkaConsumer kafkaConsumer) {
         
         log.info("MQFactory初始化开始");
         log.info("RabbitMQProducer注入状态: {}", rabbitMQProducer != null ? "已注入" : "未注入");
@@ -93,6 +97,16 @@ public class MQFactory {
         if (emqxConsumer != null) {
             consumerMap.put(MQTypeEnum.EMQX, emqxConsumer);
             log.info("注册EMQXConsumer: {}", MQTypeEnum.EMQX);
+        }
+        
+        // 注册Kafka生产者和消费者
+        if (kafkaProducer != null) {
+            producerMap.put(MQTypeEnum.KAFKA, kafkaProducer);
+            log.info("注册KafkaProducer: {}", MQTypeEnum.KAFKA);
+        }
+        if (kafkaConsumer != null) {
+            consumerMap.put(MQTypeEnum.KAFKA, kafkaConsumer);
+            log.info("注册KafkaConsumer: {}", MQTypeEnum.KAFKA);
         }
         
         log.info("MQFactory初始化完成，已注册生产者: {}, 已注册消费者: {}", producerMap.keySet(), consumerMap.keySet());

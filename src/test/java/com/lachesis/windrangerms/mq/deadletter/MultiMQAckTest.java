@@ -55,6 +55,9 @@ public class MultiMQAckTest {
     private RedisMQAckConsumer redisMQAckConsumer;
 
     @Autowired
+    private KafkaAckConsumer kafkaAckConsumer;
+
+    @Autowired
     private MQConsumerManager mqConsumerManager;
 
     @BeforeEach
@@ -145,6 +148,47 @@ public class MultiMQAckTest {
     }
 
     /**
+     * 测试Kafka消息确认机制
+     */
+    @Test
+    public void testKafkaAck() throws InterruptedException {
+        // 检查Kafka是否启用
+        if (mqConfig.getKafka() == null || mqConfig.getKafka().getBootstrapServers() == null) {
+            logger.info("Kafka未启用，跳过测试");
+            return;
+        }
+
+        // 设置测试消费者为手动确认模式
+        kafkaAckConsumer.setAckMode(MQAckConsumer.AckMode.MANUAL);
+
+        // 发送测试消息
+        String messageId = UUID.randomUUID().toString().replace("-", "");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("messageId", messageId);
+
+        CountDownLatch processLatch = new CountDownLatch(1);
+        kafkaAckConsumer.setProcessLatch(processLatch);
+
+        CountDownLatch ackLatch = new CountDownLatch(1);
+        kafkaAckConsumer.setAckLatch(ackLatch);
+
+        logger.info("发送Kafka测试消息，ID: {}", messageId);
+        MQProducer kafkaProducer = mqFactory.getProducer(MQTypeEnum.KAFKA);
+        kafkaProducer.send("kafka-ack-topic", "ack-tag", "这是一条需要手动确认的Kafka测试消息", headers);
+
+        // 等待消息处理
+        boolean processAwait = processLatch.await(30, TimeUnit.SECONDS);
+        assertTrue(processAwait, "消息处理超时");
+
+        // 等待消息确认
+        boolean ackAwait = ackLatch.await(30, TimeUnit.SECONDS);
+        assertTrue(ackAwait, "消息确认超时");
+
+        // 验证消息已被确认
+        assertTrue(kafkaAckConsumer.isMessageAcknowledged(), "消息应该已被确认");
+    }
+
+    /**
      * 测试RabbitMQ消息拒绝并进入死信队列
      */
     @Test
@@ -207,6 +251,70 @@ public class MultiMQAckTest {
         }
 
         assertTrue(found, "应该在死信队列中找到被拒绝的RabbitMQ消息");
+    }
+
+    /**
+     * 测试Kafka消息拒绝并进入死信队列
+     */
+    @Test
+    public void testKafkaRejectToDeadLetter() throws InterruptedException {
+        // 检查Kafka是否启用
+        if (mqConfig.getKafka() == null || mqConfig.getKafka().getBootstrapServers() == null) {
+            logger.info("Kafka未启用，跳过测试");
+            return;
+        }
+
+        DeadLetterService deadLetterService = deadLetterServiceFactory.getDeadLetterService();
+        if (deadLetterService == null) {
+            logger.info("死信队列服务未启用，跳过测试");
+            return;
+        }
+
+        // 设置测试消费者为拒绝模式
+        kafkaAckConsumer.setAckMode(MQAckConsumer.AckMode.REJECT);
+
+        // 发送测试消息
+        String messageId = UUID.randomUUID().toString().replace("-", "");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("messageId", messageId);
+
+        CountDownLatch processLatch = new CountDownLatch(1);
+        kafkaAckConsumer.setProcessLatch(processLatch);
+
+        CountDownLatch rejectLatch = new CountDownLatch(1);
+        kafkaAckConsumer.setRejectLatch(rejectLatch);
+
+        logger.info("发送Kafka测试消息（将被拒绝），ID: {}", messageId);
+        MQProducer kafkaProducer = mqFactory.getProducer(MQTypeEnum.KAFKA);
+        kafkaProducer.send("kafka-ack-topic", "reject-tag", "这是一条将被拒绝的Kafka测试消息", headers);
+
+        // 等待消息处理
+        boolean processAwait = processLatch.await(30, TimeUnit.SECONDS);
+        assertTrue(processAwait, "消息处理超时");
+
+        // 等待消息拒绝
+        boolean rejectAwait = rejectLatch.await(30, TimeUnit.SECONDS);
+        assertTrue(rejectAwait, "消息拒绝超时");
+
+        // 验证消息已被拒绝
+        assertTrue(kafkaAckConsumer.isMessageRejected(), "消息应该已被拒绝");
+
+        // 验证消息已进入死信队列
+        Thread.sleep(5000); // 等待足够时间确保消息完成重试并进入死信队列
+
+        List<DeadLetterMessage> messages = deadLetterService.listDeadLetterMessages(0, 10);
+        boolean found = false;
+        for (DeadLetterMessage message : messages) {
+            if (message.getOriginalMessageId().equals(messageId) ||
+                (message.getProperties() != null && messageId.equals(message.getProperties().get("messageId")))) {
+                found = true;
+                assertEquals("KAFKA", message.getMqType(), "MQ类型应该是KAFKA");
+                logger.info("在死信队列中找到被拒绝的Kafka消息: {}", JSON.toJSONString(message));
+                break;
+            }
+        }
+
+        assertTrue(found, "应该在死信队列中找到被拒绝的Kafka消息");
     }
 
     /**
@@ -401,6 +509,97 @@ public class MultiMQAckTest {
                 }
                 throw new RuntimeException("模拟消息拒绝"); // 抛出异常以触发拒绝
             }
+        }
+
+        @Override
+        public void setAckMode(AckMode mode) {
+            this.ackMode = mode;
+        }
+
+        @Override
+        public void setProcessLatch(CountDownLatch latch) {
+            this.processLatch = latch;
+        }
+
+        @Override
+        public void setAckLatch(CountDownLatch latch) {
+            this.ackLatch = latch;
+        }
+
+        @Override
+        public void setRejectLatch(CountDownLatch latch) {
+            this.rejectLatch = latch;
+        }
+
+        @Override
+        public boolean isMessageAcknowledged() {
+            return messageAcknowledged;
+        }
+
+        @Override
+        public boolean isMessageRejected() {
+            return messageRejected;
+        }
+    }
+
+    /**
+     * Kafka消息确认消费者
+     */
+    @Component
+    public static class KafkaAckConsumer implements MQAckConsumer {
+
+        private static final Logger logger = LoggerFactory.getLogger(KafkaAckConsumer.class);
+
+        private AckMode ackMode = AckMode.MANUAL;
+        private CountDownLatch processLatch;
+        private CountDownLatch ackLatch;
+        private CountDownLatch rejectLatch;
+        private boolean messageAcknowledged = false;
+        private boolean messageRejected = false;
+
+        @MQConsumer(topic = "kafka-ack-topic", tag = "ack-tag", mqType = MQTypeEnum.KAFKA)
+        public void consumeAckMessage(String message) {
+            String messageId = extractMessageIdFromMessage(message);
+            logger.info("Kafka Ack Consumer 接收到消息: {}, ID: {}", message, messageId);
+
+            if (processLatch != null) {
+                processLatch.countDown();
+            }
+
+            if (ackMode == AckMode.MANUAL) {
+                // 模拟手动确认
+                logger.info("Kafka Ack Consumer 手动确认消息: {}", messageId);
+                messageAcknowledged = true;
+                if (ackLatch != null) {
+                    ackLatch.countDown();
+                }
+            } else if (ackMode == AckMode.REJECT) {
+                // 模拟拒绝消息
+                logger.warn("Kafka Ack Consumer 拒绝消息: {}", messageId);
+                messageRejected = true;
+                if (rejectLatch != null) {
+                    rejectLatch.countDown();
+                }
+                throw new RuntimeException("模拟消息拒绝"); // 抛出异常以触发拒绝
+            }
+        }
+
+        @MQConsumer(topic = "kafka-ack-topic", tag = "reject-tag", mqType = MQTypeEnum.KAFKA)
+        public void consumeRejectMessage(String message) {
+            String messageId = extractMessageIdFromMessage(message);
+            logger.info("Kafka Reject Consumer 接收到消息: {}, ID: {}", message, messageId);
+
+            if (processLatch != null) {
+                processLatch.countDown();
+            }
+
+            // 对于reject-tag的消息，直接拒绝
+            logger.warn("Kafka Reject Consumer 拒绝消息: {}", messageId);
+            messageRejected = true;
+            if (rejectLatch != null) {
+                rejectLatch.countDown();
+            }
+            throw new RuntimeException("模拟消息拒绝"); // 抛出异常以触发拒绝
         }
 
         @Override

@@ -21,7 +21,7 @@ import java.util.Map;
  * RocketMQ生产者实现
  */
 @Component
-@ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
+@ConditionalOnProperty(prefix = "mq.rocketmq", name = {"enabled", "name-server-addr"}, havingValue = "true")
 public class RocketMQProducer implements MQProducer {
     
     private static final Logger log = LoggerFactory.getLogger(RocketMQProducer.class);

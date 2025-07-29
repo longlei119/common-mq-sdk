@@ -29,7 +29,7 @@ mq:
 
   # RocketMQ配置
   rocketmq:
-    enabled: true
+    enabled: false
     # RocketMQ服务器地址，格式：host:port
     name-server-addr: localhost:9876
     # 生产者组名
@@ -50,7 +50,7 @@ mq:
 
   # RabbitMQ配置
   rabbitmq:
-    enabled: true
+    enabled: false
     host: 10.2.6.180
     port: 5672
     username: root
@@ -70,15 +70,15 @@ mq:
 
   # Kafka配置
   kafka:
-    enabled: false
-    bootstrap-servers: localhost:9092
+    enabled: true
+    bootstrap-servers: 10.2.3.161:9092
     producer-client-id: kafka-producer
     consumer-group-id: kafka-consumer-group
     auto-commit-interval: 1000
 
   # EMQX配置
   emqx:
-    enabled: true
+    enabled: false
     server-uri: tcp://10.2.3.172:1883
     username: user
     password: Lachesis-mh_1024

@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 
 @Slf4j
 @Component
-@ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
+@ConditionalOnProperty(prefix = "mq.rocketmq", name = {"enabled", "name-server-addr"}, havingValue = "true")
 public class TestConsumer {
 
     @Autowired

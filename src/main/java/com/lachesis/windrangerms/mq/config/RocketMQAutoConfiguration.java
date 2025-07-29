@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RocketMQAutoConfiguration {
     @Bean
-    @ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
+    @ConditionalOnProperty(prefix = "mq.rocketmq", name = {"enabled", "name-server-addr"}, havingValue = "true")
     @ConditionalOnMissingBean
     public DefaultMQProducer rocketMQDefaultProducer(MQConfig mqConfig) throws Exception {
         DefaultMQProducer producer = new DefaultMQProducer();
@@ -33,7 +33,7 @@ public class RocketMQAutoConfiguration {
         return new RocketMQProducer(defaultMQProducer);
     }
     @Bean
-    @ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
+    @ConditionalOnProperty(prefix = "mq.rocketmq", name = {"enabled", "name-server-addr"}, havingValue = "true")
     @ConditionalOnMissingBean
     public DefaultMQPushConsumer rocketMQDefaultPushConsumer(MQConfig mqConfig) {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer();
@@ -50,13 +50,13 @@ public class RocketMQAutoConfiguration {
         return new RocketMQConsumer(defaultMQPushConsumer, rocketMQProperties);
     }
     @Bean
-    @ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
+    @ConditionalOnProperty(prefix = "mq.rocketmq", name = {"enabled", "name-server-addr"}, havingValue = "true")
     @ConditionalOnMissingBean
     public MQConfig.RocketMQProperties rocketMQProperties(MQConfig mqConfig) {
         return mqConfig.getRocketmq();
     }
     @Bean
-    @ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
+    @ConditionalOnProperty(prefix = "mq.rocketmq", name = {"enabled", "name-server-addr"}, havingValue = "true")
     @ConditionalOnMissingBean
     public RocketMQAdapter rocketMQAdapter(MQConfig mqConfig) throws Exception {
         MQConfig.RocketMQProperties rocketMQProps = mqConfig.getRocketmq();

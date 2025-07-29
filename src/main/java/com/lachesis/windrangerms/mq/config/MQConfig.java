@@ -209,19 +209,24 @@ public class MQConfig {
     @Data
     public static class KafkaProperties {
         /**
+         * 是否启用Kafka
+         */
+        private boolean enabled = true;
+        
+        /**
          * 服务器地址
          */
-        private String bootstrapServers;
+        private String bootstrapServers = "10.2.3.161:9092";
 
         /**
          * 生产者客户端ID
          */
-        private String producerClientId;
+        private String producerClientId = "kafka-producer";
 
         /**
          * 消费者组ID
          */
-        private String consumerGroupId;
+        private String consumerGroupId = "kafka-consumer-group";
 
         /**
          * 自动提交间隔（毫秒）

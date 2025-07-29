@@ -51,7 +51,7 @@ public class DeadLetterQueueExample implements CommandLineRunner {
         properties.put("messageId", messageId);
         
         logger.info("发送测试消息，ID: {}", messageId);
-        MQProducer mqProducer = mqFactory.getProducer(MQTypeEnum.REDIS);
+        MQProducer mqProducer = mqFactory.getProducer(MQTypeEnum.KAFKA);
         mqProducer.send("test-topic", "test-tag", "这是一条测试消息，可能会失败", properties);
 
         // 等待消息处理（在实际应用中，这里应该有更好的方式来等待或检查）
@@ -95,7 +95,7 @@ public class DeadLetterQueueExample implements CommandLineRunner {
 
         private static final Logger logger = LoggerFactory.getLogger(TestConsumer.class);
 
-        @MQConsumer(mqType = MQTypeEnum.REDIS, topic = "test-topic", tag = "test-tag")
+        @MQConsumer(mqType = MQTypeEnum.KAFKA, topic = "test-topic", tag = "test-tag")
         public void consumeMessage(String message) {
             logger.info("接收到消息: {}", message);
 

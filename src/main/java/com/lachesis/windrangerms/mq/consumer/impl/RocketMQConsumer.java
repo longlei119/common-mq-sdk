@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * RocketMQ消费者实现
  */
 @Component
-@ConditionalOnProperty(prefix = "mq.rocketmq", name = "name-server-addr")
+@ConditionalOnProperty(prefix = "mq.rocketmq", name = {"enabled", "name-server-addr"}, havingValue = "true")
 public class RocketMQConsumer implements MQConsumer {
     
     private static final Logger log = LoggerFactory.getLogger(RocketMQConsumer.class);

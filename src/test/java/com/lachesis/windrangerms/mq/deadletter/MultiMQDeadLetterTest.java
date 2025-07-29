@@ -53,6 +53,9 @@ public class MultiMQDeadLetterTest {
 
     @Autowired
     private RedisMQTestConsumer redisMQTestConsumer;
+    
+    @Autowired
+    private KafkaTestConsumer kafkaTestConsumer;
 
     @BeforeEach
     public void setup() {
@@ -178,6 +181,62 @@ public class MultiMQDeadLetterTest {
 
         assertTrue(found, "应该在死信队列中找到Redis消息");
     }
+    
+    /**
+     * 测试Kafka死信队列
+     */
+    @Test
+    public void testKafkaDeadLetter() throws InterruptedException {
+        // 检查Kafka是否启用
+        if (mqConfig.getKafka() == null || mqConfig.getKafka().getBootstrapServers() == null) {
+            logger.info("Kafka未启用，跳过测试");
+            return;
+        }
+
+        DeadLetterService deadLetterService = deadLetterServiceFactory.getDeadLetterService();
+        assertNotNull(deadLetterService, "死信服务不应为空");
+
+        String messageId = UUID.randomUUID().toString().replace("-", "");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("messageId", messageId);
+
+        CountDownLatch latch = new CountDownLatch(1);
+        kafkaTestConsumer.setLatch(latch);
+
+        // 使用Kafka生产者发送消息
+        MQProducer kafkaProducer = mqFactory.getProducer(MQTypeEnum.KAFKA);
+        logger.info("发送Kafka测试消息，ID: {}", messageId);
+        kafkaProducer.send("test-dead-letter-topic-kafka", "test-tag", "这是一条Kafka测试消息", headers);
+
+        // 等待消息被消费并进入死信队列
+        boolean await = latch.await(30, TimeUnit.SECONDS);
+        assertTrue(await, "消息未被消费或未进入死信队列");
+
+        // 验证消息已进入死信队列
+        Thread.sleep(1000); // 等待一段时间确保消息已进入死信队列
+
+        List<DeadLetterMessage> messages = deadLetterService.listDeadLetterMessages(0, 10);
+        boolean found = false;
+        for (DeadLetterMessage message : messages) {
+            if (message.getOriginalMessageId().equals(messageId) ||
+                (message.getProperties() != null && messageId.equals(message.getProperties().get("messageId")))) {
+                found = true;
+                assertEquals("KAFKA", message.getMqType(), "MQ类型应该是KAFKA");
+                assertEquals("test-dead-letter-topic-kafka", message.getOriginalTopic(), "原始Topic不匹配");
+                assertEquals("test-tag", message.getOriginalTag(), "原始Tag不匹配");
+                assertTrue(message.getOriginalBody().contains("这是一条Kafka测试消息"), "原始Body应包含测试消息");
+                assertNotNull(message.getDeadLetterTime(), "死信时间不应为空");
+                assertNotNull(message.getRetryHistory(), "重试历史不应为空");
+                assertFalse(message.getRetryHistory().isEmpty(), "重试历史不应为空");
+                RetryHistory lastRetry = message.getRetryHistory().get(message.getRetryHistory().size() - 1);
+                //assertEquals("模拟消费失败", lastRetry.getErrorMessage(), "错误信息不匹配");
+                logger.info("在死信队列中找到Kafka消息: {}", JSON.toJSONString(message));
+                break;
+            }
+        }
+
+        assertTrue(found, "应该在死信队列中找到Kafka消息");
+    }
 
     @Component
     public static class RabbitMQTestConsumer {
@@ -208,6 +267,26 @@ public class MultiMQDeadLetterTest {
         @MQConsumer(topic = "test-dead-letter-topic-redis", tag = "test-tag", mqType = MQTypeEnum.REDIS)
         public void consume(String message) {
             logger.info("RedisMQTestConsumer 接收到消息: {}", message);
+            if (latch != null) {
+                latch.countDown();
+            }
+            throw new RuntimeException("模拟消费失败"); // 模拟消费失败，消息进入死信队列
+        }
+
+        public void setLatch(CountDownLatch latch) {
+            this.latch = latch;
+        }
+    }
+    
+    @Component
+    public static class KafkaTestConsumer {
+
+        private static final Logger logger = LoggerFactory.getLogger(KafkaTestConsumer.class);
+        private CountDownLatch latch;
+
+        @MQConsumer(topic = "test-dead-letter-topic-kafka", tag = "test-tag", mqType = MQTypeEnum.KAFKA)
+        public void consume(String message) {
+            logger.info("KafkaTestConsumer 接收到消息: {}", message);
             if (latch != null) {
                 latch.countDown();
             }

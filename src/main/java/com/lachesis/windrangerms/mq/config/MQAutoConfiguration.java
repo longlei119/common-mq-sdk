@@ -2,6 +2,7 @@ package com.lachesis.windrangerms.mq.config;
 
 import com.lachesis.windrangerms.mq.consumer.impl.ActiveMQConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.EMQXConsumer;
+import com.lachesis.windrangerms.mq.consumer.impl.KafkaConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RabbitMQConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RedisConsumer;
 import com.lachesis.windrangerms.mq.consumer.impl.RocketMQConsumer;
@@ -15,13 +16,13 @@ import com.lachesis.windrangerms.mq.delay.adapter.RedisAdapter;
 import com.lachesis.windrangerms.mq.factory.MQFactory;
 import com.lachesis.windrangerms.mq.producer.impl.ActiveMQProducer;
 import com.lachesis.windrangerms.mq.producer.impl.EMQXProducer;
+import com.lachesis.windrangerms.mq.producer.impl.KafkaProducer;
 import com.lachesis.windrangerms.mq.producer.impl.RabbitMQProducer;
 import com.lachesis.windrangerms.mq.producer.impl.RedisProducer;
 import com.lachesis.windrangerms.mq.producer.impl.RocketMQProducer;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -55,15 +56,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties(MQConfig.class)
 @EnableScheduling
 @ComponentScan(basePackages = "com.lachesis.windrangerms.mq")
+@Import(KafkaAutoConfiguration.class)
 public class MQAutoConfiguration implements ApplicationRunner {
-    
+
     /**
      * 引入死信队列自动配置
      */
     @Configuration
     @Import(DeadLetterAutoConfiguration.class)
-    public static class DeadLetterConfiguration {}
-    
+    public static class DeadLetterConfiguration {
+    }
 
     // 其它 MQ 配置同前
 
@@ -82,18 +84,16 @@ public class MQAutoConfiguration implements ApplicationRunner {
     @Configuration
     public static class RabbitMQAutoConfiguration {
 
-        
-
     }
 
     @ConditionalOnClass(name = "org.apache.kafka.clients.producer.KafkaProducer")
     @Configuration
     public static class KafkaAutoConfiguration {
         @Bean
-        @ConditionalOnBean(KafkaProducer.class)
+        @ConditionalOnBean(name = "kafkaProducerForAdapter")
         @ConditionalOnMissingBean
-        public KafkaAdapter kafkaAdapter(KafkaProducer<String, byte[]> kafkaProducer) {
-            return new KafkaAdapter(kafkaProducer);
+        public KafkaAdapter kafkaAdapter(org.apache.kafka.clients.producer.KafkaProducer<String, byte[]> kafkaProducerForAdapter) {
+            return new KafkaAdapter(kafkaProducerForAdapter);
         }
     }
 
@@ -112,21 +112,23 @@ public class MQAutoConfiguration implements ApplicationRunner {
     @Configuration
     public static class RedisAutoConfiguration {
         @Bean
-        @ConditionalOnProperty(prefix = "mq.redis", name = "host")
+        @ConditionalOnProperty(prefix = "mq.redis", name = {"enabled", "host"}, havingValue = "true")
         @ConditionalOnMissingBean
         public RedisAdapter redisAdapter(StringRedisTemplate redisTemplate) {
             return new RedisAdapter(redisTemplate);
         }
+
         // 新增 RedisConsumer Bean
         @Bean
-        @ConditionalOnProperty(prefix = "mq.redis", name = "host")
+        @ConditionalOnProperty(prefix = "mq.redis", name = {"enabled", "host"}, havingValue = "true")
         @ConditionalOnMissingBean
         public RedisConsumer redisConsumer(RedisMessageListenerContainer listenerContainer) {
             return new RedisConsumer(listenerContainer);
         }
+
         // 新增 RedisProducer Bean
         @Bean
-        @ConditionalOnProperty(prefix = "mq.redis", name = "host")
+        @ConditionalOnProperty(prefix = "mq.redis", name = {"enabled", "host"}, havingValue = "true")
         @ConditionalOnMissingBean
         public RedisProducer redisProducer(StringRedisTemplate redisTemplate, @Autowired(required = false) DelayMessageSender delayMessageSender) {
             return new RedisProducer(redisTemplate, delayMessageSender);
@@ -137,7 +139,8 @@ public class MQAutoConfiguration implements ApplicationRunner {
     @ConditionalOnBean(StringRedisTemplate.class)
     @ConditionalOnProperty(prefix = "mq.delay", name = "enabled", havingValue = "true")
     @ConditionalOnMissingBean
-    public DelayMessageSender delayMessageSender(StringRedisTemplate redisTemplate, @Autowired(required = false) List<MQAdapter> mqAdapters, MQConfig mqConfig) {
+    public DelayMessageSender delayMessageSender(StringRedisTemplate redisTemplate, @Autowired(required = false) List<MQAdapter> mqAdapters,
+        MQConfig mqConfig) {
         if (mqAdapters == null || mqAdapters.isEmpty()) {
             log.warn("No MQAdapter beans found, DelayMessageSender will be created with empty adapter list");
             mqAdapters = new ArrayList<>();
@@ -150,29 +153,32 @@ public class MQAutoConfiguration implements ApplicationRunner {
     @ConditionalOnMissingBean
     @Lazy
     public MQFactory mqFactory(
-            @Autowired(required = false) RocketMQProducer rocketMQProducer,
-            @Autowired(required = false) RocketMQConsumer rocketMQConsumer,
-            @Autowired(required = false) RedisProducer redisProducer,
-            @Autowired(required = false) RedisConsumer redisConsumer,
-            @Autowired(required = false) ActiveMQProducer activeMQProducer,
-            @Autowired(required = false) ActiveMQConsumer activeMQConsumer,
-            @Autowired(required = false) RabbitMQProducer rabbitMQProducer,
-            @Autowired(required = false) RabbitMQConsumer rabbitMQConsumer,
-            @Autowired(required = false) EMQXProducer emqxProducer,
-            @Autowired(required = false) EMQXConsumer emqxConsumer
+        @Autowired(required = false) RocketMQProducer rocketMQProducer,
+        @Autowired(required = false) RocketMQConsumer rocketMQConsumer,
+        @Autowired(required = false) RedisProducer redisProducer,
+        @Autowired(required = false) RedisConsumer redisConsumer,
+        @Autowired(required = false) ActiveMQProducer activeMQProducer,
+        @Autowired(required = false) ActiveMQConsumer activeMQConsumer,
+        @Autowired(required = false) RabbitMQProducer rabbitMQProducer,
+        @Autowired(required = false) RabbitMQConsumer rabbitMQConsumer,
+        @Autowired(required = false) EMQXProducer emqxProducer,
+        @Autowired(required = false) EMQXConsumer emqxConsumer,
+        @Autowired(required = false) KafkaProducer kafkaProducer,
+        @Autowired(required = false) KafkaConsumer kafkaConsumer
     ) {
-        return new MQFactory(rocketMQProducer, rocketMQConsumer, redisProducer, redisConsumer, activeMQProducer, activeMQConsumer, rabbitMQProducer, rabbitMQConsumer, emqxProducer, emqxConsumer);
+        return new MQFactory(rocketMQProducer, rocketMQConsumer, redisProducer, redisConsumer, activeMQProducer, activeMQConsumer, rabbitMQProducer,
+            rabbitMQConsumer, emqxProducer, emqxConsumer, kafkaProducer, kafkaConsumer);
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("MQ自动配置启动完成");
-        log.info("RabbitMQ配置: enabled={}, host={}, port={}", 
-                mqConfig.getRabbitmq().isEnabled(),
-                mqConfig.getRabbitmq().getHost(),
-                mqConfig.getRabbitmq().getPort());
+        log.info("RabbitMQ配置: enabled={}, host={}, port={}",
+            mqConfig.getRabbitmq().isEnabled(),
+            mqConfig.getRabbitmq().getHost(),
+            mqConfig.getRabbitmq().getPort());
     }
-    
+
     @Autowired
     private MQConfig mqConfig;
 
@@ -198,10 +204,10 @@ public class MQAutoConfiguration implements ApplicationRunner {
     @ConditionalOnProperty(prefix = "mq.rabbitmq", name = "enabled", havingValue = "true")
     @ConditionalOnMissingBean
     public ConnectionFactory rabbitConnectionFactory(MQConfig mqConfig) {
-        log.info("创建RabbitMQ ConnectionFactory, enabled={}, host={}, port={}", 
-                mqConfig.getRabbitmq().isEnabled(), 
-                mqConfig.getRabbitmq().getHost(), 
-                mqConfig.getRabbitmq().getPort());
+        log.info("创建RabbitMQ ConnectionFactory, enabled={}, host={}, port={}",
+            mqConfig.getRabbitmq().isEnabled(),
+            mqConfig.getRabbitmq().getHost(),
+            mqConfig.getRabbitmq().getPort());
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
         connectionFactory.setHost(mqConfig.getRabbitmq().getHost());
         connectionFactory.setPort(mqConfig.getRabbitmq().getPort());
@@ -234,7 +240,7 @@ public class MQAutoConfiguration implements ApplicationRunner {
         log.info("创建RabbitMQProducer Bean");
         return new RabbitMQProducer(rabbitTemplate);
     }
-    
+
     @Bean
     @ConditionalOnProperty(prefix = "mq.rabbitmq", name = "enabled", havingValue = "true")
     @ConditionalOnBean(RabbitTemplate.class)

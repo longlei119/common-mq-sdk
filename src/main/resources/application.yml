@@ -1,105 +1,93 @@
 server:
   port: 8084
 # 测试环境配置
-spring:
-  redis:
-    host: localhost
-    port: 6379
-    database: 0
-    timeout: 2000
-    lettuce:
-      pool:
-        max-active: 8
-        max-wait: -1
-        max-idle: 8
-        min-idle: 0
-mq:
-  # RocketMQ配置
-  # 注意：如果不需要使用RocketMQ，请保持以下配置注释状态
-  rocketmq:
-    enabled: true
-    # RocketMQ服务器地址，格式：host:port
-    name-server-addr: localhost:9876
-    # 生产者组名
-    producer-group: test-producer-group
-    # 消费者组名
-    consumer-group: test-consumer-group
-    # 发送消息超时时间（毫秒）
-    send-msg-timeout: 10000
-    # 消费者配置
-    consumer:
-      # 消费线程数
-      thread-min: 20
-      thread-max: 64
-      # 批量消费配置
-      batch-max-size: 1
-      # 消费超时时间（毫秒）
-      consume-timeout: 15000
+# mq:
+#   # RocketMQ配置
+#   # 注意：如果不需要使用RocketMQ，请保持以下配置注释状态
+#   rocketmq:
+#     enabled: true
+#     # RocketMQ服务器地址，格式：host:port
+#     name-server-addr: localhost:9876
+#     # 生产者组名
+#     producer-group: test-producer-group
+#     # 消费者组名
+#     consumer-group: test-consumer-group
+#     # 发送消息超时时间（毫秒）
+#     send-msg-timeout: 10000
+#     # 消费者配置
+#     consumer:
+#       # 消费线程数
+#       thread-min: 20
+#       thread-max: 64
+#       # 批量消费配置
+#       batch-max-size: 1
+#       # 消费超时时间（毫秒）
+#       consume-timeout: 15000
 
-  # Redis配置
-  redis:
-    enabled: true
-    host: localhost
-    port: 6379
-    database: 0
-    timeout: 3000
-    password:
-    pool:
-      max-active: 8
-      max-idle: 8
-      min-idle: 0
-      max-wait: -1
+#   # Redis配置
+#   redis:
+#     enabled: true
+#     host: localhost
+#     port: 6379
+#     database: 0
+#     timeout: 3000
+#     password:
+#     pool:
+#       max-active: 8
+#       max-idle: 8
+#       min-idle: 0
+#       max-wait: -1
 
-  # RabbitMQ配置
-  rabbitmq:
-    enabled: true
-    host: 10.2.6.180
-    port: 5672
-    username: root
-    password: root
-    virtual-host: /
+#   # RabbitMQ配置
+#   rabbitmq:
+#     enabled: true
+#     host: 10.2.6.180
+#     port: 5672
+#     username: root
+#     password: root
+#     virtual-host: /
 
-  # ActiveMQ配置
-  activemq:
-    enabled: false
-    broker-url: tcp://localhost:61616
-    username: admin
-    password: admin
-    pool:
-      enabled: true
-      max-connections: 10
-      idle-timeout: 30000
+#   # ActiveMQ配置
+#   activemq:
+#     enabled: false
+#     broker-url: tcp://localhost:61616
+#     username: admin
+#     password: admin
+#     pool:
+#       enabled: true
+#       max-connections: 10
+#       idle-timeout: 30000
 
-  # Kafka配置
-  kafka:
-    enabled: false
-    bootstrap-servers: localhost:9092
-    producer-client-id: kafka-producer
-    consumer-group-id: kafka-consumer-group
-    auto-commit-interval: 1000
+#   # Kafka配置
+#   kafka:
+#     enabled: false
+#     bootstrap-servers: 10.2.3.161:9092
+#     producer-client-id: kafka-producer
+#     consumer-group-id: kafka-consumer-group
+#     auto-commit-interval: 1000
 
-  # EMQX配置
-  # 注意：如果不需要使用EMQX，请保持enabled为false
-  emqx:
-    enabled: true
-    server-uri: tcp://10.2.3.141:1883
-    username: user
-    password: Lachesis-mh_1024
-    client-id: testClient
-    clean-session: true
-    keep-alive-interval: 60
+#   # EMQX配置
+#   # 注意：如果不需要使用EMQX，请保持enabled为false
+#   emqx:
+#     enabled: true
+#     server-uri: tcp://10.2.3.141:1883
+#     username: user
+#     password: Lachesis-mh_1024
+#     client-id: testClient
+#     clean-session: true
+#     keep-alive-interval: 60
 
-  # 延迟消息配置
-  delay:
-    enabled: true
-    redis-key-prefix: "delay_message:"
-    scan-interval: 100  # 从1000ms改为100ms，提高延迟精度
-    batch-size: 100
-    message-expire-time: 604800000  # 7天，单位毫秒
-    retry:
-      max-retries: 3
-      retry-interval: 5000
-      retry-multiplier: 2
+#   # 延迟消息配置
+#   delay:
+#     enabled: true
+#     redis-key-prefix: "delay_message:"
+#     scan-interval: 100  # 从1000ms改为100ms，提高延迟精度
+#     batch-size: 100
+#     message-expire-time: 604800000  # 7天，单位毫秒
+#     retry:
+#       max-retries: 3
+#       retry-interval: 5000
+#       retry-multiplier: 2
 
 logging:
   level:

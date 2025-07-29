@@ -10,7 +10,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Configuration
-@ConditionalOnProperty(prefix = "mq.redis", name = "host")
+@ConditionalOnProperty(prefix = "mq.redis", name = {"enabled", "host"}, havingValue = "true")
 public class RedisConfiguration {
 
     @Bean

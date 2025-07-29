@@ -54,7 +54,7 @@ mq:
   
   # RocketMQ配置
   rocketmq:
-    enabled: true
+    enabled: false
     name-server-addr: localhost:9876
     producer-group: test_producer_group
     consumer-group: test_consumer_group
@@ -62,7 +62,7 @@ mq:
   
   # RabbitMQ配置
   rabbitmq:
-    enabled: true
+    enabled: false
     host: 10.2.6.180
     port: 5672
     username: root
@@ -87,14 +87,14 @@ mq:
   
   # ActiveMQ配置
   activemq:
-    enabled: true
+    enabled: false
     broker-url: tcp://localhost:61616
     username: admin
     password: admin
   
   # EMQX配置
   emqx:
-    enabled: true
+    enabled: false
     server-uri: tcp://10.2.3.141:1883
     username: user
     password: Lachesis-mh_1024
@@ -102,6 +102,14 @@ mq:
     clean-session: true
     keep-alive-interval: 60
   
+  # Kafka配置
+  kafka:
+    enabled: true
+    bootstrap-servers: 10.2.3.161:9092
+    producer-client-id: kafka-producer
+    consumer-group-id: kafka-consumer-group
+    auto-commit-interval: 1000
+
   # 延迟消息配置
   delay:
     enabled: true
