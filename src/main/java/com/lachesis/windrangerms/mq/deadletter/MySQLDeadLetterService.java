@@ -31,7 +31,7 @@ public class MySQLDeadLetterService extends AbstractDeadLetterService {
 
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
+    @Autowired(required = false)
     private Map<String, DataSource> dataSourceMap;
 
     private String deadLetterTableName;
@@ -42,6 +42,12 @@ public class MySQLDeadLetterService extends AbstractDeadLetterService {
      */
     @PostConstruct
     public void init() {
+        // 检查dataSourceMap是否可用
+        if (dataSourceMap == null || dataSourceMap.isEmpty()) {
+            log.warn("No DataSource available, MySQL dead letter service will not be initialized");
+            return;
+        }
+
         // 获取配置的表名
         deadLetterTableName = mqConfig.getDeadLetter().getMysql().getDeadLetterTableName();
         retryHistoryTableName = mqConfig.getDeadLetter().getMysql().getRetryHistoryTableName();
@@ -270,6 +276,12 @@ public class MySQLDeadLetterService extends AbstractDeadLetterService {
             return;
         }
 
+        // 检查jdbcTemplate是否已初始化
+        if (jdbcTemplate == null) {
+            log.debug("MySQL dead letter service not initialized, skipping cleanup");
+            return;
+        }
+
         long expireTime = System.currentTimeMillis() - mqConfig.getDeadLetter().getCleanup().getMessageRetentionTime();
         int count = cleanupExpiredMessages(expireTime);
         log.info("Scheduled cleanup: removed {} expired dead letter messages", count);
@@ -282,6 +294,10 @@ public class MySQLDeadLetterService extends AbstractDeadLetterService {
      */
     @Override
     public int cleanupExpiredMessages() {
+        if (jdbcTemplate == null) {
+            log.debug("MySQL dead letter service not initialized, cannot cleanup expired messages");
+            return 0;
+        }
         long expireTime = System.currentTimeMillis() - mqConfig.getDeadLetter().getCleanup().getMessageRetentionTime();
         return cleanupExpiredMessages(expireTime);
     }
@@ -293,6 +309,11 @@ public class MySQLDeadLetterService extends AbstractDeadLetterService {
      * @return 清理的消息数量
      */
     public int cleanupExpiredMessages(long expireTime) {
+        if (jdbcTemplate == null) {
+            log.debug("MySQL dead letter service not initialized, cannot cleanup expired messages");
+            return 0;
+        }
+        
         try {
             // 获取过期消息ID
             List<String> expiredIds = jdbcTemplate.queryForList(

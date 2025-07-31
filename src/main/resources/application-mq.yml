@@ -1,5 +1,8 @@
 # MQ统一配置文件
 # 此文件为MQ SDK的默认配置，会被自动加载
+server:
+  port: 8085
+
 spring:
   redis:
     host: localhost
@@ -97,3 +100,11 @@ mq:
       max-retries: 3
       retry-interval: 5000
       retry-multiplier: 2
+
+  # 死信队列配置
+  dead-letter:
+    enabled: true
+    storage-type: redis  # 使用Redis存储，避免MySQL依赖
+    redis:
+      key-prefix: "dead_letter:"
+      expire-time: 604800000  # 7天，单位毫秒

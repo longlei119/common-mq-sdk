@@ -1,2 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.lachesis.windrangerms.mq.config.MQAutoConfiguration
+  com.lachesis.windrangerms.mq.config.MQAutoConfiguration,\
+  com.lachesis.windrangerms.mq.config.DeadLetterAutoConfiguration
+
+org.springframework.context.ApplicationContextInitializer=\
+  com.lachesis.windrangerms.mq.config.MQConfigFileApplicationContextInitializer

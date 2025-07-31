@@ -7,6 +7,7 @@ import com.lachesis.windrangerms.mq.deadletter.model.DeadLetterStatusEnum;
 import com.lachesis.windrangerms.mq.deadletter.model.RetryHistory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
  * Redis实现的死信队列服务
  */
 @Slf4j
-@Service
 public class RedisDeadLetterService extends AbstractDeadLetterService {
 
     @Autowired

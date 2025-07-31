@@ -17,8 +17,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 @Slf4j
 @Configuration
-@ConditionalOnProperty(prefix = "mq.dead-letter", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "mq.dead-letter", name = "enabled", havingValue = "true")
 public class DeadLetterAutoConfiguration {
+    
+    public DeadLetterAutoConfiguration() {
+        log.info("DeadLetterAutoConfiguration 正在初始化...");
+    }
 
     /**
      * 配置Redis实现的死信队列服务
@@ -27,7 +31,7 @@ public class DeadLetterAutoConfiguration {
     @ConditionalOnBean(StringRedisTemplate.class)
     @ConditionalOnProperty(prefix = "mq.dead-letter", name = "storage-type", havingValue = "redis", matchIfMissing = true)
     public RedisDeadLetterService redisDeadLetterService() {
-        log.info("初始化Redis死信队列服务");
+        log.info("正在创建 RedisDeadLetterService bean");
         return new RedisDeadLetterService();
     }
 
@@ -35,10 +39,10 @@ public class DeadLetterAutoConfiguration {
      * 配置MySQL实现的死信队列服务
      */
     @Bean
-    @ConditionalOnBean(JdbcTemplate.class)
     @ConditionalOnProperty(prefix = "mq.dead-letter", name = "storage-type", havingValue = "mysql")
+    @ConditionalOnMissingBean
     public MySQLDeadLetterService mysqlDeadLetterService() {
-        log.info("初始化MySQL死信队列服务");
+        log.info("正在创建 MySQLDeadLetterService bean");
         return new MySQLDeadLetterService();
     }
 
@@ -48,7 +52,7 @@ public class DeadLetterAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public DeadLetterServiceFactory deadLetterServiceFactory() {
-        log.info("初始化死信队列服务工厂");
+        log.info("正在创建 DeadLetterServiceFactory bean");
         return new DeadLetterServiceFactory();
     }
 }

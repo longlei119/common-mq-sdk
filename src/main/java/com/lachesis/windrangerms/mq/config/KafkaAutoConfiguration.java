@@ -1,6 +1,7 @@
 package com.lachesis.windrangerms.mq.config;
 
 import com.lachesis.windrangerms.mq.consumer.impl.KafkaConsumer;
+import com.lachesis.windrangerms.mq.delay.adapter.KafkaAdapter;
 import com.lachesis.windrangerms.mq.producer.impl.KafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -12,6 +13,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -150,5 +152,16 @@ public class KafkaAutoConfiguration {
         log.info("创建Kafka AdminClient: bootstrap-servers={}", mqConfig.getKafka().getBootstrapServers());
         
         return AdminClient.create(configs);
+    }
+
+    /**
+     * 创建Kafka适配器Bean
+     */
+    @Bean
+    @ConditionalOnBean(name = "kafkaProducerForAdapter")
+    @ConditionalOnMissingBean
+    public KafkaAdapter kafkaAdapter(org.apache.kafka.clients.producer.KafkaProducer<String, byte[]> kafkaProducerForAdapter) {
+        log.info("创建KafkaAdapter Bean");
+        return new KafkaAdapter(kafkaProducerForAdapter);
     }
 }

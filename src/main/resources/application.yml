@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: 8085
 # 测试环境配置
 # mq:
 #   # RocketMQ配置

@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * 自动扫描和注册带@MQConsumer注解的方法
  */
 @Slf4j
-@Component
+//@Component
 public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
     
     @Autowired
@@ -44,7 +44,7 @@ public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
     @Autowired
     private MQConfig mqConfig;
     
-    @Autowired
+    @Autowired(required = false)
     private DeadLetterServiceFactory deadLetterServiceFactory;
     
     // 消息重试计数器，记录每个消息的重试次数
@@ -339,6 +339,10 @@ public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
      */
     private void deleteFromDeadLetterQueue(String messageId) {
         try {
+            if (deadLetterServiceFactory == null) {
+                log.debug("死信队列服务工厂不可用，跳过删除操作: messageId={}", messageId);
+                return;
+            }
             DeadLetterService deadLetterService = deadLetterServiceFactory.getDeadLetterService();
             if (deadLetterService == null) {
                 return;
@@ -367,6 +371,10 @@ public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
      */
     private void sendToDeadLetterQueue(String messageId, String messageBody, String mqType, String topic, String tag, String failureReason) {
         try {
+            if (deadLetterServiceFactory == null) {
+                log.warn("死信队列服务工厂不可用，无法发送消息到死信队列: messageId={}", messageId);
+                return;
+            }
             DeadLetterService deadLetterService = deadLetterServiceFactory.getDeadLetterService();
             if (deadLetterService == null) {
                 log.warn("死信队列服务不可用，无法发送消息到死信队列: messageId={}", messageId);

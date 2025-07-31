@@ -16,7 +16,7 @@ public class DeadLetterServiceFactory {
     @Autowired
     private MQConfig mqConfig;
     
-    @Autowired
+    @Autowired(required = false)
     private RedisDeadLetterService redisDeadLetterService;
     
     @Autowired(required = false)
@@ -38,17 +38,25 @@ public class DeadLetterServiceFactory {
         
         switch (storageType) {
             case "redis":
+                if (redisDeadLetterService == null) {
+                    log.warn("Redis dead letter service is not available");
+                    return null;
+                }
                 log.debug("Using Redis dead letter service");
                 return redisDeadLetterService;
             case "mysql":
                 if (mysqlDeadLetterService == null) {
-                    log.error("MySQL dead letter service is not available");
-                    throw new IllegalStateException("MySQL dead letter service is not available");
+                    log.warn("MySQL dead letter service is not available");
+                    return null;
                 }
                 log.debug("Using MySQL dead letter service");
                 return mysqlDeadLetterService;
             default:
                 log.warn("Unknown storage type: {}, fallback to Redis", storageType);
+                if (redisDeadLetterService == null) {
+                    log.warn("Redis dead letter service is not available for fallback, no dead letter service available");
+                    return null;
+                }
                 return redisDeadLetterService;
         }
     }
