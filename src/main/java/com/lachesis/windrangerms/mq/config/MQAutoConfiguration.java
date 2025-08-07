@@ -24,18 +24,12 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.env.YamlPropertySourceLoader;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.PropertySource;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -44,11 +38,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties(MQConfig.class)
 @EnableScheduling
 @ComponentScan(basePackages = "com.lachesis.windrangerms.mq")
-@Import({KafkaAutoConfiguration.class, RedisAutoConfiguration.class, ActiveMQAutoConfiguration.class, RabbitMQAutoConfiguration.class, EMQXAutoConfiguration.class})
 public class MQAutoConfiguration implements ApplicationRunner {
 
-    @Autowired
-    private MQConfig mqConfig;
+
 
     /**
      * 引入死信队列自动配置
@@ -99,9 +91,4 @@ public class MQAutoConfiguration implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         log.info("MQ自动配置启动完成");
     }
-
-    // ApplicationEnvironmentPreparedEvent监听器已移至独立的配置类
-    // 参见：MQEnvironmentPreparedListener
-
-
 }

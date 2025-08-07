@@ -36,8 +36,16 @@ public class ActiveMQProducer implements MQProducer {
     public String syncSend(MQTypeEnum mqType, String topic, String tag, MQEvent event) {
         try {
             String messageId = "activemq-" + System.currentTimeMillis();
-            jmsTemplate.convertAndSend(topic, JSON.toJSONString(event));
-            log.info("ActiveMQ同步发送消息成功: topic={}, tag={}, messageId={}", topic, tag, messageId);
+            String destination = buildDestination(topic, tag);
+            
+            // 判断是否为Topic类型的destination，与消费者逻辑保持一致
+            // ActiveMQ默认使用Queue模式，确保与消费者端保持一致
+        boolean isTopicDestination = false;
+            jmsTemplate.setPubSubDomain(isTopicDestination);
+            
+            jmsTemplate.convertAndSend(destination, JSON.toJSONString(event));
+            log.info("ActiveMQ同步发送消息成功: topic={}, tag={}, destination={}, messageId={}", topic, tag, destination, messageId);
+            
             return messageId;
         } catch (Exception e) {
             log.error("ActiveMQ同步发送消息失败: topic={}, tag={}", topic, tag, e);
@@ -49,8 +57,14 @@ public class ActiveMQProducer implements MQProducer {
     public void asyncSend(MQTypeEnum mqType, String topic, String tag, Object event) {
         CompletableFuture.runAsync(() -> {
             try {
-                jmsTemplate.convertAndSend(topic, event);
-                log.info("ActiveMQ异步发送消息成功: topic={}, tag={}", topic, tag);
+                String destination = buildDestination(topic, tag);
+                
+                // ActiveMQ默认使用Queue模式，确保与消费者端保持一致
+                boolean isTopicDestination = false;
+                jmsTemplate.setPubSubDomain(isTopicDestination);
+                
+                jmsTemplate.convertAndSend(destination, event);
+                log.info("ActiveMQ异步发送消息成功: topic={}, tag={}, destination={}", topic, tag, destination);
             } catch (Exception e) {
                 log.error("ActiveMQ异步发送消息失败: topic={}, tag={}", topic, tag, e);
             }
@@ -122,24 +136,49 @@ public class ActiveMQProducer implements MQProducer {
 
     @Override
     public boolean send(String topic, String tag, String body, Map<String, String> properties) {
+        String destination = buildDestination(topic, tag);
+        // ActiveMQ默认使用Queue模式，确保与消费者端保持一致
+        boolean isTopicDestination = false;
+        
         try {
+            log.debug("开始ActiveMQ消息发送: topic={}, tag={}, destination={}", topic, tag, destination);
+            log.debug("消息内容: {}", body);
+            log.debug("消息属性: {}", properties);
+            
+            // 判断是否为Topic类型的destination
+            if (isTopicDestination) {
+                log.debug("检测到Topic类型destination，设置pubSubDomain=true");
+                jmsTemplate.setPubSubDomain(true);
+            } else {
+                log.debug("检测到Queue类型destination，设置pubSubDomain=false");
+                jmsTemplate.setPubSubDomain(false);
+            }
+            
             log.info("ActiveMQ发送消息：topic={}, tag={}, body={}", topic, tag, body);
-            String destination = buildDestination(topic, tag);
+            log.debug("ActiveMQ发送消息到destination: {}, pubSubDomain={}", destination, jmsTemplate.isPubSubDomain());
 
+            log.debug("正在通过JmsTemplate发送消息...");
             jmsTemplate.convertAndSend(destination, body, message -> {
+                log.debug("JMS消息创建成功，正在设置属性");
                 // 添加用户自定义属性
                 if (properties != null) {
+                    log.debug("正在设置消息属性...");
                     properties.forEach((key, value) -> {
                         try {
                             message.setStringProperty(key, value);
+                            log.debug("设置属性: {}={}", key, value);
                         } catch (Exception e) {
-                            log.warn("设置消息属性失败: key={}, value={}", key, value, e);
+                            log.warn("设置消息属性失败: key={}, value={}, error={}", key, value, e.getMessage());
                         }
                     });
+                    log.debug("消息属性设置完成");
                 }
+                log.debug("返回准备发送的消息: {}", message);
                 return message;
             });
 
+            log.debug("JmsTemplate.convertAndSend()调用完成");
+            log.debug("ActiveMQ消息发送完成");
             return true;
         } catch (Exception e) {
             log.error("ActiveMQ发送消息失败：topic={}, tag={}, body={}", topic, tag, body, e);

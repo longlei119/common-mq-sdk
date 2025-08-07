@@ -87,8 +87,8 @@ mq:
   
   # ActiveMQ配置
   activemq:
-    enabled: false
-    broker-url: tcp://localhost:61616
+    enabled: true
+    broker-url: tcp://10.2.3.161:61616
     username: admin
     password: admin
   
@@ -104,7 +104,7 @@ mq:
   
   # Kafka配置
   kafka:
-    enabled: true
+    enabled: false
     bootstrap-servers: 10.2.3.161:9092
     producer-client-id: kafka-producer
     consumer-group-id: kafka-consumer-group
@@ -121,7 +121,7 @@ mq:
   # 死信队列配置
   dead-letter:
     enabled: true
-    storage-type: redis  # 默认使用Redis存储
+    storage-type: redis  # 使用Redis存储
     redis:
       key-prefix: "mq:dead-letter:"
       queue-key: "mq:dead-letter:queue"

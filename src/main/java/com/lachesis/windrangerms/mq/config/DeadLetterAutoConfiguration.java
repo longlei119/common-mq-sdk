@@ -28,7 +28,6 @@ public class DeadLetterAutoConfiguration {
      * 配置Redis实现的死信队列服务
      */
     @Bean
-    @ConditionalOnBean(StringRedisTemplate.class)
     @ConditionalOnProperty(prefix = "mq.dead-letter", name = "storage-type", havingValue = "redis", matchIfMissing = true)
     public RedisDeadLetterService redisDeadLetterService() {
         log.info("正在创建 RedisDeadLetterService bean");

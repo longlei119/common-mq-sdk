@@ -1,9 +1,13 @@
 package com.lachesis.windrangerms.mq.consumer.impl;
 
 import com.lachesis.windrangerms.mq.consumer.MQConsumer;
+import com.lachesis.windrangerms.mq.deadletter.DeadLetterService;
+import com.lachesis.windrangerms.mq.deadletter.DeadLetterServiceFactory;
+import com.lachesis.windrangerms.mq.deadletter.model.DeadLetterMessage;
 import com.lachesis.windrangerms.mq.enums.MQTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -12,7 +16,10 @@ import org.springframework.stereotype.Component;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.Session;
 import javax.jms.TextMessage;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -32,6 +39,9 @@ public class ActiveMQConsumer implements MQConsumer {
     private final Map<String, Consumer<String>> broadcastHandlerMap = new ConcurrentHashMap<>();
     private final Map<String, DefaultMessageListenerContainer> broadcastContainerMap = new ConcurrentHashMap<>();
 
+    @Autowired(required = false)
+    private DeadLetterServiceFactory deadLetterServiceFactory;
+
     public ActiveMQConsumer(JmsTemplate jmsTemplate) {
         this.jmsTemplate = jmsTemplate;
     }
@@ -43,11 +53,10 @@ public class ActiveMQConsumer implements MQConsumer {
         }
 
         try {
-            // 同时订阅单播和广播消息
+            // 默认订阅单播消息
             subscribeUnicastInternal(topic, tag, handler);
-            subscribeBroadcastInternal(topic, tag, handler);
             
-            log.info("ActiveMQ统一订阅成功: topic={}, tag={}", topic, tag);
+            log.info("ActiveMQ订阅成功: topic={}, tag={}", topic, tag);
         } catch (Exception e) {
             log.error("ActiveMQ订阅失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
             throw new RuntimeException("ActiveMQ订阅失败", e);
@@ -86,28 +95,101 @@ public class ActiveMQConsumer implements MQConsumer {
             DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
             container.setConnectionFactory(jmsTemplate.getConnectionFactory());
             container.setDestinationName(destination);
-            container.setMessageListener(new MessageListener() {
+            
+            // ActiveMQ默认使用Queue模式，除非明确指定为Topic
+            // 这里统一使用Queue模式，确保消息能够被正确消费
+            boolean isTopicDestination = false;
+            container.setPubSubDomain(isTopicDestination);
+            
+            // 添加更多配置确保消息监听容器正常工作
+            container.setSessionAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
+            container.setConcurrentConsumers(1);
+            container.setMaxConcurrentConsumers(1);
+            container.setReceiveTimeout(1000);
+            container.setIdleTaskExecutionLimit(1);
+            container.setAutoStartup(true);
+            
+            log.info("ActiveMQ单播订阅配置: destination={}, pubSubDomain={}", destination, isTopicDestination);
+            
+            // 创建一个具体的MessageListener实现，而不是匿名类
+            MessageListener messageListener = new MessageListener() {
                 @Override
                 public void onMessage(Message message) {
+                    String messageBody = null;
+                    String messageId = null;
                     try {
                         if (message instanceof TextMessage) {
-                            String messageBody = ((TextMessage) message).getText();
+                            messageBody = ((TextMessage) message).getText();
+                            messageId = message.getJMSMessageID();
+                            log.info("ActiveMQ接收到消息: topic={}, tag={}, messageId={}", topic, tag, messageId);
+                            
                             handler.accept(messageBody);
-                            log.debug("ActiveMQ单播消息处理成功: topic={}, tag={}, message={}", topic, tag, messageBody);
+                            log.debug("ActiveMQ单播消息处理成功: topic={}, tag={}", topic, tag);
+                        } else {
+                            log.warn("ActiveMQ接收到非文本消息: topic={}, tag={}, messageType={}", topic, tag, message.getClass().getSimpleName());
                         }
                     } catch (JMSException e) {
                         log.error("ActiveMQ单播消息处理失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+                        handleDeadLetter(messageId, topic, tag, messageBody, e.getMessage());
+                    } catch (Exception e) {
+                        log.error("ActiveMQ单播消息业务处理失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
+                        handleDeadLetter(messageId, topic, tag, messageBody, e.getMessage());
                     }
                 }
-            });
+            };
             
+            container.setMessageListener(messageListener);
             container.start();
             containerMap.put(key, container);
             
-            log.debug("ActiveMQ单播订阅成功: topic={}, tag={}", topic, tag);
+            // 等待一下让容器完全启动
+            Thread.sleep(1000);
+            
+            // 如果容器没有活跃消费者，尝试手动初始化
+            if (container.getActiveConsumerCount() == 0) {
+                log.debug("检测到无活跃消费者，尝试手动初始化");
+                container.initialize();
+                Thread.sleep(500);
+            }
+            
+            // 测试连接
+            testConnection(destination, isTopicDestination);
+            
+            log.info("ActiveMQ单播订阅成功: topic={}, tag={}, destination={}", topic, tag, destination);
         } catch (Exception e) {
             log.error("ActiveMQ单播订阅失败: topic={}, tag={}, error={}", topic, tag, e.getMessage(), e);
-            throw new RuntimeException("ActiveMQ单播订阅失败", e);
+            throw new RuntimeException("ActiveMQ单播订阅失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 测试连接
+     */
+    private void testConnection(String destination, boolean isTopicDestination) {
+        try {
+            javax.jms.Connection connection = jmsTemplate.getConnectionFactory().createConnection();
+            connection.start();
+            javax.jms.Session session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+            
+            if (isTopicDestination) {
+                javax.jms.Topic jmsTopic = session.createTopic(destination);
+                log.debug("成功创建Topic对象: {}", jmsTopic.getTopicName());
+                log.debug("Topic连接测试完成");
+            } else {
+                javax.jms.Queue queue = session.createQueue(destination);
+                log.debug("成功创建队列对象: {}", queue.getQueueName());
+                
+                // 尝试检查队列是否存在
+                javax.jms.QueueBrowser browser = session.createBrowser(queue);
+                log.debug("成功创建队列浏览器，队列存在: {}", destination);
+                browser.close();
+                log.debug("队列连接测试完成");
+            }
+            
+            session.close();
+            connection.close();
+        } catch (Exception e) {
+            log.warn("连接测试失败: {}", e.getMessage(), e);
         }
     }
 
@@ -135,9 +217,12 @@ public class ActiveMQConsumer implements MQConsumer {
             container.setMessageListener(new MessageListener() {
                 @Override
                 public void onMessage(Message message) {
+                    String messageBody = null;
+                    String messageId = null;
                     try {
                         if (message instanceof TextMessage) {
-                            String messageBody = ((TextMessage) message).getText();
+                            messageBody = ((TextMessage) message).getText();
+                            messageId = message.getJMSMessageID();
                             handler.accept(messageBody);
                             log.debug("ActiveMQ广播消息处理成功: topic={}, tag={}, message={}, consumerKey={}", 
                                     topic, tag, messageBody, consumerKey);
@@ -145,6 +230,11 @@ public class ActiveMQConsumer implements MQConsumer {
                     } catch (JMSException e) {
                         log.error("ActiveMQ广播消息处理失败: topic={}, tag={}, consumerKey={}, error={}", 
                                 topic, tag, consumerKey, e.getMessage(), e);
+                        handleDeadLetter(messageId, topic, tag, messageBody, e.getMessage());
+                    } catch (Exception e) {
+                        log.error("ActiveMQ广播消息业务处理失败: topic={}, tag={}, consumerKey={}, error={}", 
+                                topic, tag, consumerKey, e.getMessage(), e);
+                        handleDeadLetter(messageId, topic, tag, messageBody, e.getMessage());
                     }
                 }
             });
@@ -291,5 +381,57 @@ public class ActiveMQConsumer implements MQConsumer {
         handlerMap.clear();
         broadcastContainerMap.clear();
         broadcastHandlerMap.clear();
+    }
+
+    /**
+     * 处理死信消息
+     */
+    private void handleDeadLetter(String messageId, String topic, String tag, String messageBody, String errorMessage) {
+        if (deadLetterServiceFactory == null) {
+            log.warn("死信服务工厂未配置，无法处理死信消息: messageId={}, topic={}, tag={}", messageId, topic, tag);
+            return;
+        }
+
+        try {
+            DeadLetterService deadLetterService = deadLetterServiceFactory.getDeadLetterService();
+            if (deadLetterService == null) {
+                log.warn("死信服务未配置，无法处理死信消息: messageId={}, topic={}, tag={}", messageId, topic, tag);
+                return;
+            }
+
+            DeadLetterMessage deadLetterMessage = new DeadLetterMessage();
+             deadLetterMessage.setOriginalMessageId(messageId != null ? messageId : java.util.UUID.randomUUID().toString());
+             deadLetterMessage.setMqType("ACTIVE_MQ");
+             deadLetterMessage.setOriginalTopic(topic);
+             deadLetterMessage.setOriginalTag(tag);
+             deadLetterMessage.setOriginalBody(messageBody);
+             deadLetterMessage.setDeadLetterTime(System.currentTimeMillis());
+             deadLetterMessage.setFailureReason(errorMessage);
+             deadLetterMessage.setCreateTimestamp(System.currentTimeMillis());
+             deadLetterMessage.setUpdateTimestamp(System.currentTimeMillis());
+             deadLetterMessage.setStatus(0); // 待处理状态
+             deadLetterMessage.setRetryCount(0);
+             deadLetterMessage.setMaxRetryCount(3);
+
+            // 设置消息属性
+            Map<String, String> properties = new HashMap<>();
+            properties.put("messageId", deadLetterMessage.getOriginalMessageId());
+            properties.put("mqType", "ACTIVE_MQ");
+            properties.put("topic", topic);
+            properties.put("tag", tag != null ? tag : "");
+            deadLetterMessage.setProperties(properties);
+
+            boolean saved = deadLetterService.saveDeadLetterMessage(deadLetterMessage);
+            if (saved) {
+                log.info("ActiveMQ死信消息保存成功: messageId={}, topic={}, tag={}", 
+                    deadLetterMessage.getOriginalMessageId(), topic, tag);
+            } else {
+                log.error("ActiveMQ死信消息保存失败: messageId={}, topic={}, tag={}", 
+                    deadLetterMessage.getOriginalMessageId(), topic, tag);
+            }
+        } catch (Exception e) {
+            log.error("处理ActiveMQ死信消息时发生异常: messageId={}, topic={}, tag={}, error={}", 
+                messageId, topic, tag, e.getMessage(), e);
+        }
     }
 }

@@ -62,8 +62,8 @@ mq:
 
   # ActiveMQ配置
   activemq:
-    enabled: false
-    broker-url: tcp://localhost:61616
+    enabled: true
+    broker-url: tcp://10.2.3.161:61616
     username: admin
     password: admin
     pool:

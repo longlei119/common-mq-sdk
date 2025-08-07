@@ -1,6 +1,12 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.lachesis.windrangerms.mq.config.MQAutoConfiguration,\
-  com.lachesis.windrangerms.mq.config.DeadLetterAutoConfiguration
+  com.lachesis.windrangerms.mq.config.DeadLetterAutoConfiguration,\
+  com.lachesis.windrangerms.mq.config.ActiveMQAutoConfiguration,\
+  com.lachesis.windrangerms.mq.config.KafkaAutoConfiguration,\
+  com.lachesis.windrangerms.mq.config.RabbitMQAutoConfiguration,\
+  com.lachesis.windrangerms.mq.config.RedisAutoConfiguration,\
+  com.lachesis.windrangerms.mq.config.RocketMQAutoConfiguration,\
+  com.lachesis.windrangerms.mq.config.EMQXAutoConfiguration
 
 org.springframework.context.ApplicationContextInitializer=\
   com.lachesis.windrangerms.mq.config.MQConfigFileApplicationContextInitializer

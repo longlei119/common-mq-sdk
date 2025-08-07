@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * 自动扫描和注册带@MQConsumer注解的方法
  */
 @Slf4j
-//@Component
+@Component
 public class MQConsumerAnnotationProcessor implements BeanPostProcessor {
     
     @Autowired
