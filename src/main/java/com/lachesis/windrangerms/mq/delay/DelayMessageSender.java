@@ -47,12 +47,15 @@ public class DelayMessageSender {
         // 初始化MQ适配器映射
         this.mqAdapterMap = new ConcurrentHashMap<>();
         if (mqAdapters != null) {
+            // 初始化MQ适配器映射
             for (MQAdapter adapter : mqAdapters) {
                 this.mqAdapterMap.put(adapter.getMQType(), adapter);
+                log.info("加载MQ适配器: type={}, class={}", adapter.getMQType(), adapter.getClass().getSimpleName());
             }
         }
         
         log.info("延迟消息发送器初始化成功，已加载{}个MQ适配器", mqAdapterMap.size());
+        log.info("适配器映射表: {}", mqAdapterMap.keySet());
     }
 
     /**

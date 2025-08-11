@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -63,7 +64,7 @@ public class MQAutoConfiguration implements ApplicationRunner {
             mqAdapters = new ArrayList<>();
         }
         log.info("Creating DelayMessageSender with {} MQAdapters", mqAdapters.size());
-        return new DelayMessageSender(redisTemplate, mqAdapters, mqConfig);
+        return new DelayMessageSender(redisTemplate, mqAdapters, mqConfig); 
     }
 
     @Bean

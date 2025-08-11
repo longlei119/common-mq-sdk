@@ -109,7 +109,7 @@ public class ActiveMQConsumer implements MQConsumer {
             container.setIdleTaskExecutionLimit(1);
             container.setAutoStartup(true);
             
-            log.info("ActiveMQ单播订阅配置: destination={}, pubSubDomain={}", destination, isTopicDestination);
+            log.info("ActiveMQ单播订阅配置: topic={}, tag={}, destination={}, pubSubDomain={}", topic, tag, destination, isTopicDestination);
             
             // 创建一个具体的MessageListener实现，而不是匿名类
             MessageListener messageListener = new MessageListener() {

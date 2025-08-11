@@ -31,7 +31,9 @@ public class ActiveMQAdapter implements MQAdapter {
                 destination += "." + message.getTag();
             }
             
-            // 使用JmsTemplate发送消息
+            // 设置为Topic模式并发送消息
+            jmsTemplate.setPubSubDomain(true);
+            log.info("ActiveMQ发送前配置: destination={}, pubSubDomain={}", destination, jmsTemplate.isPubSubDomain());
             jmsTemplate.send(destination, session -> {
                 try {
                     BytesMessage bytesMessage = session.createBytesMessage();

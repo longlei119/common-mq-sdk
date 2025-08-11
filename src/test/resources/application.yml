@@ -2,6 +2,15 @@
 # 所有测试使用相同配置，简化维护
 
 spring:
+  # ActiveMQ配置
+  activemq:
+    enabled: true
+    broker-url: tcp://10.2.3.161:61616
+    username: admin
+    password: admin
+    # 启用调度器支持，用于延迟消息功能
+    scheduler-support: true
+  
   redis:
     host: localhost
     port: 6379
@@ -21,6 +30,12 @@ spring:
 
 # MQ配置
 mq:
+  # ActiveMQ配置 - 用于测试类@Value注入
+  activemq:
+    broker-url: tcp://10.2.3.161:61616
+    username: admin
+    password: admin
+  
   # Redis配置
   redis:
     enabled: true
@@ -84,31 +99,24 @@ mq:
           initial-interval: 1000
           multiplier: 1.0
           max-interval: 10000
-  
-  # ActiveMQ配置
-  activemq:
-    enabled: true
-    broker-url: tcp://10.2.3.161:61616
-    username: admin
-    password: admin
-  
-  # EMQX配置
-  emqx:
-    enabled: false
-    server-uri: tcp://10.2.3.141:1883
-    username: user
-    password: Lachesis-mh_1024
-    client-id: testClient
-    clean-session: true
-    keep-alive-interval: 60
-  
-  # Kafka配置
-  kafka:
-    enabled: false
-    bootstrap-servers: 10.2.3.161:9092
-    producer-client-id: kafka-producer
-    consumer-group-id: kafka-consumer-group
-    auto-commit-interval: 1000
+
+# EMQX配置
+emqx:
+  enabled: false
+  server-uri: tcp://10.2.3.141:1883
+  username: user
+  password: Lachesis-mh_1024
+  client-id: testClient
+  clean-session: true
+  keep-alive-interval: 60
+
+# Kafka配置
+kafka:
+  enabled: false
+  bootstrap-servers: 10.2.3.161:9092
+  producer-client-id: kafka-producer
+  consumer-group-id: kafka-consumer-group
+  auto-commit-interval: 1000
 
   # 延迟消息配置
   delay:

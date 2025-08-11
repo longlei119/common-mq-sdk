@@ -44,7 +44,7 @@ public class ActiveMQProducer implements MQProducer {
             jmsTemplate.setPubSubDomain(isTopicDestination);
             
             jmsTemplate.convertAndSend(destination, JSON.toJSONString(event));
-            log.info("ActiveMQ同步发送消息成功: topic={}, tag={}, destination={}, messageId={}", topic, tag, destination, messageId);
+            log.info("ActiveMQ同步发送消息成功: topic={}, tag={}, destination={}, messageId={}, pubSubDomain={}", topic, tag, destination, messageId, jmsTemplate.isPubSubDomain());
             
             return messageId;
         } catch (Exception e) {
