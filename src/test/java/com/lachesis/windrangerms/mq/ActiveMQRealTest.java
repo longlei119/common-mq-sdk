@@ -363,10 +363,10 @@ public class ActiveMQRealTest {
         springSession.close();
         springConnection.close();
         
-        System.out.println("ActiveMQ真实延迟消息测试完成：");
-        System.out.println("- 期望延迟: " + expectedDelay + "ms");
-        System.out.println("- 实际延迟: " + actualDelay + "ms");
-        System.out.println("- 延迟误差: " + Math.abs(actualDelay - expectedDelay) + "ms");
+        log.info("ActiveMQ真实延迟消息测试完成：");
+        log.info("- 期望延迟: {}ms", expectedDelay);
+        log.info("- 实际延迟: {}ms", actualDelay);
+        log.info("- 延迟误差: {}ms", Math.abs(actualDelay - expectedDelay));
     }
 
     /**
@@ -503,7 +503,7 @@ public class ActiveMQRealTest {
             
             // 使用MQProducer发送消息
             producer.syncSend(MQTypeEnum.ACTIVE_MQ, batchQueueName, batchTag, event);
-            System.out.println("发送ActiveMQ批量消息 " + (i+1) + "/" + batchSize + ": " + event.getMessage());
+            log.info("发送ActiveMQ批量消息 {}/{}: {}", (i+1), batchSize, event.getMessage());
         }
         
         long sendEndTime = System.currentTimeMillis();
@@ -519,19 +519,19 @@ public class ActiveMQRealTest {
         // 验证性能指标
         assertEquals(batchSize, receivedCount.get(), "接收消息数量不匹配");
         
-        System.out.println("ActiveMQ批量消息测试完成，接收到 " + receivedCount.get() + " 条消息");
-        System.out.println("总耗时: " + totalTime + "ms");
+        log.info("ActiveMQ批量消息测试完成，接收到 {} 条消息", receivedCount.get());
+        log.info("总耗时: {}ms", totalTime);
         
         // 计算TPS
         double sendTps = batchSize * 1000.0 / sendTime;
         double totalTps = batchSize * 1000.0 / totalTime;
         
-        System.out.println("ActiveMQ真实批量消息测试完成：");
-        System.out.println("- 批量大小: " + batchSize);
-        System.out.println("- 发送耗时: " + sendTime + "ms");
-        System.out.println("- 总耗时: " + totalTime + "ms");
-        System.out.println("- 发送TPS: " + String.format("%.2f", sendTps));
-        System.out.println("- 整体TPS: " + String.format("%.2f", totalTps));
+        log.info("ActiveMQ真实批量消息测试完成：");
+        log.info("- 批量大小: {}", batchSize);
+        log.info("- 发送耗时: {}ms", sendTime);
+        log.info("- 总耗时: {}ms", totalTime);
+        log.info("- 发送TPS: {}", String.format("%.2f", sendTps));
+        log.info("- 整体TPS: {}", String.format("%.2f", totalTps));
     }
 
     @Test
@@ -558,7 +558,7 @@ public class ActiveMQRealTest {
         // 订阅消息
         consumer.subscribe(MQTypeEnum.ACTIVE_MQ, priorityQueueName, priorityTag, (message) -> {
             int count = priorityReceivedCount.incrementAndGet();
-            System.out.println("收到ActiveMQ优先级消息 " + count + ": " + message);
+            log.info("收到ActiveMQ优先级消息 {}: {}", count, message);
             priorityLatch.countDown();
         });
         
@@ -582,7 +582,7 @@ public class ActiveMQRealTest {
                 
                 // 使用MQProducer发送消息
                 producer.syncSend(MQTypeEnum.ACTIVE_MQ, priorityQueueName, priorityTag, event);
-                System.out.println("发送ActiveMQ" + priorityName + "消息: " + event.getMessage());
+                log.info("发送ActiveMQ{}消息: {}", priorityName, event.getMessage());
             }
         }
         
@@ -597,8 +597,8 @@ public class ActiveMQRealTest {
         
         assertEquals(totalMessages, priorityReceivedCount.get(), "优先级消息接收数量不匹配");
         
-        System.out.println("ActiveMQ优先级消息测试完成，接收到 " + priorityReceivedCount.get() + " 条消息");
-        System.out.println("总耗时: " + priorityTotalTime + "ms");
+        log.info("ActiveMQ优先级消息测试完成，接收到 {} 条消息", priorityReceivedCount.get());
+        log.info("总耗时: {}ms", priorityTotalTime);
     }
 
     @Test
@@ -615,10 +615,10 @@ public class ActiveMQRealTest {
         
         // 创建第一个消费者
         MessageConsumer unicastConsumer1 = session.createConsumer(unicastDestination);
-        System.out.println("创建单播消费者1");
+        log.info("创建单播消费者1");
         unicastConsumer1.setMessageListener(message -> {
             try {
-                System.out.println("单播消费者1收到消息: " + ((TextMessage) message).getText());
+                log.info("单播消费者1收到消息: {}", ((TextMessage) message).getText());
                 consumer1Count.incrementAndGet();
                 totalReceivedCount.incrementAndGet();
                 latch.countDown();
@@ -629,10 +629,10 @@ public class ActiveMQRealTest {
         
         // 创建第二个消费者（ActiveMQ中同一个队列的多个消费者会负载均衡）
         MessageConsumer unicastConsumer2 = session.createConsumer(unicastDestination);
-        System.out.println("创建单播消费者2");
+        log.info("创建单播消费者2");
         unicastConsumer2.setMessageListener(message -> {
             try {
-                System.out.println("单播消费者2收到消息: " + ((TextMessage) message).getText());
+                log.info("单播消费者2收到消息: {}", ((TextMessage) message).getText());
                 consumer2Count.incrementAndGet();
                 totalReceivedCount.incrementAndGet();
                 latch.countDown();
@@ -661,7 +661,7 @@ public class ActiveMQRealTest {
         message.setText(messageContent);
         message.setStringProperty("tag", event.getTag());
         
-        System.out.println("发送单播消息");
+        log.info("发送单播消息");
         unicastProducer.send(message);
         
         // 等待消息处理
@@ -678,7 +678,7 @@ public class ActiveMQRealTest {
                   (consumer1Count.get() == 0 && consumer2Count.get() == 1), 
             "应该只有一个消费者收到消息");
         
-        System.out.println("ActiveMQ单播模式验证完成 - 消费者1收到: " + consumer1Count.get() + ", 消费者2收到: " + consumer2Count.get() + ", 总计: " + totalReceivedCount.get());
+        log.info("ActiveMQ单播模式验证完成 - 消费者1收到: {}, 消费者2收到: {}, 总计: {}", consumer1Count.get(), consumer2Count.get(), totalReceivedCount.get());
         
         // 清理资源
         unicastConsumer1.close();
@@ -701,7 +701,7 @@ public class ActiveMQRealTest {
         transactionConsumer.setMessageListener(message -> {
             try {
                 int count = transactionReceivedCount.incrementAndGet();
-                System.out.println("收到ActiveMQ事务消息 " + count + ": " + ((TextMessage) message).getText());
+                log.info("收到ActiveMQ事务消息 {}: {}", count, ((TextMessage) message).getText());
                 transactionSession.commit(); // 提交事务
                 transactionLatch.countDown();
             } catch (Exception e) {
@@ -741,7 +741,7 @@ public class ActiveMQRealTest {
             // 提交事务
             transactionSession.commit();
             
-            System.out.println("ActiveMQ事务消息发送并提交成功");
+            log.info("ActiveMQ事务消息发送并提交成功");
         } catch (Exception e) {
             e.printStackTrace();
             transactionSession.rollback();
@@ -757,7 +757,7 @@ public class ActiveMQRealTest {
         transactionProducer.close();
         transactionSession.close();
         
-        System.out.println("ActiveMQ真实事务消息测试完成");
+        log.info("ActiveMQ真实事务消息测试完成");
     }
 
     @Test
@@ -776,7 +776,7 @@ public class ActiveMQRealTest {
         // 订阅消息
         consumer.subscribe(MQTypeEnum.ACTIVE_MQ, QUEUE_NAME, TAG, (message) -> {
             int count = resilienceReceivedCount.incrementAndGet();
-            System.out.println("收到ActiveMQ弹性测试消息 " + count + ": " + message);
+            log.info("收到ActiveMQ弹性测试消息 {}: {}", count, message);
             resilienceLatch.countDown();
         });
         
@@ -802,7 +802,7 @@ public class ActiveMQRealTest {
             "ActiveMQ弹性测试消息接收超时");
         assertEquals(2, resilienceReceivedCount.get(), "应该收到2条弹性测试消息");
         
-        System.out.println("ActiveMQ连接弹性测试完成，接收到 " + resilienceReceivedCount.get() + " 条消息");
+        log.info("ActiveMQ连接弹性测试完成，接收到 {} 条消息", resilienceReceivedCount.get());
     }
 
 
@@ -824,6 +824,6 @@ public class ActiveMQRealTest {
         
         // 添加延迟确保资源完全释放
         Thread.sleep(2000);
-        System.out.println("ActiveMQ连接已关闭");
+        log.info("ActiveMQ连接已关闭");
     }
 }
